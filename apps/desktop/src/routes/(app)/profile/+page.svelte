@@ -4,12 +4,14 @@
   import EmptyState from '$lib/components/layout/EmptyState.svelte';
   import Card from '$lib/components/ui/Card.svelte';
   import Button from '$lib/components/ui/Button.svelte';
+  import ImportModal from '$lib/components/profile/ImportModal.svelte';
   import { profileApi } from '$lib/ipc/client';
   import type { Profile } from '@arpli/shared';
 
   let profile = $state<Profile | null>(null);
   let loading = $state(true);
   let loadError = $state<string | null>(null);
+  let showImport = $state(false);
 
   async function loadProfile() {
     loading = true;
@@ -29,10 +31,21 @@
 <TopBar title="Profile" subtitle="Your permanent, growing knowledge base">
   {#snippet actions()}
     {#if profile}
-      <Button variant="secondary" size="sm" onclick={loadProfile}>Refresh</Button>
+      <Button variant="secondary" size="sm" onclick={() => (showImport = true)}>
+        Import document
+      </Button>
+      <Button variant="ghost" size="sm" onclick={loadProfile}>Refresh</Button>
     {/if}
   {/snippet}
 </TopBar>
+
+{#if showImport && profile}
+  <ImportModal
+    profileId={profile.id}
+    onimported={loadProfile}
+    onclose={() => (showImport = false)}
+  />
+{/if}
 
 <div class="flex-1 overflow-auto p-6">
   {#if loading}
@@ -51,8 +64,7 @@
       description="Import a resume or LinkedIn export, or talk Arpli through your background. Everything stays on this machine."
     >
       {#snippet actions()}
-        <Button href="/onboarding/profile">Import resume</Button>
-        <Button href="/onboarding/profile" variant="secondary">Tell me about yourself</Button>
+        <Button href="/onboarding/profile">Get started</Button>
       {/snippet}
     </EmptyState>
   {:else}

@@ -88,6 +88,15 @@ export const profileEssays = sqliteTable('profile_essays', {
     .default(sql`CURRENT_TIMESTAMP`),
 });
 
+/**
+ * An opportunity is anything an applicant can bring into Arpli: a
+ * scholarship, grant, fellowship, accelerator, or job posting. The
+ * parser extracts a normalised shape; the user edits it before saving.
+ *
+ * `questions` is a JSON-encoded `OpportunityQuestion[]` and `tags` is a
+ * JSON-encoded `string[]`. They are stored as text columns because
+ * SQLite has no native JSON type; the service layer parses them.
+ */
 export const opportunities = sqliteTable('opportunities', {
   id: text('id').primaryKey(),
   title: text('title').notNull(),
@@ -95,17 +104,19 @@ export const opportunities = sqliteTable('opportunities', {
     enum: ['scholarship', 'grant', 'fellowship', 'accelerator', 'job', 'other'],
   }).notNull(),
   organization: text('organization'),
-  description: text('description'),
-  requirements: text('requirements'),
-  eligibility: text('eligibility'),
-  deadline: text('deadline'),
-  wordLimits: text('word_limits'),
-  status: text('status', { enum: ['open', 'closed', 'archived'] })
-    .notNull()
-    .default('open'),
-  rawText: text('raw_text'),
   url: text('url'),
+  deadline: text('deadline'),
+  eligibility: text('eligibility'),
+  questions: text('questions'),
+  description: text('description'),
+  tags: text('tags'),
+  status: text('status', { enum: ['active', 'archived'] })
+    .notNull()
+    .default('active'),
   createdAt: text('created_at')
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+  updatedAt: text('updated_at')
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
 });

@@ -17,7 +17,7 @@ let mainWindow: BrowserWindow | null = null;
  * On non-2xx status or network error, returns { error: string }.
  */
 async function daemonRequest<T>(
-  method: 'GET' | 'POST' | 'PATCH',
+  method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
   path: string,
   body?: unknown,
 ): Promise<T | { error: string }> {
@@ -64,6 +64,30 @@ ipcMain.handle('profile:get', async () => {
 
 ipcMain.handle('profile:update', (_event, payload: { id: string; patch: unknown }) =>
   daemonRequest('PATCH', `/profile/${payload.id}`, payload.patch),
+);
+
+ipcMain.handle('opportunity:intake', (_event, payload) =>
+  daemonRequest('POST', '/opportunities/intake', payload),
+);
+
+ipcMain.handle('opportunity:create', (_event, payload) =>
+  daemonRequest('POST', '/opportunities', payload),
+);
+
+ipcMain.handle('opportunity:list', () =>
+  daemonRequest('GET', '/opportunities'),
+);
+
+ipcMain.handle('opportunity:get', (_event, payload: { id: string }) =>
+  daemonRequest('GET', `/opportunities/${payload.id}`),
+);
+
+ipcMain.handle('opportunity:update', (_event, payload: { id: string; patch: unknown }) =>
+  daemonRequest('PATCH', `/opportunities/${payload.id}`, payload.patch),
+);
+
+ipcMain.handle('opportunity:delete', (_event, payload: { id: string }) =>
+  daemonRequest('DELETE', `/opportunities/${payload.id}`),
 );
 
 // ── Window ───────────────────────────────────────────────────────────────────

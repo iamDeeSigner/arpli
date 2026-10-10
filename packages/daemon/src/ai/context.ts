@@ -106,9 +106,7 @@ export function buildSystemPrompt(
       const bits: string[] = [];
       bits.push(`${opp.title}${opp.organization ? ` — ${opp.organization}` : ''} (${opp.type}).`);
       if (opp.description) bits.push(opp.description.trim());
-      if (opp.requirements) bits.push(`Requirements: ${opp.requirements.trim()}`);
       if (opp.eligibility) bits.push(`Eligibility: ${opp.eligibility.trim()}`);
-      if (opp.wordLimits) bits.push(`Word limits: ${opp.wordLimits.trim()}`);
       if (opp.deadline) bits.push(`Deadline: ${opp.deadline}`);
       sections.push(`## Opportunity\n${bits.join('\n')}`);
     }
