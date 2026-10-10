@@ -1,22 +1,22 @@
 <!--
-  Scaffold Card. Uses the HSL token system (tailwind.config.js colours resolve
-  to hsl(var(--card)) etc. defined in src/lib/styles/tokens.css). A follow-up
-  task should port the full Card API from cloudlands-fe/src/lib/components/ui/card
-  once its supporting primitives (SurfaceContext, ProximityHighlight, cn) are in
-  place.
+  Card component. Uses the HSL token system from tokens.css via Tailwind aliases.
+  Pass padded=false to remove default padding (e.g. for cards with custom padding).
 -->
 <script lang="ts">
   import type { HTMLAttributes } from 'svelte/elements';
   import { cn } from '$lib/utils';
 
-  type $$Props = HTMLAttributes<HTMLDivElement> & { class?: string };
-  let className: $$Props['class'] = undefined;
-  export { className as class };
+  let {
+    padded = true,
+    class: className = '',
+    children,
+    ...rest
+  }: HTMLAttributes<HTMLDivElement> & { padded?: boolean; class?: string } = $props();
 </script>
 
 <div
-  class={cn('bg-card text-card-foreground rounded-md border p-6', className)}
-  {...$$restProps}
+  class={cn('bg-card text-card-foreground rounded-md border', padded ? 'p-6' : '', className)}
+  {...rest}
 >
-  <slot />
+  {@render children?.()}
 </div>

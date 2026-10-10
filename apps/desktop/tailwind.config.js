@@ -1,104 +1,88 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: 'class',
   content: ['./src/**/*.{html,js,svelte,ts}'],
+  darkMode: 'class',
   theme: {
     extend: {
-      // All color tokens resolve to HSL CSS custom properties defined in
-      // src/lib/styles/tokens.css. The product designer can replace the token
-      // values without touching this config or any component class.
       colors: {
-        border: 'hsl(var(--border) / <alpha-value>)',
-        input: 'hsl(var(--input) / <alpha-value>)',
-        ring: 'hsl(var(--ring) / <alpha-value>)',
-        background: 'hsl(var(--background) / <alpha-value>)',
-        foreground: 'hsl(var(--foreground) / <alpha-value>)',
-        primary: {
-          DEFAULT: 'hsl(var(--primary) / <alpha-value>)',
-          foreground: 'hsl(var(--primary-foreground) / <alpha-value>)',
-        },
-        secondary: {
-          DEFAULT: 'hsl(var(--secondary) / <alpha-value>)',
-          foreground: 'hsl(var(--secondary-foreground) / <alpha-value>)',
-        },
-        danger: 'hsl(var(--danger) / <alpha-value>)',
-        'danger-background': 'hsl(var(--danger-background) / <alpha-value>)',
-        muted: {
-          DEFAULT: 'hsl(var(--muted) / <alpha-value>)',
-          foreground: 'hsl(var(--muted-foreground) / <alpha-value>)',
-        },
-        accent: {
-          DEFAULT: 'hsl(var(--accent) / <alpha-value>)',
-          foreground: 'hsl(var(--accent-foreground) / <alpha-value>)',
-        },
-        popover: {
-          DEFAULT: 'hsl(var(--popover) / <alpha-value>)',
-          foreground: 'hsl(var(--popover-foreground) / <alpha-value>)',
-        },
-        card: {
-          DEFAULT: 'hsl(var(--card) / <alpha-value>)',
-          foreground: 'hsl(var(--card-foreground) / <alpha-value>)',
-        },
-        info: {
-          DEFAULT: 'hsl(var(--info) / <alpha-value>)',
-          foreground: 'hsl(var(--info-foreground) / <alpha-value>)',
-        },
-        success: {
-          DEFAULT: 'hsl(var(--success) / <alpha-value>)',
-          foreground: 'hsl(var(--success-foreground) / <alpha-value>)',
-        },
-        warning: {
-          DEFAULT: 'hsl(var(--warning) / <alpha-value>)',
-          foreground: 'hsl(var(--warning-foreground) / <alpha-value>)',
-        },
-        sidebar: {
-          DEFAULT: 'hsl(var(--sidebar) / <alpha-value>)',
-          foreground: 'hsl(var(--sidebar-foreground) / <alpha-value>)',
-          accent: 'hsl(var(--sidebar-accent) / <alpha-value>)',
-          'accent-foreground': 'hsl(var(--sidebar-accent-foreground) / <alpha-value>)',
-          border: 'hsl(var(--sidebar-border) / <alpha-value>)',
-        },
+        // Semantic tokens — resolve to CSS custom properties so a designer can
+        // reskin the whole app by editing src/app.css without touching Tailwind.
+        bg: 'rgb(var(--color-bg) / <alpha-value>)',
+        surface: 'rgb(var(--color-surface) / <alpha-value>)',
+        'surface-raised': 'rgb(var(--color-surface-raised) / <alpha-value>)',
+        border: 'rgb(var(--color-border) / <alpha-value>)',
+        'border-strong': 'rgb(var(--color-border-strong) / <alpha-value>)',
+        text: 'rgb(var(--color-text) / <alpha-value>)',
+        muted: 'rgb(var(--color-text-muted) / <alpha-value>)',
+        subtle: 'rgb(var(--color-text-subtle) / <alpha-value>)',
+        accent: 'rgb(var(--color-accent) / <alpha-value>)',
+        'accent-hover': 'rgb(var(--color-accent-hover) / <alpha-value>)',
+        'accent-foreground': 'rgb(var(--color-accent-foreground) / <alpha-value>)',
+        success: 'rgb(var(--color-success) / <alpha-value>)',
+        warning: 'rgb(var(--color-warning) / <alpha-value>)',
+        danger: 'rgb(var(--color-danger) / <alpha-value>)',
       },
-      borderColor: {
-        DEFAULT: 'hsl(var(--border) / <alpha-value>)',
-      },
-      borderRadius: {
-        lg: 'var(--radius-large)',
-        md: 'var(--radius-medium)',
-        sm: 'var(--radius-small)',
-        full: 'var(--radius-full)',
+      spacing: {
+        // Base 4px scale.
+        0: 'var(--space-0)',
+        1: 'var(--space-1)',
+        2: 'var(--space-2)',
+        3: 'var(--space-3)',
+        4: 'var(--space-4)',
+        5: 'var(--space-5)',
+        6: 'var(--space-6)',
+        8: 'var(--space-8)',
+        10: 'var(--space-10)',
+        12: 'var(--space-12)',
+        16: 'var(--space-16)',
+        // Legacy semantic aliases.
+        xs: 'var(--space-xs)',
+        sm: 'var(--space-sm)',
+        md: 'var(--space-md)',
+        lg: 'var(--space-lg)',
+        xl: 'var(--space-xl)',
       },
       fontFamily: {
-        sans: ['var(--font-ui)'],
-        mono: ['var(--font-code)'],
+        sans: 'var(--font-sans)',
+        mono: 'var(--font-mono)',
       },
-      keyframes: {
-        'fade-in': {
-          from: { opacity: 0, transform: 'scale(0.95)' },
-          to: { opacity: 1, transform: 'scale(1)' },
-        },
-        shimmer: {
-          '0%': { transform: 'translateX(-100%)' },
-          '100%': { transform: 'translateX(100%)' },
-        },
+      fontSize: {
+        xs: 'var(--text-xs)',
+        sm: 'var(--text-sm)',
+        base: 'var(--text-base)',
+        lg: 'var(--text-lg)',
+        xl: 'var(--text-xl)',
+        '2xl': 'var(--text-2xl)',
+        '3xl': 'var(--text-3xl)',
+        '4xl': 'var(--text-4xl)',
       },
-      animation: {
-        'fade-in': 'fade-in var(--motion-fast) var(--ease-standard)',
-        shimmer: 'shimmer 2s infinite',
+      borderRadius: {
+        sm: 'var(--radius-sm)',
+        md: 'var(--radius-md)',
+        lg: 'var(--radius-lg)',
+        xl: 'var(--radius-xl)',
+        token: 'var(--radius)',
+      },
+      boxShadow: {
+        sm: 'var(--shadow-sm)',
+        md: 'var(--shadow-md)',
+        lg: 'var(--shadow-lg)',
+      },
+      transitionDuration: {
+        fast: 'var(--motion-fast)',
+        standard: 'var(--motion-standard)',
+        slow: 'var(--motion-slow)',
+      },
+      transitionTimingFunction: {
+        standard: 'var(--ease-standard)',
+      },
+      width: {
+        sidebar: 'var(--sidebar-width)',
+      },
+      height: {
+        topbar: 'var(--topbar-height)',
       },
     },
   },
-  plugins: [
-    require('@tailwindcss/typography'),
-    function ({ addBase, theme }) {
-      addBase({
-        ':root': {
-          '--tw-border-opacity': '1',
-        },
-        '*, ::before, ::after': {
-          borderColor: theme('colors.border'),
-        },
-      });
-    },
-  ],
+  plugins: [],
 };
