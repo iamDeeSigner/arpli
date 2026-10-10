@@ -1,43 +1,51 @@
 <!--
-  Scaffold Button. Uses the HSL token system; a follow-up task should port
-  the full Button API from cloudlands-fe/src/lib/components/ui/button once
-  its supporting primitives (IntentMarkLoader, TooltipShortcut, size-context,
-  button.variants) are in place.
+  Button component. Uses the HSL token system from tokens.css via Tailwind aliases.
+  Supports primary/secondary/ghost/danger variants and sm/md/lg sizes.
+  Pass href to render an <a> tag instead.
 -->
 <script lang="ts">
-  import type { HTMLButtonAttributes } from 'svelte/elements';
   import { cn } from '$lib/utils';
 
-  type $$Props = HTMLButtonAttributes & {
-    variant?: 'primary' | 'secondary' | 'ghost';
-    class?: string;
+  type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
+  type Size = 'sm' | 'md' | 'lg';
+
+  let {
+    variant = 'primary' as Variant,
+    size = 'md' as Size,
+    type = 'button' as 'button' | 'submit' | 'reset',
+    disabled = false,
+    href = null as string | null,
+    class: className = '',
+    onclick = undefined as ((e: MouseEvent & { currentTarget: EventTarget & (HTMLButtonElement | HTMLAnchorElement) }) => void) | undefined,
+    children,
+    ...rest
+  } = $props();
+
+  const sizeClasses: Record<Size, string> = {
+    sm: 'px-3 py-1 text-sm',
+    md: 'px-4 py-2 text-sm',
+    lg: 'px-5 py-3 text-base',
   };
 
-  export let variant: NonNullable<$$Props['variant']> = 'primary';
-  export let type: $$Props['type'] = 'button';
-  export let disabled: $$Props['disabled'] = false;
-  let className: $$Props['class'] = undefined;
-  export { className as class };
-
-  const variantClasses: Record<NonNullable<$$Props['variant']>, string> = {
+  const variantClasses: Record<Variant, string> = {
     primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
     secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
     ghost: 'bg-transparent text-foreground hover:bg-muted',
+    danger: 'bg-danger text-white hover:bg-danger/90',
   };
+
+  const base =
+    'inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50';
+
+  const classes = $derived(cn(base, sizeClasses[size], variantClasses[variant], className));
 </script>
 
-<button
-  {type}
-  {disabled}
-  class={cn(
-    'inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors',
-    'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-    'disabled:opacity-50 disabled:pointer-events-none',
-    variantClasses[variant],
-    className,
-  )}
-  on:click
-  {...$$restProps}
->
-  <slot />
-</button>
+{#if href}
+  <a {href} class={classes} aria-disabled={disabled || undefined} {...rest}>
+    {@render children?.()}
+  </a>
+{:else}
+  <button {type} {disabled} class={classes} {onclick} {...rest}>
+    {@render children?.()}
+  </button>
+{/if}
