@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Design tokens — Phase 1 scaffold
+ *
+ * This is a deliberately plain neutral palette. A product designer will replace
+ * these values (and nothing else should need to change) when the Figma system
+ * lands. Keep ALL color / spacing / typography decisions as CSS custom
+ * properties so nothing is hardcoded downstream.
+ */
+
+:root {
+  color-scheme: light;
+
+  --color-bg: 255 255 255;
+  --color-surface: 249 250 251;
+  --color-border: 229 231 235;
+  --color-text: 17 24 39;
+  --color-muted: 107 114 128;
+  --color-accent: 37 99 235;
+
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2.5rem;
+
+  --radius: 0.5rem;
+
+  --font-sans:
+    system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --color-bg: 17 24 39;
+    --color-surface: 31 41 55;
+    --color-border: 55 65 81;
+    --color-text: 243 244 246;
+    --color-muted: 156 163 175;
+    --color-accent: 96 165 250;
+  }
+}
+
+html,
+body {
+  background: rgb(var(--color-bg));
+  color: rgb(var(--color-text));
+  font-family: var(--font-sans);
+}

@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+out/
+.svelte-kit/
+*.tsbuildinfo
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Local data
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+data/
+.arpli/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Electron
+release/
+dist-electron/
