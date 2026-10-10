@@ -155,3 +155,35 @@ export const applicationDrafts = sqliteTable('application_drafts', {
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
 });
+
+/**
+ * Generic key/value settings store.
+ * `value` is stored as a JSON-encoded string.
+ */
+export const settings = sqliteTable('settings', {
+  key: text('key').primaryKey(),
+  value: text('value').notNull(),
+  updatedAt: text('updated_at')
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+});
+
+/**
+ * One row per configured AI provider. Only one row has `is_active = 1` at a
+ * time — the connector manager routes all calls to that provider. API keys
+ * are stored locally in SQLite (local-first, single-user); keep this table
+ * out of any future cloud sync surface.
+ */
+export const aiProviders = sqliteTable('ai_providers', {
+  kind: text('kind', {
+    enum: ['ollama', 'groq', 'google', 'anthropic', 'openai', 'gemini'],
+  }).primaryKey(),
+  tier: text('tier', { enum: ['local', 'free-cloud', 'paid'] }).notNull(),
+  model: text('model').notNull(),
+  apiKey: text('api_key'),
+  baseUrl: text('base_url'),
+  isActive: integer('is_active', { mode: 'boolean' }).notNull().default(false),
+  updatedAt: text('updated_at')
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
+});
