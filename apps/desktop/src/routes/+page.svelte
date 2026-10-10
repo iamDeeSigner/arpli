@@ -16,27 +16,27 @@
   });
 </script>
 
-<main class="min-h-screen p-xl">
-  <header class="mb-xl">
+<main class="min-h-screen bg-background text-foreground p-10">
+  <header class="mb-10">
     <h1 class="text-3xl font-semibold">Arpli</h1>
-    <p class="text-muted">Local-first application intelligence hub.</p>
+    <p class="text-muted-foreground">Local-first application intelligence hub.</p>
   </header>
 
   <Card>
-    <h2 class="text-lg font-medium mb-sm">Daemon</h2>
+    <h2 class="text-lg font-medium mb-2">Daemon</h2>
     {#if health}
-      <dl class="grid grid-cols-2 gap-sm text-sm">
-        <dt class="text-muted">Status</dt>
+      <dl class="grid grid-cols-2 gap-2 text-sm">
+        <dt class="text-muted-foreground">Status</dt>
         <dd>{health.ok ? 'ok' : 'down'}</dd>
-        <dt class="text-muted">Version</dt>
+        <dt class="text-muted-foreground">Version</dt>
         <dd>{health.version}</dd>
-        <dt class="text-muted">Database</dt>
+        <dt class="text-muted-foreground">Database</dt>
         <dd>{health.dbReady ? 'ready' : 'initializing'}</dd>
       </dl>
     {:else if error}
-      <p class="text-sm text-muted">Daemon not reachable: {error}</p>
+      <p class="text-sm text-muted-foreground">Daemon not reachable: {error}</p>
     {:else}
-      <p class="text-sm text-muted">Checking daemon…</p>
+      <p class="text-sm text-muted-foreground">Checking daemon…</p>
     {/if}
   </Card>
 </main>
