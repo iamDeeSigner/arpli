@@ -17,6 +17,8 @@ const ALLOWED_CHANNELS = [
   'ai:complete',
   'ai:providers:ollama:models',
   'ai:providers',
+  'ai:transcribe',
+  'ai:transcribe:status',
   'profile:get',
   'profile:update',
   'daemon:health',

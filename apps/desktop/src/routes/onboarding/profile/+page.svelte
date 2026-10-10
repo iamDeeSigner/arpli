@@ -7,7 +7,9 @@
   import { goto } from '$app/navigation';
   import Button from '$lib/components/ui/Button.svelte';
   import Textarea from '$lib/components/ui/Textarea.svelte';
+  import MicButton from '$lib/components/voice/MicButton.svelte';
   import { onboarding } from '$lib/stores/onboarding';
+  import { voiceSettings } from '$lib/voice/settings';
 
   type Mode = 'choose' | 'paste' | 'talk';
 
@@ -135,9 +137,14 @@
       </button>
 
       <div class="flex flex-col gap-1">
-        <label class="text-sm font-medium" for="bio-input">
-          Tell me about yourself
-        </label>
+        <div class="flex items-center justify-between">
+          <label class="text-sm font-medium" for="bio-input">
+            Tell me about yourself
+          </label>
+          {#if $voiceSettings.enabled}
+            <MicButton bind:value={bio} appendToValue={true} />
+          {/if}
+        </div>
         <Textarea
           id="bio-input"
           bind:value={bio}
@@ -146,6 +153,9 @@
         />
         <p class="text-xs text-muted-foreground">
           Include your current situation, background, and what you're looking for.
+          {#if $voiceSettings.enabled}
+            Use the mic button above to dictate.
+          {/if}
         </p>
       </div>
 

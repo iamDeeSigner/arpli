@@ -30,6 +30,8 @@ type Channel =
   | 'ai:complete'
   | 'ai:providers:ollama:models'
   | 'ai:providers'
+  | 'ai:transcribe'
+  | 'ai:transcribe:status'
   | 'profile:get'
   | 'profile:update'
   | 'daemon:health'
@@ -421,6 +423,41 @@ export const applicationApi = {
     if (hasInvokeBridge())
       return viaBridge<{ ok: boolean }>('application:delete-draft', { id, draftId });
     return viaFetch<{ ok: boolean }>('DELETE', `/applications/${id}/drafts/${draftId}`);
+  },
+};
+
+// ────── Transcription ──────
+
+export interface TranscribePayload {
+  audio: string; // base64
+  mimeType: string;
+  filename?: string;
+  model?: string;
+  language?: string;
+}
+
+export interface TranscribeResponse {
+  text: string;
+  provider: string;
+  model: string;
+  durationSeconds?: number;
+}
+
+export interface TranscribeStatusResponse {
+  available: boolean;
+  provider: string | null;
+}
+
+export const transcribeApi = {
+  async transcribe(payload: TranscribePayload): Promise<TranscribeResponse> {
+    if (hasInvokeBridge()) return viaBridge<TranscribeResponse>('ai:transcribe', payload);
+    return viaFetch<TranscribeResponse>('POST', '/ai/transcribe', payload);
+  },
+
+  async status(): Promise<TranscribeStatusResponse> {
+    if (hasInvokeBridge())
+      return viaBridge<TranscribeStatusResponse>('ai:transcribe:status');
+    return viaFetch<TranscribeStatusResponse>('GET', '/ai/transcribe/status');
   },
 };
 

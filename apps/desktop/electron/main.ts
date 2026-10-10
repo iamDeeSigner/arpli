@@ -1,4 +1,4 @@
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, session, shell, ipcMain } from 'electron';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -54,6 +54,14 @@ ipcMain.handle('ai:providers:ollama:models', () =>
 
 ipcMain.handle('ai:providers', () =>
   daemonRequest('GET', '/ai/providers'),
+);
+
+ipcMain.handle('ai:transcribe', (_event, payload) =>
+  daemonRequest('POST', '/ai/transcribe', payload),
+);
+
+ipcMain.handle('ai:transcribe:status', () =>
+  daemonRequest('GET', '/ai/transcribe/status'),
 );
 
 ipcMain.handle('profile:get', async () => {
@@ -153,6 +161,36 @@ ipcMain.handle(
     daemonRequest('DELETE', `/applications/${payload.id}/drafts/${payload.draftId}`),
 );
 
+// ── Permissions ──────────────────────────────────────────────────────────────
+
+/**
+ * Grant the microphone (and nothing else) when the renderer calls
+ * `navigator.mediaDevices.getUserMedia({ audio: true })`. Everything
+ * else returns false so a compromised renderer cannot escalate.
+ *
+ * macOS still shows the system-level mic prompt the first time; this
+ * handler only governs Chromium's in-page permission. On macOS the OS
+ * prompt is driven by `NSMicrophoneUsageDescription` in the signed app's
+ * Info.plist (configured at packaging time); the dev shell inherits
+ * Electron Helper's own entitlements and prompts on first use.
+ */
+function wireRendererPermissions() {
+  session.defaultSession.setPermissionRequestHandler(
+    (_webContents, permission, callback) => {
+      if (permission === 'media' || permission === 'audioCapture') {
+        callback(true);
+        return;
+      }
+      callback(false);
+    },
+  );
+
+  session.defaultSession.setPermissionCheckHandler((_webContents, permission) => {
+    if (permission === 'media' || permission === 'audioCapture') return true;
+    return false;
+  });
+}
+
 // ── Window ───────────────────────────────────────────────────────────────────
 
 async function createWindow() {
@@ -187,7 +225,10 @@ async function createWindow() {
   mainWindow.once('ready-to-show', () => mainWindow?.show());
 }
 
-void app.whenReady().then(createWindow);
+void app.whenReady().then(() => {
+  wireRendererPermissions();
+  return createWindow();
+});
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
