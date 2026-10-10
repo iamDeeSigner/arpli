@@ -26,6 +26,16 @@ const ALLOWED_CHANNELS = [
   'opportunity:get',
   'opportunity:update',
   'opportunity:delete',
+  'application:create',
+  'application:ensure',
+  'application:list',
+  'application:get',
+  'application:update',
+  'application:delete',
+  'application:draft',
+  'application:save-draft',
+  'application:list-drafts',
+  'application:delete-draft',
 ];
 
 contextBridge.exposeInMainWorld('arpli', {

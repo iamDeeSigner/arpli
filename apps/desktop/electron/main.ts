@@ -90,6 +90,69 @@ ipcMain.handle('opportunity:delete', (_event, payload: { id: string }) =>
   daemonRequest('DELETE', `/opportunities/${payload.id}`),
 );
 
+// ── Applications ─────────────────────────────────────────────────────────────
+
+ipcMain.handle('application:create', (_event, payload) =>
+  daemonRequest('POST', '/applications', payload),
+);
+
+ipcMain.handle(
+  'application:ensure',
+  (_event, payload: { opportunityId: string; profileId: string }) =>
+    daemonRequest('POST', '/applications', { ...payload, ensure: true }),
+);
+
+ipcMain.handle(
+  'application:list',
+  (
+    _event,
+    payload?: { opportunityId?: string; profileId?: string; status?: string },
+  ) => {
+    const qs = new URLSearchParams();
+    if (payload?.opportunityId) qs.set('opportunityId', payload.opportunityId);
+    if (payload?.profileId) qs.set('profileId', payload.profileId);
+    if (payload?.status) qs.set('status', payload.status);
+    const q = qs.toString();
+    return daemonRequest('GET', `/applications${q ? `?${q}` : ''}`);
+  },
+);
+
+ipcMain.handle('application:get', (_event, payload: { id: string }) =>
+  daemonRequest('GET', `/applications/${payload.id}`),
+);
+
+ipcMain.handle(
+  'application:update',
+  (_event, payload: { id: string; patch: unknown }) =>
+    daemonRequest('PATCH', `/applications/${payload.id}`, payload.patch),
+);
+
+ipcMain.handle('application:delete', (_event, payload: { id: string }) =>
+  daemonRequest('DELETE', `/applications/${payload.id}`),
+);
+
+ipcMain.handle(
+  'application:draft',
+  (_event, payload: { id: string; input: unknown }) =>
+    daemonRequest('POST', `/applications/${payload.id}/draft`, payload.input),
+);
+
+ipcMain.handle(
+  'application:save-draft',
+  (_event, payload: { id: string; input: unknown }) =>
+    daemonRequest('POST', `/applications/${payload.id}/drafts`, payload.input),
+);
+
+ipcMain.handle('application:list-drafts', (_event, payload: { id: string }) =>
+  daemonRequest('GET', `/applications/${payload.id}/drafts`),
+);
+
+ipcMain.handle(
+  'application:delete-draft',
+  (_event, payload: { id: string; draftId: string }) =>
+    daemonRequest('DELETE', `/applications/${payload.id}/drafts/${payload.draftId}`),
+);
+
 // ── Window ───────────────────────────────────────────────────────────────────
 
 async function createWindow() {
