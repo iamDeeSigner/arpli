@@ -5,22 +5,52 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Semantic tokens — resolve to CSS custom properties so a designer can
-        // reskin the whole app by editing src/app.css without touching Tailwind.
-        bg: 'rgb(var(--color-bg) / <alpha-value>)',
-        surface: 'rgb(var(--color-surface) / <alpha-value>)',
-        'surface-raised': 'rgb(var(--color-surface-raised) / <alpha-value>)',
-        border: 'rgb(var(--color-border) / <alpha-value>)',
-        'border-strong': 'rgb(var(--color-border-strong) / <alpha-value>)',
-        text: 'rgb(var(--color-text) / <alpha-value>)',
-        muted: 'rgb(var(--color-text-muted) / <alpha-value>)',
-        subtle: 'rgb(var(--color-text-subtle) / <alpha-value>)',
-        accent: 'rgb(var(--color-accent) / <alpha-value>)',
-        'accent-hover': 'rgb(var(--color-accent-hover) / <alpha-value>)',
-        'accent-foreground': 'rgb(var(--color-accent-foreground) / <alpha-value>)',
-        success: 'rgb(var(--color-success) / <alpha-value>)',
-        warning: 'rgb(var(--color-warning) / <alpha-value>)',
-        danger: 'rgb(var(--color-danger) / <alpha-value>)',
+        // Semantic tokens — HSL channel vars so Tailwind opacity utilities work.
+        border: 'hsl(var(--border) / <alpha-value>)',
+        input: 'hsl(var(--input) / <alpha-value>)',
+        ring: 'hsl(var(--ring) / <alpha-value>)',
+        background: 'hsl(var(--background) / <alpha-value>)',
+        foreground: 'hsl(var(--foreground) / <alpha-value>)',
+        primary: {
+          DEFAULT: 'hsl(var(--primary) / <alpha-value>)',
+          foreground: 'hsl(var(--primary-foreground) / <alpha-value>)',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary) / <alpha-value>)',
+          foreground: 'hsl(var(--secondary-foreground) / <alpha-value>)',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted) / <alpha-value>)',
+          foreground: 'hsl(var(--muted-foreground) / <alpha-value>)',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent) / <alpha-value>)',
+          foreground: 'hsl(var(--accent-foreground) / <alpha-value>)',
+        },
+        card: {
+          DEFAULT: 'hsl(var(--card) / <alpha-value>)',
+          foreground: 'hsl(var(--card-foreground) / <alpha-value>)',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover) / <alpha-value>)',
+          foreground: 'hsl(var(--popover-foreground) / <alpha-value>)',
+        },
+        sidebar: {
+          DEFAULT: 'hsl(var(--sidebar) / <alpha-value>)',
+          foreground: 'hsl(var(--sidebar-foreground) / <alpha-value>)',
+          accent: 'hsl(var(--sidebar-accent) / <alpha-value>)',
+          'accent-foreground': 'hsl(var(--sidebar-accent-foreground) / <alpha-value>)',
+          border: 'hsl(var(--sidebar-border) / <alpha-value>)',
+        },
+        danger: 'hsl(var(--danger) / <alpha-value>)',
+        success: {
+          DEFAULT: 'hsl(var(--success) / <alpha-value>)',
+          foreground: 'hsl(var(--success-foreground) / <alpha-value>)',
+        },
+        warning: {
+          DEFAULT: 'hsl(var(--warning) / <alpha-value>)',
+          foreground: 'hsl(var(--warning-foreground) / <alpha-value>)',
+        },
       },
       spacing: {
         // Base 4px scale.

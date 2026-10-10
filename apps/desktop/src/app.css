@@ -3,151 +3,205 @@
 @tailwind utilities;
 
 /*
- * Design tokens — Phase 1
+ * Design tokens — HSL channel vars.
  *
- * ALL visual decisions live here as CSS custom properties. Components reach
- * these via Tailwind semantic utilities configured in tailwind.config.js.
- * A designer can replace the entire visual layer by editing this file alone —
- * no component changes required.
- *
- * Design constraint for this phase: NEVER hardcode color, spacing, or type
- * values in markup. Everything flows through this file.
+ * ALL color decisions live here as HSL-channel custom properties.
+ * Tailwind resolves them as hsl(var(--name) / <alpha-value>), so opacity
+ * modifiers (bg-primary/50 etc.) work correctly.
+ * Non-color tokens (spacing, type, radius, shadow, motion) follow below.
  */
 
 :root {
-  color-scheme: light;
+  /* ── Color tokens (light) ─────────────────────────────────────────── */
+  --background:           0 0% 100%;
+  --foreground:           222 47% 11%;
 
-  /* Core palette — unwrapped RGB channels so Tailwind alpha utilities work. */
-  --color-bg: 255 255 255;
-  --color-surface: 249 250 251;
-  --color-surface-raised: 243 244 246;
-  --color-border: 229 231 235;
-  --color-border-strong: 209 213 219;
-  --color-text: 17 24 39;
-  --color-text-muted: 107 114 128;
-  --color-text-subtle: 156 163 175;
-  --color-accent: 37 99 235;
-  --color-accent-hover: 29 78 216;
-  --color-accent-foreground: 255 255 255;
-  --color-success: 22 163 74;
-  --color-warning: 217 119 6;
-  --color-danger: 220 38 38;
+  --card:                 0 0% 100%;
+  --card-foreground:      222 47% 11%;
+  --popover:              0 0% 100%;
+  --popover-foreground:   222 47% 11%;
 
-  /* Legacy alias: --color-muted used by the earlier Card scaffold. */
-  --color-muted: var(--color-text-muted);
+  --primary:              221 83% 53%;
+  --primary-foreground:   0 0% 100%;
 
-  /* Spacing — 4px base unit (0.25rem) with a modest scale. */
-  --space-0: 0;
-  --space-1: 0.25rem;  /* 4  */
-  --space-2: 0.5rem;   /* 8  */
-  --space-3: 0.75rem;  /* 12 */
-  --space-4: 1rem;     /* 16 */
-  --space-5: 1.25rem;  /* 20 */
-  --space-6: 1.5rem;   /* 24 */
-  --space-8: 2rem;     /* 32 */
-  --space-10: 2.5rem;  /* 40 */
-  --space-12: 3rem;    /* 48 */
-  --space-16: 4rem;    /* 64 */
+  --secondary:            220 14% 96%;
+  --secondary-foreground: 222 47% 11%;
 
-  /* Legacy aliases kept so pre-existing scaffold components keep working. */
+  --muted:                220 14% 96%;
+  --muted-foreground:     220 9% 46%;
+
+  --accent:               220 14% 96%;
+  --accent-foreground:    222 47% 11%;
+
+  --sidebar:              220 14% 96%;
+  --sidebar-foreground:   222 47% 11%;
+  --sidebar-accent:       220 14% 91%;
+  --sidebar-accent-foreground: 222 47% 11%;
+  --sidebar-border:       220 13% 91%;
+
+  --border:               220 13% 91%;
+  --input:                220 13% 91%;
+  --ring:                 221 83% 53%;
+
+  --danger:               0 84% 60%;
+  --success:              142 71% 45%;
+  --success-foreground:   0 0% 100%;
+  --warning:              38 92% 50%;
+  --warning-foreground:   0 0% 10%;
+
+  /* ── Spacing (4 px base) ─────────────────────────────────────────── */
+  --space-0:  0;
+  --space-1:  0.25rem;   /*  4 */
+  --space-2:  0.5rem;    /*  8 */
+  --space-3:  0.75rem;   /* 12 */
+  --space-4:  1rem;      /* 16 */
+  --space-5:  1.25rem;   /* 20 */
+  --space-6:  1.5rem;    /* 24 */
+  --space-8:  2rem;      /* 32 */
+  --space-10: 2.5rem;    /* 40 */
+  --space-12: 3rem;      /* 48 */
+  --space-16: 4rem;      /* 64 */
+
+  /* Legacy semantic aliases */
   --space-xs: var(--space-1);
   --space-sm: var(--space-2);
   --space-md: var(--space-4);
   --space-lg: var(--space-6);
   --space-xl: var(--space-10);
 
-  /* Radii */
+  /* ── Radii ───────────────────────────────────────────────────────── */
   --radius-sm: 0.25rem;
   --radius-md: 0.375rem;
   --radius-lg: 0.5rem;
   --radius-xl: 0.75rem;
   --radius: var(--radius-md);
 
-  /* Type */
+  /* ── Typography ──────────────────────────────────────────────────── */
   --font-sans:
     'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     sans-serif;
   --font-mono:
     ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
     monospace;
+  --font-ui: var(--font-sans);
 
-  --text-xs: 0.75rem;
-  --text-sm: 0.875rem;
+  --text-xs:   0.75rem;
+  --text-sm:   0.875rem;
   --text-base: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.25rem;
-  --text-2xl: 1.5rem;
-  --text-3xl: 1.875rem;
-  --text-4xl: 2.25rem;
+  --text-lg:   1.125rem;
+  --text-xl:   1.25rem;
+  --text-2xl:  1.5rem;
+  --text-3xl:  1.875rem;
+  --text-4xl:  2.25rem;
 
-  /* Layout */
-  --sidebar-width: 15rem;
-  --topbar-height: 3.5rem;
+  /* ── Layout ──────────────────────────────────────────────────────── */
+  --sidebar-width:  15rem;
+  --topbar-height:  3.5rem;
 
-  /* Elevation */
+  /* ── Elevation ───────────────────────────────────────────────────── */
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
 
-  /* Motion */
-  --motion-fast: 120ms;
+  /* ── Motion ──────────────────────────────────────────────────────── */
+  --motion-fast:     120ms;
   --motion-standard: 180ms;
-  --motion-slow: 240ms;
-  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --motion-slow:     240ms;
+  --ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* ── Dark theme overrides ───────────────────────────────────────────── */
 :root.dark {
   color-scheme: dark;
 
-  --color-bg: 15 23 42;
-  --color-surface: 23 33 54;
-  --color-surface-raised: 30 41 65;
-  --color-border: 51 65 85;
-  --color-border-strong: 71 85 105;
-  --color-text: 241 245 249;
-  --color-text-muted: 148 163 184;
-  --color-text-subtle: 100 116 139;
-  --color-accent: 96 165 250;
-  --color-accent-hover: 59 130 246;
-  --color-accent-foreground: 15 23 42;
-  --color-success: 74 222 128;
-  --color-warning: 251 191 36;
-  --color-danger: 248 113 113;
+  --background:           222 47% 11%;
+  --foreground:           213 31% 91%;
+
+  --card:                 222 47% 11%;
+  --card-foreground:      213 31% 91%;
+  --popover:              222 47% 11%;
+  --popover-foreground:   213 31% 91%;
+
+  --primary:              217 91% 60%;
+  --primary-foreground:   222 47% 11%;
+
+  --secondary:            222 47% 15%;
+  --secondary-foreground: 213 31% 91%;
+
+  --muted:                222 47% 15%;
+  --muted-foreground:     217 10% 64%;
+
+  --accent:               222 47% 15%;
+  --accent-foreground:    213 31% 91%;
+
+  --sidebar:              222 47% 9%;
+  --sidebar-foreground:   213 31% 91%;
+  --sidebar-accent:       222 47% 15%;
+  --sidebar-accent-foreground: 213 31% 91%;
+  --sidebar-border:       217 33% 27%;
+
+  --border:               217 33% 27%;
+  --input:                217 33% 27%;
+  --ring:                 217 91% 60%;
+
+  --danger:               0 62% 70%;
+  --success:              142 71% 45%;
+  --success-foreground:   0 0% 100%;
+  --warning:              38 92% 50%;
+  --warning-foreground:   0 0% 10%;
 
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.45), 0 4px 6px -4px rgb(0 0 0 / 0.3);
 }
 
-/*
- * Fall back to system preference only if the user has not explicitly chosen a
- * theme. The theme store resolves this on mount, so there is no flash.
- */
+/* System-preference fallback when no explicit theme class is set. */
 @media (prefers-color-scheme: dark) {
   :root:not(.light):not(.dark) {
     color-scheme: dark;
 
-    --color-bg: 15 23 42;
-    --color-surface: 23 33 54;
-    --color-surface-raised: 30 41 65;
-    --color-border: 51 65 85;
-    --color-border-strong: 71 85 105;
-    --color-text: 241 245 249;
-    --color-text-muted: 148 163 184;
-    --color-text-subtle: 100 116 139;
-    --color-accent: 96 165 250;
-    --color-accent-hover: 59 130 246;
-    --color-accent-foreground: 15 23 42;
-    --color-success: 74 222 128;
-    --color-warning: 251 191 36;
-    --color-danger: 248 113 113;
+    --background:           222 47% 11%;
+    --foreground:           213 31% 91%;
+
+    --card:                 222 47% 11%;
+    --card-foreground:      213 31% 91%;
+    --popover:              222 47% 11%;
+    --popover-foreground:   213 31% 91%;
+
+    --primary:              217 91% 60%;
+    --primary-foreground:   222 47% 11%;
+
+    --secondary:            222 47% 15%;
+    --secondary-foreground: 213 31% 91%;
+
+    --muted:                222 47% 15%;
+    --muted-foreground:     217 10% 64%;
+
+    --accent:               222 47% 15%;
+    --accent-foreground:    213 31% 91%;
+
+    --sidebar:              222 47% 9%;
+    --sidebar-foreground:   213 31% 91%;
+    --sidebar-accent:       222 47% 15%;
+    --sidebar-accent-foreground: 213 31% 91%;
+    --sidebar-border:       217 33% 27%;
+
+    --border:               217 33% 27%;
+    --input:                217 33% 27%;
+    --ring:                 217 91% 60%;
+
+    --danger:               0 62% 70%;
+    --success:              142 71% 45%;
+    --success-foreground:   0 0% 100%;
+    --warning:              38 92% 50%;
+    --warning-foreground:   0 0% 10%;
   }
 }
 
 html,
 body {
-  background: rgb(var(--color-bg));
-  color: rgb(var(--color-text));
+  background: hsl(var(--background));
+  color: hsl(var(--foreground));
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -160,7 +214,7 @@ body {
 
 /* Focus — token-driven, visible, scoped to :focus-visible. */
 :focus-visible {
-  outline: 2px solid rgb(var(--color-accent));
+  outline: 2px solid hsl(var(--ring));
   outline-offset: 2px;
   border-radius: var(--radius-sm);
 }
