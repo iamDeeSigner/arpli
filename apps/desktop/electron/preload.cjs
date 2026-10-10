@@ -20,6 +20,12 @@ const ALLOWED_CHANNELS = [
   'profile:get',
   'profile:update',
   'daemon:health',
+  'opportunity:intake',
+  'opportunity:create',
+  'opportunity:list',
+  'opportunity:get',
+  'opportunity:update',
+  'opportunity:delete',
 ];
 
 contextBridge.exposeInMainWorld('arpli', {

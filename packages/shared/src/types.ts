@@ -71,22 +71,50 @@ export type OpportunityType =
   | 'job'
   | 'other';
 
-export type OpportunityStatus = 'open' | 'closed' | 'archived';
+export type OpportunityStatus = 'active' | 'archived';
+
+/**
+ * One prompt an applicant has to answer. `wordLimit` is optional because
+ * many opportunities state a count only on some of their questions.
+ */
+export interface OpportunityQuestion {
+  id: string;
+  text: string;
+  wordLimit?: number;
+}
 
 export interface Opportunity {
   id: string;
   title: string;
   type: OpportunityType;
   organization: string | null;
-  description: string | null;
-  requirements: string | null;
-  eligibility: string | null;
-  deadline: string | null;
-  wordLimits: string | null;
-  status: OpportunityStatus;
-  rawText: string | null;
   url: string | null;
+  deadline: string | null;
+  eligibility: string | null;
+  /** JSON string: `OpportunityQuestion[]`. Null when none have been extracted yet. */
+  questions: string | null;
+  description: string | null;
+  /** JSON string: `string[]` of free-form tags. */
+  tags: string | null;
+  status: OpportunityStatus;
   createdAt: string;
+  updatedAt: string;
+}
+
+/**
+ * Shape returned by `/opportunities/intake` and consumed by the Save step.
+ * Everything optional because the parser may fail to extract some fields.
+ */
+export interface OpportunityDraft {
+  title: string;
+  type: OpportunityType;
+  organization: string | null;
+  url: string | null;
+  deadline: string | null;
+  eligibility: string | null;
+  questions: OpportunityQuestion[];
+  description: string | null;
+  tags: string[];
 }
 
 // Application domain

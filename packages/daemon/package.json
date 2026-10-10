@@ -15,10 +15,12 @@
     "@arpli/db": "*",
     "@arpli/shared": "*",
     "drizzle-orm": "^0.33.0",
-    "fastify": "^4.28.1"
+    "fastify": "^4.28.1",
+    "pdf-parse": "^1.1.4"
   },
   "devDependencies": {
     "@types/node": "^22.5.4",
+    "@types/pdf-parse": "^1.1.5",
     "tsx": "^4.19.0",
     "typescript": "^5.5.4"
   }
