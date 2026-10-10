@@ -3,6 +3,7 @@ import { join } from 'node:path';
 import { homedir } from 'node:os';
 import { openDatabase, type ArpliDb } from '@arpli/db';
 import type { DaemonHealth } from '@arpli/shared';
+import { registerProfileRoutes } from './routes/profile.js';
 
 const PORT = Number(process.env.ARPLI_DAEMON_PORT ?? 4848);
 const HOST = process.env.ARPLI_DAEMON_HOST ?? '127.0.0.1';
@@ -34,6 +35,10 @@ async function main() {
     const rows = await db.query.profiles.findMany();
     return { profiles: rows };
   });
+
+  if (db) {
+    await registerProfileRoutes(app, db);
+  }
 
   try {
     await app.listen({ port: PORT, host: HOST });
