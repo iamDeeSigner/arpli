@@ -143,12 +143,63 @@ export interface Application {
 export interface ApplicationDraft {
   id: string;
   applicationId: string;
+  /** Stable OpportunityQuestion.id, when the draft answers a stored question. */
+  questionId: string | null;
   questionText: string;
   draftContent: string;
   wordCount: number;
+  /**
+   * Monotonically increasing per (applicationId, questionId|questionText).
+   * Version 1 is the first AI draft; later versions include manual edits and
+   * regenerations.
+   */
   version: number;
   aiModel: string | null;
+  /** Tone label the drafter was asked to adopt, if any. */
+  tone: string | null;
+  /** Free-form instructions attached to this revision, if any. */
+  instructions: string | null;
   createdAt: string;
+}
+
+/**
+ * Input for drafting a single answer. Either `questionId` + opportunity
+ * context, or a free-form `questionText`.
+ */
+export interface DraftAnswerInput {
+  applicationId: string;
+  /** The question's stable id (from the opportunity). Null for free-form. */
+  questionId?: string | null;
+  /** The question text — required so the drafter has something to answer. */
+  questionText: string;
+  /** Word-cap the drafter is required to respect. */
+  wordLimit?: number | null;
+  /** Short tone label — "concise", "warm", "formal", … */
+  tone?: string | null;
+  /**
+   * Optional revision instruction ("make it shorter", "lead with the
+   * research project", "rephrase the opening"). Appended to the system
+   * prompt so the model treats it as the user's steering.
+   */
+  instructions?: string | null;
+  /**
+   * Optional previous draft text. When present, the drafter treats this
+   * call as a revision of that draft; without it, it treats the call as
+   * the first draft.
+   */
+  previousDraft?: string | null;
+}
+
+/**
+ * The envelope returned by `/applications/:id/draft`. The draft row itself
+ * is already saved to the database; this gives the UI the content, word
+ * count, and the model that produced it so a regenerate button can switch
+ * models without a round-trip.
+ */
+export interface DraftAnswerResult {
+  draft: ApplicationDraft;
+  /** True when the generated draft respected `wordLimit`. */
+  withinLimit: boolean;
 }
 
 // AI connector domain

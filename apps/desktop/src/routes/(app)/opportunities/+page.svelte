@@ -1,12 +1,13 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { goto } from '$app/navigation';
   import TopBar from '$lib/components/layout/TopBar.svelte';
   import EmptyState from '$lib/components/layout/EmptyState.svelte';
   import Card from '$lib/components/ui/Card.svelte';
   import Button from '$lib/components/ui/Button.svelte';
   import Input from '$lib/components/ui/Input.svelte';
   import Textarea from '$lib/components/ui/Textarea.svelte';
-  import { opportunityApi } from '$lib/ipc/client';
+  import { applicationApi, opportunityApi, profileApi } from '$lib/ipc/client';
   import type { Opportunity, OpportunityDraft, OpportunityType, OpportunityQuestion } from '@arpli/shared';
 
   // ── page state ──────────────────────────────────────────────────────────────
@@ -180,6 +181,25 @@
     }
   }
 
+  let startingDraftId = $state<string | null>(null);
+
+  async function startDrafting(opportunityId: string) {
+    startingDraftId = opportunityId;
+    try {
+      const profile = await profileApi.get();
+      if (!profile) {
+        alert('Create a profile first in Profile → Builder so Arpli has context to draft from.');
+        return;
+      }
+      const { application } = await applicationApi.ensure(opportunityId, profile.id);
+      await goto(`/applications/${application.id}`);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : String(err));
+    } finally {
+      startingDraftId = null;
+    }
+  }
+
   // ── helpers ─────────────────────────────────────────────────────────────────
 
   const OPPORTUNITY_TYPES: OpportunityType[] = [
@@ -300,6 +320,11 @@
                 </a>
               {/if}
               <div class="ml-auto flex gap-2">
+                <Button
+                  size="sm"
+                  onclick={() => startDrafting(opp.id)}
+                  disabled={startingDraftId === opp.id}
+                >{startingDraftId === opp.id ? 'Opening…' : 'Draft answers'}</Button>
                 <Button
                   size="sm"
                   variant="ghost"

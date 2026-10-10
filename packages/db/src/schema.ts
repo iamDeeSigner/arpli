@@ -157,11 +157,21 @@ export const applicationDrafts = sqliteTable('application_drafts', {
   applicationId: text('application_id')
     .notNull()
     .references(() => applications.id, { onDelete: 'cascade' }),
+  /**
+   * Stable OpportunityQuestion.id this draft is answering. Nullable so the
+   * user can draft against a free-form question (one not stored on the
+   * opportunity). Prefer this over `questionText` for grouping versions.
+   */
+  questionId: text('question_id'),
   questionText: text('question_text').notNull(),
   draftContent: text('draft_content').notNull(),
   wordCount: integer('word_count').notNull().default(0),
   version: integer('version').notNull().default(1),
   aiModel: text('ai_model'),
+  /** Free-form tone label the drafter was asked to adopt. */
+  tone: text('tone'),
+  /** Free-form instruction attached to this particular revision. */
+  instructions: text('instructions'),
   createdAt: text('created_at')
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),

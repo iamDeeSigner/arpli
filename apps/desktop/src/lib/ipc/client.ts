@@ -12,7 +12,17 @@
  * silently swallow failures: a down daemon surfaces as a clear error.
  */
 
-import type { Profile, AiProviderConfig, Opportunity, OpportunityDraft } from '@arpli/shared';
+import type {
+  Profile,
+  AiProviderConfig,
+  Opportunity,
+  OpportunityDraft,
+  Application,
+  ApplicationDraft,
+  ApplicationStatus,
+  DraftAnswerInput,
+  DraftAnswerResult,
+} from '@arpli/shared';
 
 const DAEMON_BASE = 'http://127.0.0.1:4848';
 
@@ -28,7 +38,17 @@ type Channel =
   | 'opportunity:list'
   | 'opportunity:get'
   | 'opportunity:update'
-  | 'opportunity:delete';
+  | 'opportunity:delete'
+  | 'application:create'
+  | 'application:ensure'
+  | 'application:list'
+  | 'application:get'
+  | 'application:update'
+  | 'application:delete'
+  | 'application:draft'
+  | 'application:save-draft'
+  | 'application:list-drafts'
+  | 'application:delete-draft';
 
 interface ArpliBridge {
   version: string;
@@ -289,6 +309,118 @@ export const profileImportApi = {
       preview,
       updateBio: opts.updateBio ?? false,
     });
+  },
+};
+
+// ────── Applications & drafts ──────
+
+export interface ApplicationWithDrafts {
+  application: Application;
+  drafts: ApplicationDraft[];
+}
+
+export interface CreateApplicationInput {
+  opportunityId: string;
+  profileId: string;
+  status?: ApplicationStatus;
+  notes?: string | null;
+}
+
+export interface UpdateApplicationInput {
+  status?: ApplicationStatus;
+  notes?: string | null;
+  submittedAt?: string | null;
+}
+
+export interface ListApplicationsFilter {
+  opportunityId?: string;
+  profileId?: string;
+  status?: ApplicationStatus;
+}
+
+export const applicationApi = {
+  async create(input: CreateApplicationInput): Promise<{ application: Application }> {
+    if (hasInvokeBridge())
+      return viaBridge<{ application: Application }>('application:create', input);
+    return viaFetch<{ application: Application }>('POST', '/applications', input);
+  },
+
+  /** Idempotent: reuses the existing (opportunity, profile) application if one exists. */
+  async ensure(opportunityId: string, profileId: string): Promise<{ application: Application }> {
+    if (hasInvokeBridge())
+      return viaBridge<{ application: Application }>('application:ensure', {
+        opportunityId,
+        profileId,
+      });
+    return viaFetch<{ application: Application }>('POST', '/applications', {
+      opportunityId,
+      profileId,
+      ensure: true,
+    });
+  },
+
+  async list(filter: ListApplicationsFilter = {}): Promise<{ applications: Application[] }> {
+    if (hasInvokeBridge())
+      return viaBridge<{ applications: Application[] }>('application:list', filter);
+    const qs = new URLSearchParams();
+    if (filter.opportunityId) qs.set('opportunityId', filter.opportunityId);
+    if (filter.profileId) qs.set('profileId', filter.profileId);
+    if (filter.status) qs.set('status', filter.status);
+    const q = qs.toString();
+    return viaFetch<{ applications: Application[] }>('GET', `/applications${q ? `?${q}` : ''}`);
+  },
+
+  async get(id: string): Promise<ApplicationWithDrafts> {
+    if (hasInvokeBridge())
+      return viaBridge<ApplicationWithDrafts>('application:get', { id });
+    return viaFetch<ApplicationWithDrafts>('GET', `/applications/${id}`);
+  },
+
+  async update(id: string, patch: UpdateApplicationInput): Promise<{ application: Application }> {
+    if (hasInvokeBridge())
+      return viaBridge<{ application: Application }>('application:update', { id, patch });
+    return viaFetch<{ application: Application }>('PATCH', `/applications/${id}`, patch);
+  },
+
+  async delete(id: string): Promise<{ ok: boolean }> {
+    if (hasInvokeBridge())
+      return viaBridge<{ ok: boolean }>('application:delete', { id });
+    return viaFetch<{ ok: boolean }>('DELETE', `/applications/${id}`);
+  },
+
+  /** Ask the AI to produce a fresh draft for one question. Persists on success. */
+  async draft(id: string, input: Omit<DraftAnswerInput, 'applicationId'>): Promise<DraftAnswerResult> {
+    if (hasInvokeBridge())
+      return viaBridge<DraftAnswerResult>('application:draft', { id, input });
+    return viaFetch<DraftAnswerResult>('POST', `/applications/${id}/draft`, input);
+  },
+
+  /** Save a user-edited draft as a new version. */
+  async saveDraft(
+    id: string,
+    input: {
+      questionId?: string | null;
+      questionText: string;
+      draftContent: string;
+      tone?: string | null;
+      instructions?: string | null;
+    },
+  ): Promise<{ draft: ApplicationDraft }> {
+    if (hasInvokeBridge())
+      return viaBridge<{ draft: ApplicationDraft }>('application:save-draft', { id, input });
+    return viaFetch<{ draft: ApplicationDraft }>('POST', `/applications/${id}/drafts`, input);
+  },
+
+  async listDrafts(id: string): Promise<{ drafts: ApplicationDraft[] }> {
+    if (hasInvokeBridge())
+      return viaBridge<{ drafts: ApplicationDraft[] }>('application:list-drafts', { id });
+    return viaFetch<{ drafts: ApplicationDraft[] }>('GET', `/applications/${id}/drafts`);
+  },
+
+  async deleteDraft(id: string, draftId: string): Promise<{ ok: boolean }> {
+    if (hasInvokeBridge())
+      return viaBridge<{ ok: boolean }>('application:delete-draft', { id, draftId });
+    return viaFetch<{ ok: boolean }>('DELETE', `/applications/${id}/drafts/${draftId}`);
   },
 };
 

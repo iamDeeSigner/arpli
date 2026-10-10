@@ -7,6 +7,7 @@ import { registerProfileRoutes } from './routes/profile.js';
 import { registerProfileImportRoutes } from './routes/profile-import.js';
 import { registerAiRoutes } from './routes/ai.js';
 import { registerOpportunityRoutes } from './routes/opportunity.js';
+import { registerApplicationRoutes } from './routes/application.js';
 
 const PORT = Number(process.env.ARPLI_DAEMON_PORT ?? 4848);
 const HOST = process.env.ARPLI_DAEMON_HOST ?? '127.0.0.1';
@@ -44,6 +45,7 @@ async function main() {
     await registerProfileImportRoutes(app, db);
     await registerAiRoutes(app, db);
     await registerOpportunityRoutes(app, db);
+    await registerApplicationRoutes(app, db);
   }
 
   try {
