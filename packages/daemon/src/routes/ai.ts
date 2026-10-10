@@ -18,15 +18,15 @@ import {
   deleteProvider,
 } from '../services/settings.js';
 import { OllamaConnector } from '../ai/providers/ollama.js';
+import { OpenAiCompatibleConnector } from '../ai/providers/openai-compatible.js';
+import {
+  ALL_PROVIDERS,
+  LOCAL_RUNNERS,
+  PROVIDER_REGISTRY,
+  describe,
+} from '../ai/providers/registry.js';
 
-const VALID_PROVIDERS: readonly AiProvider[] = [
-  'ollama',
-  'groq',
-  'google',
-  'anthropic',
-  'openai',
-  'gemini',
-];
+const VALID_PROVIDERS: readonly AiProvider[] = ALL_PROVIDERS;
 
 const VALID_TIERS: readonly AiProviderTier[] = ['local', 'free-cloud', 'paid'];
 
@@ -55,7 +55,12 @@ export async function registerAiRoutes(app: FastifyInstance, db: ArpliDb): Promi
     if ('error' in aiRequest) {
       return reply.code(400).send(aiRequest);
     }
-    const connector = getActiveConnector(db);
+    let connector;
+    try {
+      connector = getActiveConnector(db);
+    } catch (err) {
+      return reply.code(409).send({ error: errorMessage(err) });
+    }
     if (!connector) {
       return reply.code(409).send({ error: 'no active AI provider configured' });
     }
@@ -74,7 +79,12 @@ export async function registerAiRoutes(app: FastifyInstance, db: ArpliDb): Promi
     if ('error' in aiRequest) {
       return reply.code(400).send(aiRequest);
     }
-    const connector = getActiveConnector(db);
+    let connector;
+    try {
+      connector = getActiveConnector(db);
+    } catch (err) {
+      return reply.code(409).send({ error: errorMessage(err) });
+    }
     if (!connector) {
       return reply.code(409).send({ error: 'no active AI provider configured' });
     }
@@ -225,6 +235,114 @@ export async function registerAiRoutes(app: FastifyInstance, db: ArpliDb): Promi
       return reply.code(502).send({ error: errorMessage(err) });
     }
   });
+
+  app.get<{ Params: { provider: string } }>(
+    '/ai/providers/:provider/models',
+    async (req, reply) => {
+      const provider = normalizeProvider(req.params.provider);
+      if (!provider) {
+        return reply.code(400).send({ error: `unknown provider: ${req.params.provider}` });
+      }
+      const descriptor = describe(provider);
+      const row = getProvider(db, provider);
+      const baseUrl = row?.baseUrl ?? descriptor.defaultBaseUrl;
+      const model = row?.model ?? descriptor.suggestedModel ?? '';
+      const apiKey = row?.apiKey ?? undefined;
+
+      try {
+        if (descriptor.wireProtocol === 'native-ollama') {
+          const connector = new OllamaConnector({
+            provider,
+            tier: descriptor.tier,
+            model,
+            baseUrl,
+          });
+          return { models: await connector.listModels() };
+        }
+        if (descriptor.wireProtocol === 'openai-compat') {
+          const connector = new OpenAiCompatibleConnector({
+            provider,
+            tier: descriptor.tier,
+            model,
+            apiKey,
+            baseUrl,
+          });
+          return { models: await connector.listModels() };
+        }
+        return reply
+          .code(400)
+          .send({ error: `provider ${provider} has no model-listing endpoint` });
+      } catch (err) {
+        return reply.code(502).send({ error: errorMessage(err) });
+      }
+    },
+  );
+
+  /**
+   * Catalog of every provider Arpli knows about, in a shape the setup UI
+   * can render directly. Does not touch SQLite — it reflects compile-time
+   * registry data only.
+   */
+  app.get('/ai/catalog', async () => {
+    return {
+      providers: Object.values(PROVIDER_REGISTRY).map((p) => ({
+        kind: p.kind,
+        label: p.label,
+        tier: p.tier,
+        wireProtocol: p.wireProtocol,
+        defaultBaseUrl: p.defaultBaseUrl,
+        requiresApiKey: p.requiresApiKey,
+        suggestedModel: p.suggestedModel,
+        localRunner: p.localRunner === true,
+      })),
+    };
+  });
+
+  /**
+   * Probe every known local runner on its default port and report which
+   * ones are reachable. The setup UI uses this to recommend one-click
+   * configuration when the user has (say) LM Studio already running.
+   */
+  app.get('/ai/local/detect', async () => {
+    const results = await Promise.all(
+      LOCAL_RUNNERS.map(async (descriptor) => {
+        const probeUrl = `${descriptor.defaultBaseUrl.replace(/\/+$/, '')}${
+          descriptor.probePath ?? '/'
+        }`;
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 1500);
+        try {
+          const res = await fetch(probeUrl, { signal: controller.signal });
+          return {
+            kind: descriptor.kind,
+            label: descriptor.label,
+            baseUrl: descriptor.defaultBaseUrl,
+            running: res.ok,
+            httpStatus: res.status,
+          };
+        } catch (err) {
+          return {
+            kind: descriptor.kind,
+            label: descriptor.label,
+            baseUrl: descriptor.defaultBaseUrl,
+            running: false,
+            error: (err as Error).name === 'AbortError' ? 'timeout' : (err as Error).message,
+          };
+        } finally {
+          clearTimeout(timer);
+        }
+      }),
+    );
+    const anyRunning = results.some((r) => r.running);
+    const recommendation = anyRunning
+      ? null
+      : {
+          kind: 'ollama' as const,
+          reason:
+            'No local AI runner was detected. Install Ollama from https://ollama.com for the simplest zero-cost setup, or configure a free cloud provider (OpenRouter, Groq, Google AI Studio) under Settings → AI.',
+        };
+    return { runners: results, recommendation };
+  });
 }
 
 function buildAiRequest(db: ArpliDb, body: CompleteBody): AiRequest | { error: string } {
@@ -265,17 +383,7 @@ function normalizeTier(input: string | undefined): AiProviderTier | null {
 }
 
 function defaultTierFor(provider: AiProvider): AiProviderTier {
-  switch (provider) {
-    case 'ollama':
-      return 'local';
-    case 'groq':
-    case 'google':
-      return 'free-cloud';
-    case 'anthropic':
-    case 'openai':
-    case 'gemini':
-      return 'paid';
-  }
+  return describe(provider).tier;
 }
 
 function errorMessage(err: unknown): string {

@@ -176,7 +176,21 @@ export const settings = sqliteTable('settings', {
  */
 export const aiProviders = sqliteTable('ai_providers', {
   kind: text('kind', {
-    enum: ['ollama', 'groq', 'google', 'anthropic', 'openai', 'gemini'],
+    enum: [
+      'ollama',
+      'groq',
+      'google',
+      'anthropic',
+      'openai',
+      'gemini',
+      'lmstudio',
+      'jan',
+      'localai',
+      'llamafile',
+      'openrouter',
+      'together',
+      'mistral',
+    ],
   }).primaryKey(),
   tier: text('tier', { enum: ['local', 'free-cloud', 'paid'] }).notNull(),
   model: text('model').notNull(),

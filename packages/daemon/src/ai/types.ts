@@ -2,11 +2,31 @@
  * Unified AI connector types.
  *
  * Every Arpli feature that calls an LLM goes through an `AiConnector`
- * implementation. Providers (ollama, groq, google, anthropic, openai) each
- * expose the same surface, so swapping models is a one-setting change.
+ * implementation. Providers each expose the same surface, so swapping
+ * models is a one-setting change.
+ *
+ * Provider families:
+ * - Native wire protocols: ollama (native /api/chat), anthropic (Messages
+ *   API), google/gemini (generateContent).
+ * - OpenAI-compatible: openai (reference), groq, lmstudio, jan, localai,
+ *   llamafile, openrouter, together, mistral. All share one adapter —
+ *   only the base URL, auth header, and tier differ.
  */
 
-export type AiProvider = 'ollama' | 'groq' | 'google' | 'anthropic' | 'openai' | 'gemini';
+export type AiProvider =
+  | 'ollama'
+  | 'groq'
+  | 'google'
+  | 'anthropic'
+  | 'openai'
+  | 'gemini'
+  | 'lmstudio'
+  | 'jan'
+  | 'localai'
+  | 'llamafile'
+  | 'openrouter'
+  | 'together'
+  | 'mistral';
 
 export type AiProviderTier = 'local' | 'free-cloud' | 'paid';
 

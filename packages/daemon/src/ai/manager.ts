@@ -1,9 +1,9 @@
 import { AiConnector, AiConnectorConfig, AiProviderError } from './types.js';
 import { OllamaConnector } from './providers/ollama.js';
-import { GroqConnector } from './providers/groq.js';
 import { GoogleConnector } from './providers/google.js';
 import { AnthropicConnector } from './providers/anthropic.js';
-import { OpenAIConnector } from './providers/openai.js';
+import { OpenAiCompatibleConnector } from './providers/openai-compatible.js';
+import { describe } from './providers/registry.js';
 import {
   getActiveProvider,
   getAllProviders,
@@ -12,28 +12,26 @@ import {
 import type { ArpliDb } from '@arpli/db';
 
 /**
- * Build an `AiConnector` from a stored provider config. The config is read
- * fresh from SQLite on each call, so settings changes take effect on the
- * next request without a daemon restart.
+ * Build an `AiConnector` from a stored provider config. Dispatch is
+ * driven by the `wireProtocol` from the registry: native-ollama,
+ * native-anthropic, native-google, or openai-compat (shared adapter).
  */
 export function loadConnector(config: AiConnectorConfig): AiConnector {
-  switch (config.provider) {
-    case 'ollama':
+  const descriptor = describe(config.provider);
+  switch (descriptor.wireProtocol) {
+    case 'native-ollama':
       return new OllamaConnector(config);
-    case 'groq':
-      return new GroqConnector(config);
-    case 'google':
-    case 'gemini':
-      return new GoogleConnector(config);
-    case 'anthropic':
+    case 'native-anthropic':
       return new AnthropicConnector(config);
-    case 'openai':
-      return new OpenAIConnector(config);
+    case 'native-google':
+      return new GoogleConnector(config);
+    case 'openai-compat':
+      return new OpenAiCompatibleConnector(config);
     default: {
-      const exhaustive: never = config.provider;
+      const exhaustive: never = descriptor.wireProtocol;
       throw new AiProviderError(
-        exhaustive as never,
-        `unknown provider: ${String(config.provider)}`,
+        config.provider,
+        `unknown wire protocol: ${String(exhaustive)}`,
       );
     }
   }
