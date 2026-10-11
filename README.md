@@ -33,7 +33,10 @@ arpli/
 │   └── desktop/              Electron + SvelteKit shell
 │       ├── electron/         Electron main + preload
 │       └── src/              SvelteKit app (routes + lib)
-│           └── lib/components/ui/   Replaceable UI primitives (design-token-driven)
+│           ├── lib/components/ui/        UI kit (ported from Intent's cloudlands-fe)
+│           ├── lib/components/patterns/  Screen, settings, notify, confirm… patterns
+│           ├── lib/styles/tokens.css     Design tokens (colour, type, radius, motion)
+│           └── stories/                  Storybook stories
 └── packages/
     ├── daemon/               Node.js local HTTP daemon (Fastify)
     ├── db/                   SQLite schema + drizzle-orm migrations
@@ -48,9 +51,9 @@ installs everything and links the local packages together.
 | Layer          | Choice                                      |
 | -------------- | ------------------------------------------- |
 | Desktop shell  | Electron 32                                 |
-| UI framework   | SvelteKit 2 + Svelte 4                      |
-| Styling        | Tailwind CSS + CSS custom properties        |
-| UI components  | shadcn/ui-style scaffold (replaceable)      |
+| UI framework   | SvelteKit 2 + Svelte 5                      |
+| Styling        | Tailwind CSS v4 + design tokens             |
+| UI components  | Intent UI kit (bits-ui, Phosphor icons)     |
 | Daemon         | Node.js 20 + Fastify                        |
 | Storage        | SQLite via `better-sqlite3`                 |
 | ORM / migrate  | drizzle-orm + drizzle-kit                   |
@@ -68,16 +71,33 @@ Arpli's AI layer is tiered so the product is free for anyone to use:
 All features in the desktop app call a single internal API; the daemon routes requests to
 whichever provider the user has configured.
 
-## Design philosophy — Phase 1
+## Design system
 
-The user of this codebase is a product designer who will replace the visual layer after
-Phase 1 ships. Phase 1 is a functional scaffold:
+Arpli's interface uses the design tokens, UI kit and motion system ported from
+[Intent](https://github.com/intent-hq/cloudlands-fe) (cloudlands-fe, Apache-2.0 — see
+`NOTICE`). Intent-specific components and branding were left out.
 
-- All colors, spacing, and typography are **CSS custom properties** (`src/app.css`).
-  Nothing in Tailwind config or components hardcodes a value.
-- UI components live in `apps/desktop/src/lib/components/ui/` — isolated and
-  replaceable.
-- No custom illustrations, animations, or visual polish.
+- **Tokens** live in `apps/desktop/src/lib/styles/tokens.css` and reach Tailwind v4
+  through its `@theme` block; `src/app.css` adds fonts (Inter, Source Serif 4,
+  JetBrains Mono), type roles (`type-body`, `type-title` …), focus and scrollbar styles.
+  Use semantic tokens (`bg-card`, `text-muted-foreground`) — never raw colours.
+- **Components** live in `apps/desktop/src/lib/components/ui/` (primitives) and
+  `.../patterns/` (screen states, settings, confirm, notify, action menus).
+- **Motion** comes from `$lib/motion` (`fade`, `fly`, `slide`, `scale` with a
+  `fast` / `moderate` / `slow` tier). Don't import from `svelte/transition` or hand-write
+  durations; reduced motion is handled centrally.
+- **UI strings** used by the kit come from `apps/desktop/messages/en.json`; after porting a
+  component that uses new keys, run `python3 apps/desktop/scripts/generate-messages.py`.
+
+### Storybook
+
+```bash
+npm run storybook --workspace apps/desktop        # http://localhost:6006
+npm run build-storybook --workspace apps/desktop  # static build in storybook-static/
+```
+
+Stories live in `apps/desktop/src/stories/`, grouped as Foundations, Primitives, Forms,
+Overlays, Layout, Patterns and Arpli. Use the toolbar to switch light/dark.
 
 ## Scripts
 
@@ -89,6 +109,7 @@ Phase 1 ships. Phase 1 is a functional scaffold:
 | `npm run lint`     | Run ESLint                                            |
 | `npm run format`   | Run Prettier                                          |
 | `npm run db:migrate` | Apply pending SQLite migrations                     |
+| `npm run storybook --workspace apps/desktop` | Browse the component library |
 
 ## Development notes
 

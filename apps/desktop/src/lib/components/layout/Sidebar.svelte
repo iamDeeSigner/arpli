@@ -1,54 +1,72 @@
+<!--
+  Primary navigation, built on the sidebar primitives from Intent's UI kit
+  (same composition as cloudlands-fe's catalog shell).
+-->
 <script lang="ts">
   import { page } from '$app/state';
+  import * as Sidebar from '$lib/components/ui/sidebar';
   import { NAV_SECTIONS, SECTION_LABELS, type NavSection } from '$lib/stores/nav';
-  import { cn } from '$lib/utils';
+  import FileTextIcon from 'phosphor-svelte/lib/FileTextIcon';
+  import GearSixIcon from 'phosphor-svelte/lib/GearSixIcon';
+  import TargetIcon from 'phosphor-svelte/lib/TargetIcon';
+  import UserCircleIcon from 'phosphor-svelte/lib/UserCircleIcon';
+  import type { Component } from 'svelte';
+
+  const ICONS: Record<NavSection, Component> = {
+    profile: UserCircleIcon,
+    opportunities: TargetIcon,
+    applications: FileTextIcon,
+    settings: GearSixIcon,
+  };
+
+  const PRIMARY: NavSection[] = NAV_SECTIONS.filter((section) => section !== 'settings');
 
   function isActive(path: string, section: NavSection): boolean {
     return path === `/${section}` || path.startsWith(`/${section}/`);
   }
 </script>
 
-<nav
-  class="flex h-full w-sidebar flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground"
-  aria-label="Primary"
->
-  <!-- Brand mark -->
-  <div class="flex items-center gap-2 border-b border-sidebar-border px-6 py-5">
-    <div
-      class="flex h-8 w-8 items-center justify-center rounded-md bg-primary font-semibold text-primary-foreground"
-      aria-hidden="true"
-    >
-      A
-    </div>
-    <span class="text-lg font-semibold tracking-tight">Arpli</span>
-  </div>
-
-  <!-- Nav links -->
-  <ul class="flex flex-1 flex-col gap-1 p-4">
-    {#each NAV_SECTIONS as section}
-      {@const active = isActive(page.url.pathname, section)}
-      <li>
-        <a
-          href={`/${section}`}
-          class={cn(
-            'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-            active
-              ? 'bg-sidebar-accent text-sidebar-accent-foreground'
-              : 'text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-          )}
-          aria-current={active ? 'page' : undefined}
-        >
-          <span
-            aria-hidden="true"
-            class={cn('h-1.5 w-1.5 rounded-full', active ? 'bg-primary' : 'bg-transparent')}
-          ></span>
-          {SECTION_LABELS[section]}
+{#snippet navItem(section: NavSection)}
+  {@const Icon = ICONS[section]}
+  <Sidebar.MenuItem>
+    <Sidebar.MenuButton isActive={isActive(page.url.pathname, section)}>
+      {#snippet child({ props })}
+        <a {...props} href={`/${section}`}>
+          <Icon weight="regular" aria-hidden="true" />
+          <span>{SECTION_LABELS[section]}</span>
         </a>
-      </li>
-    {/each}
-  </ul>
+      {/snippet}
+    </Sidebar.MenuButton>
+  </Sidebar.MenuItem>
+{/snippet}
 
-  <div class="border-t border-sidebar-border p-4 text-xs text-muted-foreground">
-    <p>Local-first · v0.1.0</p>
-  </div>
-</nav>
+<Sidebar.Root collapsible="none" rail={false} aria-label="Primary">
+  <Sidebar.Header class="app-drag-region px-3 pb-2 pt-4">
+    <a href="/profile" class="app-no-drag flex items-center gap-2 px-2" aria-label="Arpli home">
+      <span
+        class="type-caption flex size-6 items-center justify-center rounded-(--radius-medium) bg-primary font-semibold text-primary-foreground"
+        aria-hidden="true">A</span
+      >
+      <span class="type-body font-medium">Arpli</span>
+    </a>
+  </Sidebar.Header>
+
+  <Sidebar.Content>
+    <Sidebar.Group>
+      <Sidebar.GroupContent>
+        <Sidebar.Menu>
+          {#each PRIMARY as section (section)}
+            {@render navItem(section)}
+          {/each}
+        </Sidebar.Menu>
+      </Sidebar.GroupContent>
+    </Sidebar.Group>
+  </Sidebar.Content>
+
+  <Sidebar.Footer>
+    <Sidebar.Menu>
+      {@render navItem('settings')}
+    </Sidebar.Menu>
+    <p class="type-caption px-2 pt-1 text-muted-foreground">Local-first · v0.1.0</p>
+  </Sidebar.Footer>
+</Sidebar.Root>

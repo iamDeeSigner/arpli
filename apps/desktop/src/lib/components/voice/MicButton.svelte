@@ -20,6 +20,11 @@
 -->
 <script lang="ts">
   import { cn } from '$lib/utils';
+  import { Button } from '$lib/components/ui/button';
+  import { fade, slide } from '$lib/motion';
+  import MicrophoneIcon from 'phosphor-svelte/lib/MicrophoneIcon';
+  import StopIcon from 'phosphor-svelte/lib/StopIcon';
+  import CircleNotchIcon from 'phosphor-svelte/lib/CircleNotchIcon';
   import { voiceSettings } from '$lib/voice/settings';
   import {
     WebSpeechRecognizer,
@@ -213,81 +218,61 @@
   <!-- Pulsing ring (recording indicator) -->
   {#if isRecording}
     <span
-      class="pointer-events-none absolute inset-0 rounded-full animate-ping bg-destructive/30"
+      class="pointer-events-none absolute inset-0 animate-ping rounded-full bg-danger/30"
       style:opacity={0.3 + audioLevel * 0.7}
       aria-hidden="true"
+      transition:fade={{ tier: 'fast' }}
     ></span>
   {/if}
 
-  <button
-    type="button"
+  <Button
+    variant={isRecording ? 'destructive' : isTranscribing ? 'ghost' : 'secondary'}
+    size="icon-sm"
+    iconOnly
     {disabled}
     aria-label={ariaLabel}
     aria-pressed={isRecording}
-    class={cn(
-      'relative flex h-8 w-8 items-center justify-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-40',
-      isRecording
-        ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90'
-        : isTranscribing
-          ? 'bg-muted text-muted-foreground cursor-wait'
-          : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground',
-      className,
-    )}
+    tooltip={ariaLabel}
+    class={cn('relative rounded-full', isTranscribing && 'cursor-wait text-muted-foreground', className)}
     onclick={handleClick}
   >
     {#if isTranscribing}
-      <!-- Spinner -->
-      <svg
-        class="h-4 w-4 animate-spin"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        aria-hidden="true"
-      >
-        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-      </svg>
+      <CircleNotchIcon class="animate-spin" aria-hidden="true" />
     {:else if isRecording}
-      <!-- Stop square -->
-      <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <rect x="4" y="4" width="16" height="16" rx="2" />
-      </svg>
+      <StopIcon weight="fill" aria-hidden="true" />
     {:else}
-      <!-- Mic icon -->
-      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" />
-        <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
-        <line x1="12" y1="19" x2="12" y2="22" />
-        <line x1="8" y1="22" x2="16" y2="22" />
-      </svg>
+      <MicrophoneIcon aria-hidden="true" />
     {/if}
-  </button>
+  </Button>
 </div>
 
 <!-- Live transcript overlay -->
 {#if (isRecording || isTranscribing) && (finalText || interimText)}
   <div
-    class="mt-1 rounded-md border border-border bg-muted/60 px-3 py-2 text-sm leading-relaxed"
+    class="type-body mt-1 rounded-(--radius-medium) border border-border bg-muted px-3 py-2"
     aria-live="polite"
     aria-atomic="false"
+    transition:slide={{ tier: 'fast' }}
   >
     {#if finalText}
       <span class="text-foreground">{finalText}</span>
     {/if}
     {#if interimText}
-      <span class="text-muted-foreground italic"> {interimText}</span>
+      <span class="italic text-muted-foreground"> {interimText}</span>
     {/if}
   </div>
 {/if}
 
 <!-- Review-before-saving prompt -->
 {#if showReview}
-  <p class="mt-1 text-xs text-amber-600 dark:text-amber-400" role="alert">
+  <p class="type-caption mt-1 text-warning-ink" role="alert" transition:fade={{ tier: 'fast' }}>
     Low-confidence transcript — review before saving.
   </p>
 {/if}
 
 <!-- Error message -->
 {#if status === 'error' && errorMsg}
-  <p class="mt-1 text-xs text-destructive" role="alert">{errorMsg}</p>
+  <p class="type-caption mt-1 text-danger" role="alert" transition:fade={{ tier: 'fast' }}>
+    {errorMsg}
+  </p>
 {/if}

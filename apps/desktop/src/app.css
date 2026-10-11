@@ -1,228 +1,851 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 /*
- * Design tokens — HSL channel vars.
- *
- * ALL color decisions live here as HSL-channel custom properties.
- * Tailwind resolves them as hsl(var(--name) / <alpha-value>), so opacity
- * modifiers (bg-primary/50 etc.) work correctly.
- * Non-color tokens (spacing, type, radius, shadow, motion) follow below.
+ * Arpli's global stylesheet, ported from Intent's cloudlands-fe (Apache-2.0, see NOTICE).
+ * Tokens live in $lib/styles/tokens.css; this file wires Tailwind v4, fonts, type roles,
+ * focus, scrollbars and reduced-motion handling. Chat/editor-specific styles were left out.
  */
+@import 'tailwindcss';
+/* CSS requires all @import rules to precede every other statement — anything
+   else before them makes the later imports invalid and Vite drops them from
+   the production bundle (intent-hq/monorepo#1909). Keep these imports first. */
+@import '$lib/styles/tokens.css';
+@import '$lib/styles/overlay-surface.css';
+
+/* Tailwind v4 auto-detects sources by scanning the whole package, so class-name
+   strings that only live in tests, scripts, and docs would otherwise reach the
+   production stylesheet. Exclude test code, tooling, and docs (including the
+   Markdown nested under src/); keep `.svelte`/`.html` fixtures (test/fixtures,
+   __tests__/*.svelte, playwright/) because the CT and Playwright harnesses
+   import this file and need their utilities. */
+@source not '**/*.test.ts';
+@source not '**/*.spec.ts';
+@source not '**/*.md';
+@source not '../electron';
+@source not '../scripts';
+@source not '../messages';
+
+/* Tailwind v4 ignores the legacy tailwind.config.js, so the typography plugin
+   must be loaded here for the `prose` classes (markdown rendering) to exist. */
+@plugin '@tailwindcss/typography';
+/* The legacy `darkMode: 'class'` is likewise ignored under v4; the app toggles
+   `.dark`/`.light` on the root element (src/lib/utils/theme.ts), so `dark:`
+   variants must key off the class, not the OS `prefers-color-scheme` query. */
+@custom-variant dark (&:where(.dark, .dark *));
+/* The built-in `motion-reduce:` variant compiles to the raw OS media query, which
+   battery saver (`:root[data-reduce-motion]`) cannot reach. Route it through the
+   `--motion-reduced` token from tokens.css so every `motion-reduce:*` utility
+   follows the same single source of truth as the hand-written component CSS. */
+@custom-variant motion-reduce (@container style(--motion-reduced: 1));
 
 :root {
-  /* ── Color tokens (light) ─────────────────────────────────────────── */
-  --background:           0 0% 100%;
-  --foreground:           222 47% 11%;
-
-  --card:                 0 0% 100%;
-  --card-foreground:      222 47% 11%;
-  --popover:              0 0% 100%;
-  --popover-foreground:   222 47% 11%;
-
-  --primary:              221 83% 53%;
-  --primary-foreground:   0 0% 100%;
-
-  --secondary:            220 14% 96%;
-  --secondary-foreground: 222 47% 11%;
-
-  --muted:                220 14% 96%;
-  --muted-foreground:     220 9% 46%;
-
-  --accent:               220 14% 96%;
-  --accent-foreground:    222 47% 11%;
-
-  --sidebar:              220 14% 96%;
-  --sidebar-foreground:   222 47% 11%;
-  --sidebar-accent:       220 14% 91%;
-  --sidebar-accent-foreground: 222 47% 11%;
-  --sidebar-border:       220 13% 91%;
-
-  --border:               220 13% 91%;
-  --input:                220 13% 91%;
-  --ring:                 221 83% 53%;
-
-  --danger:               0 84% 60%;
-  --success:              142 71% 45%;
-  --success-foreground:   0 0% 100%;
-  --warning:              38 92% 50%;
-  --warning-foreground:   0 0% 10%;
-
-  /* ── Spacing (4 px base) ─────────────────────────────────────────── */
-  --space-0:  0;
-  --space-1:  0.25rem;   /*  4 */
-  --space-2:  0.5rem;    /*  8 */
-  --space-3:  0.75rem;   /* 12 */
-  --space-4:  1rem;      /* 16 */
-  --space-5:  1.25rem;   /* 20 */
-  --space-6:  1.5rem;    /* 24 */
-  --space-8:  2rem;      /* 32 */
-  --space-10: 2.5rem;    /* 40 */
-  --space-12: 3rem;      /* 48 */
-  --space-16: 4rem;      /* 64 */
-
-  /* Legacy semantic aliases */
-  --space-xs: var(--space-1);
-  --space-sm: var(--space-2);
-  --space-md: var(--space-4);
-  --space-lg: var(--space-6);
-  --space-xl: var(--space-10);
-
-  /* ── Radii ───────────────────────────────────────────────────────── */
-  --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
-  --radius-xl: 0.75rem;
-  --radius: var(--radius-md);
-
-  /* ── Typography ──────────────────────────────────────────────────── */
-  --font-sans:
-    'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
-    sans-serif;
-  --font-mono:
-    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
-    monospace;
-  --font-ui: var(--font-sans);
-
-  --text-xs:   0.75rem;
-  --text-sm:   0.875rem;
-  --text-base: 1rem;
-  --text-lg:   1.125rem;
-  --text-xl:   1.25rem;
-  --text-2xl:  1.5rem;
-  --text-3xl:  1.875rem;
-  --text-4xl:  2.25rem;
-
-  /* ── Layout ──────────────────────────────────────────────────────── */
-  --sidebar-width:  15rem;
-  --topbar-height:  3.5rem;
-
-  /* ── Elevation ───────────────────────────────────────────────────── */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.06);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.05);
-
-  /* ── Motion ──────────────────────────────────────────────────────── */
-  --motion-fast:     120ms;
-  --motion-standard: 180ms;
-  --motion-slow:     240ms;
-  --ease-standard:   cubic-bezier(0.4, 0, 0.2, 1);
+  /* Canonical navigation-row geometry. Product rows select compact or regular density. */
+  --row-height-compact: 1.75rem;
+  --row-height-regular: 2rem;
+  --row-padding-inline-compact: 0.5rem;
+  --row-padding-inline-regular: 0.75rem;
+  --row-gap-compact: 0.5rem;
+  --row-gap-regular: 0.5rem;
+  --row-icon-box-compact: 1rem;
+  --row-icon-box-regular: 1.25rem;
+  --row-icon-size-compact: 0.75rem;
+  --row-icon-size-regular: 0.875rem;
+  --row-action-target-compact: var(--control-height-compact);
+  --row-action-target-regular: var(--control-height-small);
+  --row-open-indicator-size: 0.875rem;
+  --row-radius: var(--radius-small);
+  /* Named product row: emphasized agent avatars require the 40px virtualization contract. */
+  --workspace-agent-row-height: 2.5rem;
+  --workspace-agent-delegation-indent: 1.625rem;
 }
 
-/* ── Dark theme overrides ───────────────────────────────────────────── */
-:root.dark {
-  color-scheme: dark;
-
-  --background:           222 47% 11%;
-  --foreground:           213 31% 91%;
-
-  --card:                 222 47% 11%;
-  --card-foreground:      213 31% 91%;
-  --popover:              222 47% 11%;
-  --popover-foreground:   213 31% 91%;
-
-  --primary:              217 91% 60%;
-  --primary-foreground:   222 47% 11%;
-
-  --secondary:            222 47% 15%;
-  --secondary-foreground: 213 31% 91%;
-
-  --muted:                222 47% 15%;
-  --muted-foreground:     217 10% 64%;
-
-  --accent:               222 47% 15%;
-  --accent-foreground:    213 31% 91%;
-
-  --sidebar:              222 47% 9%;
-  --sidebar-foreground:   213 31% 91%;
-  --sidebar-accent:       222 47% 15%;
-  --sidebar-accent-foreground: 213 31% 91%;
-  --sidebar-border:       217 33% 27%;
-
-  --border:               217 33% 27%;
-  --input:                217 33% 27%;
-  --ring:                 217 91% 60%;
-
-  --danger:               0 62% 70%;
-  --success:              142 71% 45%;
-  --success-foreground:   0 0% 100%;
-  --warning:              38 92% 50%;
-  --warning-foreground:   0 0% 10%;
-
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.45), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+/* Inter: bundle only the Latin weight axis used by application UI. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('@fontsource-variable/inter/files/inter-latin-wght-normal.woff2')
+    format('woff2-variations');
 }
 
-/* System-preference fallback when no explicit theme class is set. */
-@media (prefers-color-scheme: dark) {
-  :root:not(.light):not(.dark) {
-    color-scheme: dark;
+/* JetBrains Mono: code and keyboard-shortcut glyphs (--font-code). */
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2') format('woff2');
+}
 
-    --background:           222 47% 11%;
-    --foreground:           213 31% 91%;
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url('@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2') format('woff2');
+}
 
-    --card:                 222 47% 11%;
-    --card-foreground:      213 31% 91%;
-    --popover:              222 47% 11%;
-    --popover-foreground:   213 31% 91%;
+/* Source Serif 4: bundle only the Latin normal and italic variable faces used by notes. */
+@font-face {
+  font-family: 'Source Serif 4 Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 200 900;
+  src: url('@fontsource-variable/source-serif-4/files/source-serif-4-latin-standard-normal.woff2')
+    format('woff2-variations');
+}
 
-    --primary:              217 91% 60%;
-    --primary-foreground:   222 47% 11%;
+@font-face {
+  font-family: 'Source Serif 4 Variable';
+  font-style: italic;
+  font-display: swap;
+  font-weight: 200 900;
+  src: url('@fontsource-variable/source-serif-4/files/source-serif-4-latin-standard-italic.woff2')
+    format('woff2-variations');
+}
 
-    --secondary:            222 47% 15%;
-    --secondary-foreground: 213 31% 91%;
-
-    --muted:                222 47% 15%;
-    --muted-foreground:     217 10% 64%;
-
-    --accent:               222 47% 15%;
-    --accent-foreground:    213 31% 91%;
-
-    --sidebar:              222 47% 9%;
-    --sidebar-foreground:   213 31% 91%;
-    --sidebar-accent:       222 47% 15%;
-    --sidebar-accent-foreground: 213 31% 91%;
-    --sidebar-border:       217 33% 27%;
-
-    --border:               217 33% 27%;
-    --input:                217 33% 27%;
-    --ring:                 217 91% 60%;
-
-    --danger:               0 62% 70%;
-    --success:              142 71% 45%;
-    --success-foreground:   0 0% 100%;
-    --warning:              38 92% 50%;
-    --warning-foreground:   0 0% 10%;
+@keyframes ui-highlight-pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.55);
   }
+  70% {
+    box-shadow: 0 0 0 8px hsl(var(--primary) / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 hsl(var(--primary) / 0);
+  }
+}
+
+.ui-highlight-pulse-ring {
+  animation: ui-highlight-pulse-ring 700ms ease-out 3;
+  border-radius: 0.5rem;
+  outline: 1px solid hsl(var(--primary-ink) / 0.55);
+  outline-offset: 2px;
 }
 
 html,
 body {
-  background: hsl(var(--background));
+  background-color: hsl(var(--background));
   color: hsl(var(--foreground));
-  font-family: var(--font-sans);
+  font-family: var(--font-ui);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --header-height: 2.7rem;
+  --footer-height: 1.75rem;
+  --panel-header-height: 3rem;
+}
+
+#app {
+  background-color: transparent;
+}
+
+/* Browsers default <kbd> to monospace; shortcuts use the app's UI typography. */
+kbd {
+  font-family: var(--font-ui);
+}
+
+/* Rich-content widgets are application chrome, not editorial prose. */
+.ws-block-widget {
+  font-family: var(--font-ui);
+}
+
+/* Interactive elements use pointer cursors by default. Layered so Tailwind cursor
+   utilities can override this semantic fallback. */
+/* Keep pointer focus quiet while guaranteeing a semantic keyboard-focus fallback.
+   Layered so Tailwind utilities (e.g. `focus-visible:outline-none` from the Input
+   component's `noFocusStyle` opt-out) can override these rules — unlayered author
+   CSS would otherwise beat every layered utility under Tailwind v4. */
+@layer base {
+  :where(button:not(:disabled), a[href], [role='button']:not([aria-disabled='true'])) {
+    cursor: pointer;
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  :focus-visible {
+    outline: 1px solid hsl(var(--focus-ring));
+    outline-offset: 2px;
+    border-radius: var(--shape-input-radius, 8px);
+  }
+
+  a:focus-visible {
+    border-radius: 2px;
+  }
 }
 
 body {
-  min-height: 100vh;
-  margin: 0;
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line-height);
+  font-weight: var(--text-body-weight);
+  letter-spacing: var(--text-body-tracking);
 }
 
-/* Focus — token-driven, visible, scoped to :focus-visible. */
-:focus-visible {
-  outline: 2px solid hsl(var(--ring));
-  outline-offset: 2px;
-  border-radius: var(--radius-sm);
+/* Canonical type roles. Prefer these over physical Tailwind size utilities in new product UI. */
+/* Components precede Tailwind utilities so explicit weight overrides win. */
+@layer components {
+  .type-caption {
+    font-size: var(--text-caption-size);
+    line-height: var(--text-caption-line-height);
+    font-weight: var(--text-caption-weight);
+    letter-spacing: var(--text-caption-tracking);
+  }
+  .type-body {
+    font-size: var(--text-body-size);
+    line-height: var(--text-body-line-height);
+    font-weight: var(--text-body-weight);
+    letter-spacing: var(--text-body-tracking);
+  }
+  .type-title {
+    font-size: var(--text-title-size);
+    line-height: var(--text-title-line-height);
+    font-weight: var(--text-title-weight);
+    letter-spacing: var(--text-title-tracking);
+  }
+  .type-display {
+    font-size: var(--text-display-size);
+    line-height: var(--text-display-line-height);
+    font-weight: var(--text-display-weight);
+    letter-spacing: var(--text-display-tracking);
+  }
+  .type-code {
+    font-family: var(--font-code);
+    font-size: var(--text-code-size);
+    line-height: var(--text-code-line-height);
+    font-weight: var(--text-code-weight);
+    letter-spacing: var(--text-code-tracking);
+  }
 }
 
-input,
-textarea,
-select,
-button {
-  font: inherit;
-  color: inherit;
+/* Compatibility utilities resolve to the canonical caption/body roles. */
+.text-xs {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line-height);
+}
+.text-ui {
+  font-size: var(--text-body-size);
+  line-height: var(--text-body-line-height);
+}
+.text-ui-sm {
+  font-size: var(--text-caption-size);
+  line-height: var(--text-caption-line-height);
+}
+
+/* Vercel-style typography */
+/* h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+h5 { font-size: 1.125rem; }
+h6 { font-size: 1rem; } */
+
+/* Placeholder color */
+input::placeholder,
+textarea::placeholder {
+  color: hsl(var(--muted-foreground));
+  opacity: 1;
+}
+
+/* Smooth transitions - removed to make hover effects snappier */
+/* Hover color changes should appear instantly for better UX */
+/* Layout transitions (panel resizing, accordion, etc.) are handled per-component */
+
+/* Canonical scrollbar styling. Terminals and editors opt out by placing
+     `native-scrollbars` on their host so their platform-owned behavior wins. */
+@media (pointer: fine) {
+  :where(:not(.native-scrollbars, .native-scrollbars *)) {
+    scrollbar-width: thin;
+  }
+
+  /* `scrollbar-color` is inherited, so declare it once per theme scope. Declaring it on
+     every element made each restyle start a `scrollbar-color` transition per element
+     under the reduced-motion duration blanket. */
+  :where(:root, .light, .dark) {
+    scrollbar-color: hsl(var(--overlay) / 0.08) transparent;
+  }
+
+  /* A component that overrides `scrollbar-color` on itself (`.custom-scrollbar`, the
+     comment thread) must not restyle the scrollers it hosts: the editor mounted while
+     editing a comment keeps the canonical colour. */
+  :where(.custom-scrollbar .tiptap-container) {
+    scrollbar-color: hsl(var(--overlay) / 0.08) transparent;
+  }
+
+  :where(:not(.native-scrollbars, .native-scrollbars *))::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  :where(:not(.native-scrollbars, .native-scrollbars *))::-webkit-scrollbar-track,
+  :where(:not(.native-scrollbars, .native-scrollbars *))::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  :where(:not(.native-scrollbars, .native-scrollbars *))::-webkit-scrollbar-thumb {
+    border: 3px solid transparent;
+    border-radius: 9999px;
+    background-color: hsl(var(--overlay) / 0.08);
+    background-clip: content-box;
+  }
+
+  :where(:not(.native-scrollbars, .native-scrollbars *))::-webkit-scrollbar-thumb:vertical {
+    border-right-width: 5px;
+    border-left-width: 1px;
+  }
+
+  :where(:not(.native-scrollbars, .native-scrollbars *))::-webkit-scrollbar-thumb:horizontal {
+    border-top-width: 1px;
+    border-bottom-width: 5px;
+  }
+
+  :where(:not(.native-scrollbars, .native-scrollbars *))::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--overlay) / 0.12);
+  }
+
+  :where(:not(.native-scrollbars, .native-scrollbars *))::-webkit-scrollbar-thumb:active {
+    background-color: hsl(var(--overlay) / 0.16);
+  }
+}
+
+[data-slot='scroll-area-scrollbar'] {
+  position: absolute;
+  z-index: 20;
+  display: flex;
+  touch-action: none;
+  user-select: none;
+  opacity: 0;
+  transition: opacity var(--spring-fast-exit) var(--spring-exit-ease);
+}
+
+[data-slot='scroll-area-scrollbar'][data-state='visible'] {
+  opacity: 1;
+  transition-duration: var(--spring-fast);
+  transition-timing-function: var(--spring-fast-ease);
+}
+
+[data-slot='scroll-area-scrollbar'][data-orientation='vertical'] {
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 100%;
+}
+
+[data-slot='scroll-area-scrollbar'][data-orientation='horizontal'] {
+  bottom: 0;
+  left: 0;
+  flex-direction: column;
+  width: 100%;
+  height: 10px;
+}
+
+[data-slot='scroll-area-thumb'] {
+  position: relative;
+  margin: auto;
+  border-radius: 9999px;
+  background: hsl(var(--overlay) / 0.08);
+  transition:
+    width var(--spring-fast) var(--spring-fast-ease),
+    height var(--spring-fast) var(--spring-fast-ease),
+    background-color var(--spring-fast) var(--spring-fast-ease);
+}
+
+[data-slot='scroll-area-scrollbar'][data-orientation='vertical'] [data-slot='scroll-area-thumb'] {
+  width: 4px;
+  height: var(--bits-scroll-area-thumb-height);
+  transform: translateX(-2px);
+}
+
+[data-slot='scroll-area-scrollbar'][data-orientation='horizontal'] [data-slot='scroll-area-thumb'] {
+  width: var(--bits-scroll-area-thumb-width);
+  height: 4px;
+  transform: translateY(-2px);
+}
+
+[data-slot='scroll-area-scrollbar']:hover [data-slot='scroll-area-thumb'] {
+  background: hsl(var(--overlay) / 0.12);
+}
+
+[data-slot='scroll-area-scrollbar'][data-orientation='vertical']:hover
+  [data-slot='scroll-area-thumb'] {
+  width: 6px;
+}
+
+[data-slot='scroll-area-scrollbar'][data-orientation='horizontal']:hover
+  [data-slot='scroll-area-thumb'] {
+  height: 6px;
+}
+
+[data-slot='scroll-area-thumb']:active {
+  background: hsl(var(--overlay) / 0.16);
+}
+
+@container style(--motion-reduced: 1) {
+  [data-slot='scroll-area-scrollbar'],
+  [data-slot='scroll-area-thumb'] {
+    transition: none;
+  }
+}
+
+/* Loading skeleton animation */
+@keyframes skeleton-loading {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted) / 0.5),
+    hsl(var(--muted) / 0.3),
+    hsl(var(--muted) / 0.5)
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 2s ease-in-out infinite;
+}
+
+/* Fade in animation */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+/* Streaming text animations */
+@keyframes stream-in {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-stream-in {
+  animation: stream-in 0.2s ease-out;
+}
+
+/* Smooth word appearance */
+@keyframes word-appear {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-word {
+  animation: word-appear var(--spring-moderate) var(--ease-spring-moderate);
+}
+
+/* Tool call animations */
+@keyframes tool-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.8;
+    transform: scale(0.98);
+  }
+}
+
+.animate-tool-pulse {
+  animation: tool-pulse 1.5s infinite;
+}
+
+/* Message container animations */
+@keyframes message-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-message-in {
+  animation: message-slide-up var(--spring-slow) var(--ease-spring-slow);
+}
+
+/* Streaming cursor */
+@keyframes cursor-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.streaming-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: currentColor;
+  color: hsl(var(--muted-foreground));
+  margin-left: 2px;
+  margin-top: -0.3em;
+  animation: cursor-blink 1s infinite;
+  vertical-align: text-top;
+}
+
+/* Shimmer effect for loading states */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Gradient fade-out utilities */
+.fade-edge-b {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2rem;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(
+    to top,
+    hsl(var(--background)),
+    hsl(var(--background) / 0.95) 20%,
+    hsl(var(--background) / 0.7) 60%,
+    transparent
+  );
+}
+
+.fade-edge-t {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2rem;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(
+    to bottom,
+    hsl(var(--background)),
+    hsl(var(--background) / 0.95) 20%,
+    hsl(var(--background) / 0.7) 60%,
+    transparent
+  );
+}
+
+.fade-edge-b-subtle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1.5rem;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(
+    to top,
+    hsl(var(--background)),
+    hsl(var(--background) / 0.8) 40%,
+    transparent
+  );
+}
+
+.fade-edge-t-subtle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1.5rem;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(
+    to bottom,
+    hsl(var(--background)),
+    hsl(var(--background) / 0.8) 40%,
+    transparent
+  );
+}
+
+/* Sidebar-specific gradients */
+.fade-edge-b-sidebar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 0.5rem;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(
+    to top,
+    hsl(var(--sidebar)),
+    hsl(var(--sidebar) / 0.95) 20%,
+    hsl(var(--sidebar) / 0.7) 60%,
+    transparent
+  );
+}
+
+.fade-edge-t-sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 0.5rem;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(
+    to bottom,
+    hsl(var(--sidebar)),
+    hsl(var(--sidebar) / 0.95) 20%,
+    hsl(var(--sidebar) / 0.7) 60%,
+    transparent
+  );
+}
+
+/* Muted background gradients */
+.fade-edge-b-muted {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2rem;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(
+    to top,
+    hsl(var(--muted)),
+    hsl(var(--muted) / 0.95) 20%,
+    hsl(var(--muted) / 0.7) 60%,
+    transparent
+  );
+}
+
+.fade-edge-t-muted {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2rem;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(
+    to bottom,
+    hsl(var(--muted)),
+    hsl(var(--muted) / 0.95) 20%,
+    hsl(var(--muted) / 0.7) 60%,
+    transparent
+  );
+}
+
+/* Legacy class names for backward compatibility */
+.gradient-fade-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2rem;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(
+    to top,
+    hsl(var(--background)),
+    hsl(var(--background) / 0.95) 20%,
+    hsl(var(--background) / 0.7) 60%,
+    transparent
+  );
+}
+
+.gradient-fade-bottom-subtle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1.5rem;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(
+    to top,
+    hsl(var(--background)),
+    hsl(var(--background) / 0.8) 40%,
+    transparent
+  );
+}
+
+.gradient-fade-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2rem;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(
+    to bottom,
+    hsl(var(--background)),
+    hsl(var(--background) / 0.95) 20%,
+    hsl(var(--background) / 0.7) 60%,
+    transparent
+  );
+}
+
+/* Hide scrollbar utility */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Compact action button - used for Clone/Create buttons on workspace initialization */
+.btn-compact-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: hsl(var(--muted-foreground));
+  background: hsl(var(--background));
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  border-radius: 0;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.btn-compact-action:hover {
+  background: hsl(var(--background) / 0.8);
+}
+
+/* ===== Reduced motion support ===== */
+/* Follows `--motion-reduced` (OS preference or battery saver), see tokens.css */
+/* The window lifecycle marks the targets of looping CSS animations only; finite
+   entrances and flashes run to completion while blurred instead of freezing at
+   frame 0 and replaying on focus. An html descendant blanket would invalidate
+   the entire transcript on every focus change. */
+[data-window-animation-paused],
+[data-window-animation-paused]::before,
+[data-window-animation-paused]::after {
+  animation-play-state: paused !important;
+}
+
+@container style(--motion-reduced: 1) {
+  /* Disable infinite animations */
+  .animate-tool-pulse,
+  .streaming-cursor,
+  .animate-shimmer {
+    animation: none !important;
+  }
+
+  /* Keep streaming cursor visible but static */
+  .streaming-cursor {
+    opacity: 1;
+  }
+
+  /* Disable transition animations */
+  .animate-message-in {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.placeholder-current::placeholder {
+  color: currentColor;
+}
+
+/* Frameless-window drag regions: interactive descendants of .app-drag-region
+   (plus explicit .app-no-drag opt-outs) must stay clickable. This lives here —
+   loaded by the root layout in every window — so standalone routes outside the
+   (app) group (e.g. /hud) get it too (intent-hq/monorepo#2167). Keep it scoped
+   to .app-drag-region descendants: an app-wide no-drag rule carved dead zones
+   into the titlebar drag strip (intent-hq/monorepo#1907; see
+   drag-region-no-drag-scoping.test.ts). */
+.app-drag-region button,
+.app-drag-region a,
+.app-drag-region input,
+.app-drag-region select,
+.app-drag-region textarea,
+.app-drag-region [role='button'],
+.app-drag-region [role='tab'],
+.app-drag-region [role='menuitem'],
+.app-drag-region [data-interactive],
+.app-drag-region [tabindex]:not([tabindex='-1']),
+.app-no-drag {
+  -webkit-app-region: no-drag;
+}
+
+/* Scrollable containers inside a drag region (e.g. the workspace tab strip)
+   need their no-drag geometry CLIPPED: Chromium computes draggable regions
+   from UNCLIPPED element geometry, so interactive children scrolled out of
+   the container still carve no-drag holes in the titlebar drag strip where
+   their invisible rects land (intent-hq/monorepo#2400 — the dead gap left of
+   the tabs; same mechanism as #1907). Mark the container itself no-drag (its
+   own border box is exactly its visible area) and reset the per-element
+   no-drag on ALL descendants so their unclipped geometry contributes nothing.
+   app-region is inherited: resetting only interactive elements leaves motion,
+   tooltip and visual wrappers inheriting no-drag from the container. Visible
+   descendants stay clickable inside the container's bounded no-drag region.
+   Computed-style and overflow coverage: workspace-tab-drag-region.ct.spec.ts. */
+.app-drag-region [data-app-region-clip] {
+  -webkit-app-region: no-drag;
+}
+
+/* The focusable selector also overrides the higher-specificity opt-out above. */
+.app-drag-region [data-app-region-clip] *,
+.app-drag-region [data-app-region-clip] [tabindex]:not([tabindex='-1']) {
+  -webkit-app-region: initial;
+}
+/* Icon slots share the first text line's typography, not the whole row's height. */
+@utility first-line-icon {
+  display: inline-flex;
+  height: 1lh;
+  flex-shrink: 0;
+  align-self: flex-start;
+  align-items: center;
+  justify-content: center;
 }

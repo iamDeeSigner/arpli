@@ -1,0 +1,308 @@
+<!-- @catalog-exempt: portal-positioned hover surface covered by __tests__/HoverCard.positioning.test.ts; no catalog fixtures yet -->
+
+<script lang="ts">
+  import { onMount, tick } from 'svelte';
+  import type { Snippet } from 'svelte';
+  import Portal from './Portal.svelte';
+  import { scheduleLayoutRead, type CancelLayoutTask } from '$lib/utils/layout-phases';
+  import { crispOut, springIn } from '$lib/motion';
+  import {
+    clampSurface,
+    setSurface,
+    surfaceClasses,
+    useSurface,
+  } from '$lib/components/ui/surface-context';
+  interface Props {
+    id?: string;
+    anchor: string;
+    position?: 'right' | 'bottom' | 'bottom-right' | 'bottom-left' | 'top';
+    /** Use absolute positioning instead of fixed (needed inside transformed containers) */
+    absolute?: boolean;
+    /** Optional trigger element used for viewport-aware fixed positioning. */
+    anchorElement?: HTMLElement | null;
+    /** Render in normal flow without a portal or positioning observers. */
+    staticPosition?: boolean;
+    class?: string;
+    children?: Snippet;
+    onmouseenter?: (event: MouseEvent) => void;
+    onmouseleave?: (event: MouseEvent) => void;
+    onfocusin?: (event: FocusEvent) => void;
+    onfocusout?: (event: FocusEvent) => void;
+  }
+  let {
+    id,
+    anchor,
+    position = 'right',
+    absolute = false,
+    anchorElement = null,
+    staticPosition = false,
+    class: className = '',
+    children,
+    onmouseenter,
+    onmouseleave,
+    onfocusin,
+    onfocusout,
+  }: Props = $props();
+
+  const surface = clampSurface(useSurface() + 2);
+  setSurface(surface);
+  const surfaceClass = surfaceClasses(surface);
+
+  const COLLISION_PADDING = 8;
+  const SIDE_OFFSET = 4;
+
+  let cardEl: HTMLDivElement | null = $state(null);
+  let measuredStyle = $state('');
+  let maxHeight = $state<string | undefined>();
+
+  // Compute positioning styles based on position prop
+  // - 'right': appears beside the anchor, preferring the right side and flipping left on collision
+  // - 'bottom': appears to the left of the anchor, aligned to bottom
+  // - 'bottom-right': appears below the anchor, aligned to left edge, flows right
+  // - 'bottom-left': appears below the anchor, aligned to left edge (same as bottom-right)
+  // - 'top': appears above the anchor, horizontally centered
+  const isBottom = $derived(position === 'bottom-right' || position === 'bottom-left');
+  const isTop = $derived(position === 'top');
+  const positionClass = $derived(staticPosition ? 'relative' : absolute ? 'absolute' : 'fixed');
+  const enterOffset = $derived.by(() => {
+    if (position === 'right') return { x: -4, y: 0 };
+    if (position === 'bottom') return { x: 4, y: 0 };
+    if (isTop) return { x: 0, y: 4 };
+    return { x: 0, y: -4 };
+  });
+
+  function clamp(value: number, min: number, max: number) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  // Resolving an anchor string scans every [style*="anchor-name"] element and
+  // calls getComputedStyle on each, so the result is cached and only
+  // re-resolved when the anchor changes or the element leaves the DOM.
+  let cachedTrigger: HTMLElement | null = null;
+  let cachedTriggerAnchor: string | null = null;
+
+  function isCachedTriggerValid() {
+    if (!cachedTrigger?.isConnected || cachedTriggerAnchor !== anchor) return false;
+    // The node can stay in the DOM while its anchor-name is rewritten to a
+    // different anchor (DOM node reuse across per-entity anchors). Recheck the
+    // inline style first, then one computed-style read — still far cheaper
+    // than re-scanning every anchored element.
+    return (
+      cachedTrigger.style.getPropertyValue('anchor-name').includes(anchor) ||
+      getComputedStyle(cachedTrigger).getPropertyValue('anchor-name').includes(anchor)
+    );
+  }
+
+  function findAnchorElement() {
+    if (anchorElement) return anchorElement;
+    if (isCachedTriggerValid()) return cachedTrigger;
+    cachedTrigger =
+      Array.from(document.querySelectorAll<HTMLElement>('[style*="anchor-name"]')).find((el) => {
+        const inlineAnchor = el.style.getPropertyValue('anchor-name');
+        const computedAnchor = getComputedStyle(el).getPropertyValue('anchor-name');
+        return inlineAnchor.includes(anchor) || computedAnchor.includes(anchor);
+      }) ?? null;
+    cachedTriggerAnchor = cachedTrigger ? anchor : null;
+    return cachedTrigger;
+  }
+
+  function updateMeasuredPosition() {
+    if (staticPosition || absolute || !cardEl) return;
+
+    const trigger = findAnchorElement();
+    if (!trigger) return;
+
+    const triggerRect = trigger.getBoundingClientRect();
+    const cardRect = cardEl.getBoundingClientRect();
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+    const cardWidth = cardRect.width || cardEl.offsetWidth;
+    const cardHeight = cardRect.height || cardEl.offsetHeight;
+    const spaceAbove = Math.max(0, triggerRect.top - SIDE_OFFSET - COLLISION_PADDING);
+    const spaceBelow = Math.max(
+      0,
+      viewportHeight - triggerRect.bottom - SIDE_OFFSET - COLLISION_PADDING,
+    );
+    const placeAbove = isTop
+      ? !(spaceAbove < cardHeight && spaceBelow > spaceAbove)
+      : isBottom && spaceBelow < cardHeight && spaceAbove > spaceBelow;
+
+    let left = triggerRect.left;
+    let top = triggerRect.bottom + SIDE_OFFSET;
+    let availableHeight = placeAbove ? spaceAbove : spaceBelow;
+
+    if (position === 'right') {
+      const spaceLeft = triggerRect.left - SIDE_OFFSET - COLLISION_PADDING;
+      const spaceRight = viewportWidth - triggerRect.right - SIDE_OFFSET - COLLISION_PADDING;
+      const placeRight = spaceRight >= cardWidth || spaceRight >= spaceLeft;
+      left = placeRight
+        ? triggerRect.right + SIDE_OFFSET
+        : triggerRect.left - cardWidth - SIDE_OFFSET;
+      top = triggerRect.top;
+      availableHeight = Math.max(0, viewportHeight - COLLISION_PADDING * 2);
+    } else if (position === 'bottom') {
+      left = triggerRect.left - cardWidth - SIDE_OFFSET;
+      top = triggerRect.bottom - cardHeight;
+    } else if (isTop || isBottom) {
+      if (position === 'bottom-left') {
+        left = triggerRect.right - cardWidth;
+      } else if (isTop) {
+        left = triggerRect.left + triggerRect.width / 2 - cardWidth / 2;
+      }
+      top = placeAbove
+        ? triggerRect.top - Math.min(cardHeight, availableHeight) - SIDE_OFFSET
+        : triggerRect.bottom + SIDE_OFFSET;
+    }
+
+    left = clamp(
+      left,
+      COLLISION_PADDING,
+      Math.max(COLLISION_PADDING, viewportWidth - cardWidth - COLLISION_PADDING),
+    );
+    top = clamp(
+      top,
+      COLLISION_PADDING,
+      Math.max(
+        COLLISION_PADDING,
+        viewportHeight - Math.min(cardHeight, availableHeight) - COLLISION_PADDING,
+      ),
+    );
+    maxHeight = `${availableHeight}px`;
+    measuredStyle = `left: ${left}px; top: ${top}px;`;
+  }
+
+  // The initial measurement runs synchronously after tick so the card never
+  // paints unpositioned; the guard collapses the mount effect and onMount
+  // into a single measurement.
+  let initialMeasurePending = false;
+
+  async function schedulePositionUpdate() {
+    if (initialMeasurePending) return;
+    initialMeasurePending = true;
+    await tick();
+    initialMeasurePending = false;
+    updateMeasuredPosition();
+  }
+
+  // Observer-driven updates (scroll/resize/ResizeObserver) coalesce into at
+  // most one measurement per frame, batched with other layout reads.
+  let pendingMeasure: CancelLayoutTask | null = null;
+
+  function requestMeasuredPositionUpdate() {
+    if (pendingMeasure) return;
+    pendingMeasure = scheduleLayoutRead(() => {
+      pendingMeasure = null;
+      updateMeasuredPosition();
+    });
+  }
+
+  function handleScroll(event: Event) {
+    // The capture-phase listener sees every scroll in the app; only a scroll
+    // of an ancestor of the trigger can move the card. A stale cache entry
+    // (disconnected or re-anchored node) would fail the contains() check for
+    // every scroll source, so fall through and re-measure conservatively.
+    const trigger = anchorElement ?? (isCachedTriggerValid() ? cachedTrigger : null);
+    if (trigger && event.target instanceof Node && !event.target.contains(trigger)) return;
+    requestMeasuredPositionUpdate();
+  }
+
+  $effect(() => {
+    const currentCard = cardEl;
+    const currentAnchor = anchorElement;
+    if (staticPosition || absolute || !currentCard || !currentAnchor) return;
+    void schedulePositionUpdate();
+  });
+
+  onMount(() => {
+    if (staticPosition) return;
+    let resizeObserver: ResizeObserver | null = null;
+    void schedulePositionUpdate().then(() => {
+      if (!absolute && typeof ResizeObserver !== 'undefined') {
+        resizeObserver = new ResizeObserver(requestMeasuredPositionUpdate);
+        if (cardEl) resizeObserver.observe(cardEl);
+        const trigger = findAnchorElement();
+        if (trigger) resizeObserver.observe(trigger);
+      }
+    });
+    window.addEventListener('resize', requestMeasuredPositionUpdate);
+    window.addEventListener('scroll', handleScroll, true);
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener('resize', requestMeasuredPositionUpdate);
+      window.removeEventListener('scroll', handleScroll, true);
+      pendingMeasure?.();
+      pendingMeasure = null;
+    };
+  });
+</script>
+
+{#if staticPosition}
+  <div
+    {id}
+    bind:this={cardEl}
+    class={positionClass +
+      ` z-50 w-64 flex flex-col overflow-y-auto border border-border pointer-events-auto ${surfaceClass} ` +
+      className}
+    data-static-position
+    data-surface-level={surface}
+    role="tooltip"
+  >
+    {@render children?.()}
+  </div>
+{:else if absolute}
+  <div
+    {id}
+    bind:this={cardEl}
+    class={positionClass +
+      ` z-50 w-64 flex flex-col border border-border pointer-events-none ${surfaceClass} ` +
+      className}
+    data-surface-level={surface}
+    style:position-anchor={anchor}
+    style:right={position === 'bottom' ? 'anchor(left)' : undefined}
+    style:left={position === 'right'
+      ? 'anchor(right)'
+      : isBottom
+        ? 'anchor(left)'
+        : isTop
+          ? 'anchor(center)'
+          : undefined}
+    style:top={position === 'right' ? 'anchor(top)' : isBottom ? 'anchor(bottom)' : undefined}
+    style:bottom={position === 'bottom' ? 'anchor(bottom)' : isTop ? 'anchor(top)' : undefined}
+    style:margin-right={position === 'bottom' ? '8px' : undefined}
+    style:margin-left={position === 'right' ? '8px' : undefined}
+    style:margin-top={isBottom ? '4px' : undefined}
+    style:margin-bottom={isTop ? '4px' : undefined}
+    style:translate={isTop ? '-50% 0' : undefined}
+    role="tooltip"
+    {onmouseenter}
+    {onmouseleave}
+    {onfocusin}
+    {onfocusout}
+    in:springIn={{ tier: 'fast', ...enterOffset, scale: 0.96 }}
+    out:crispOut={{ tier: 'fast' }}
+  >
+    {@render children?.()}
+  </div>
+{:else}
+  <Portal zIndex={50}>
+    <div
+      {id}
+      bind:this={cardEl}
+      class={positionClass +
+        ` z-50 w-64 flex flex-col overflow-y-auto border border-border pointer-events-auto ${surfaceClass} ` +
+        className}
+      data-surface-level={surface}
+      style={measuredStyle}
+      style:max-height={maxHeight}
+      role="tooltip"
+      {onmouseenter}
+      {onmouseleave}
+      {onfocusin}
+      {onfocusout}
+      in:springIn={{ tier: 'fast', ...enterOffset, scale: 0.96 }}
+      out:crispOut={{ tier: 'fast' }}
+    >
+      {@render children?.()}
+    </div>
+  </Portal>
+{/if}

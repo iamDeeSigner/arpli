@@ -1,0 +1,29 @@
+<script lang="ts">
+  import { cn, type WithElementRef } from '$lib/utils.js';
+  import type { HTMLAttributes } from 'svelte/elements';
+
+  let {
+    ref = $bindable(null),
+    as: element = 'main',
+    class: className,
+    children,
+    ...restProps
+  }: WithElementRef<HTMLAttributes<HTMLElement>> & {
+    /** Use a non-landmark element only when an enclosing surface already owns the main landmark. */
+    as?: 'main' | 'div';
+  } = $props();
+</script>
+
+<svelte:element
+  this={element}
+  bind:this={ref}
+  data-slot="sidebar-inset"
+  class={cn(
+    'bg-background relative flex w-full flex-1 flex-col',
+    'md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2 md:peer-data-[variant=inset]:rounded-md md:peer-data-[variant=inset]:shadow-(--elevation-raised)',
+    className,
+  )}
+  {...restProps}
+>
+  {@render children?.()}
+</svelte:element>

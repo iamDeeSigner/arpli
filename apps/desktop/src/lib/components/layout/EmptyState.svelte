@@ -1,56 +1,35 @@
 <!--
-  EmptyState — centered illustration + copy + optional CTA cluster.
-  Consumers pass actions as a snippet:
-    <EmptyState title="..." description="...">
+  Empty state. Wraps the EmptyState pattern from Intent's kit with Arpli's string API:
+    <EmptyState title="..." description="..." icon={SomePhosphorIcon}>
       {#snippet actions()}<Button>...</Button>{/snippet}
     </EmptyState>
 -->
 <script lang="ts">
+  import { EmptyState } from '$lib/components/patterns/screen';
+  import PlusCircleIcon from 'phosphor-svelte/lib/PlusCircleIcon';
+  import type { Component, Snippet } from 'svelte';
+
   let {
     title,
     description = null,
+    icon: Icon = PlusCircleIcon,
     actions,
   }: {
     title: string;
     description?: string | null;
-    actions?: import('svelte').Snippet;
+    icon?: Component;
+    actions?: Snippet;
   } = $props();
 </script>
 
-<div
-  class="mx-auto flex max-w-xl flex-col items-center gap-4 rounded-lg border border-border bg-card p-10 text-center"
->
-  <!-- Icon placeholder — designer swaps the illustration later. -->
-  <div
-    class="flex h-12 w-12 items-center justify-center rounded-md bg-muted text-muted-foreground"
-    aria-hidden="true"
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7v10M7 12h10" />
-    </svg>
-  </div>
+{#snippet titleSnippet()}{title}{/snippet}
+{#snippet descriptionSnippet()}{description}{/snippet}
+{#snippet iconSnippet()}<Icon class="size-6" aria-hidden="true" />{/snippet}
 
-  <div class="flex flex-col gap-1">
-    <h2 class="text-lg font-semibold">{title}</h2>
-    {#if description}
-      <p class="text-sm text-muted-foreground">{description}</p>
-    {/if}
-  </div>
-
-  {#if actions}
-    <div class="flex flex-wrap items-center justify-center gap-2 pt-1">
-      {@render actions()}
-    </div>
-  {/if}
-</div>
+<EmptyState
+  title={titleSnippet}
+  description={description ? descriptionSnippet : undefined}
+  icon={iconSnippet}
+  {actions}
+  emphasis="prominent"
+/>

@@ -1,5 +1,6 @@
 <script lang="ts">
   import Sidebar from '$lib/components/layout/Sidebar.svelte';
+  import * as SidebarPrimitive from '$lib/components/ui/sidebar';
   import { page } from '$app/state';
   import { lastSection, sectionFromPath } from '$lib/stores/nav';
 
@@ -12,9 +13,9 @@
   });
 </script>
 
-<div class="flex h-screen w-screen overflow-hidden bg-background text-foreground">
+<SidebarPrimitive.Provider open persist={false} class="h-screen w-screen overflow-hidden">
   <Sidebar />
-  <section class="flex min-w-0 flex-1 flex-col">
+  <SidebarPrimitive.Inset class="flex min-w-0 flex-1 flex-col overflow-hidden">
     {@render children()}
-  </section>
-</div>
+  </SidebarPrimitive.Inset>
+</SidebarPrimitive.Provider>

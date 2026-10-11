@@ -1,0 +1,120 @@
+<!-- @catalog-exempt: deprecated wrapper over the catalogued Menu (replacement $lib/components/ui/menu); covered by __tests__/dropdown-menu-escape.test.ts -->
+
+<script module lang="ts">
+  let closeActiveMenu: (() => void) | null = null;
+</script>
+
+<script lang="ts">
+  import { onDestroy } from 'svelte';
+  import type { Snippet } from 'svelte';
+  import * as Menu from './menu';
+  import { pushEscapeLayer } from '$lib/utils/escapeLayers';
+  import { m } from '$shared/paraglide/messages.js';
+
+  let {
+    open = $bindable(false),
+    align = 'start',
+    side = 'bottom',
+    portal = true,
+    collisionPadding = 8,
+    alignIconColumn = false,
+    trigger,
+    content,
+    contentClass = '',
+    subContentClass,
+    contentMaxHeight,
+    onOpenChangeComplete,
+    class: className = '',
+  }: {
+    open?: boolean;
+    align?: 'start' | 'center' | 'end';
+    side?: 'top' | 'bottom' | 'left' | 'right';
+    portal?: boolean;
+    collisionPadding?: number;
+    alignIconColumn?: boolean;
+    trigger?: Snippet<[{ toggle: () => void; open: boolean; props: Record<string, unknown> }]>;
+    content?: Snippet<[{ close: () => void }]>;
+    contentClass?: string;
+    subContentClass?: string;
+    contentMaxHeight?: string;
+    onOpenChangeComplete?: (open: boolean) => void;
+    class?: string;
+  } = $props();
+
+  let rootElement: HTMLDivElement | null = $state(null);
+
+  function toggle() {
+    const openBeforeClick = open;
+    queueMicrotask(() => {
+      if (open === openBeforeClick) open = !openBeforeClick;
+    });
+  }
+
+  function close() {
+    open = false;
+  }
+
+  function handleDocumentPointerDown(event: PointerEvent) {
+    if (!open || event.button !== 0) return;
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    if (rootElement?.contains(target) || target.closest('[role="menu"]')) return;
+    close();
+    if (!target.closest('[data-dropdown-menu-trigger]')) {
+      queueMicrotask(() => {
+        if (!open) rootElement?.querySelector<HTMLElement>('[data-dropdown-menu-trigger]')?.focus();
+      });
+    }
+  }
+
+  $effect(() => {
+    if (!open) {
+      if (closeActiveMenu === close) closeActiveMenu = null;
+      return;
+    }
+
+    const previousClose = closeActiveMenu;
+    closeActiveMenu = close;
+    if (previousClose && previousClose !== close) previousClose();
+  });
+
+  // Escape ordering: while open, occupy the top of the escape-layer stack so
+  // underlying overlays (e.g. an expanded sidebar panel) do not also dismiss
+  // on the same keypress. Decline (return false) so the event still falls
+  // through to bits-ui's own Escape handling, which closes the menu and
+  // restores focus to the trigger.
+  $effect(() => {
+    if (!open) return;
+    return pushEscapeLayer(() => false);
+  });
+
+  onDestroy(() => {
+    if (closeActiveMenu === close) closeActiveMenu = null;
+  });
+</script>
+
+<svelte:document onpointerdown={handleDocumentPointerDown} />
+
+<div bind:this={rootElement} class="relative inline-block {className}">
+  <Menu.Root bind:open {onOpenChangeComplete}>
+    <Menu.Trigger>
+      {#snippet child({ props })}
+        {@render trigger?.({ toggle, open, props })}
+      {/snippet}
+    </Menu.Trigger>
+    <Menu.Content
+      {align}
+      {side}
+      {portal}
+      {collisionPadding}
+      {alignIconColumn}
+      {subContentClass}
+      preventScroll={false}
+      class={contentClass}
+      maxHeight={contentMaxHeight}
+      aria-label={m.ui_dropdownMenu_ariaLabel()}
+    >
+      {@render content?.({ close })}
+    </Menu.Content>
+  </Menu.Root>
+</div>

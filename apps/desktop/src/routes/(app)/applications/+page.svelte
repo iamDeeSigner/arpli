@@ -3,12 +3,15 @@
   import { goto } from '$app/navigation';
   import TopBar from '$lib/components/layout/TopBar.svelte';
   import EmptyState from '$lib/components/layout/EmptyState.svelte';
-  import Card from '$lib/components/ui/Card.svelte';
-  import Button from '$lib/components/ui/Button.svelte';
-  import {
-    applicationApi,
-    opportunityApi,
-  } from '$lib/ipc/client';
+  import { ErrorState, LoadingState, ScreenBody } from '$lib/components/patterns/screen';
+  import { Badge, type BadgeColor } from '$lib/components/ui/badge';
+  import { Button } from '$lib/components/ui/button';
+  import * as Card from '$lib/components/ui/card';
+  import { fade, fly } from '$lib/motion';
+  import { applicationApi, opportunityApi } from '$lib/ipc/client';
+  import ArrowRightIcon from 'phosphor-svelte/lib/ArrowRightIcon';
+  import FileTextIcon from 'phosphor-svelte/lib/FileTextIcon';
+  import TrashIcon from 'phosphor-svelte/lib/TrashIcon';
   import type { Application, ApplicationStatus, Opportunity } from '@arpli/shared';
 
   let applications = $state<Application[]>([]);
@@ -48,6 +51,19 @@
     withdrew: 'Withdrew',
   };
 
+  const STATUS_COLOR: Record<ApplicationStatus, BadgeColor> = {
+    discovered: 'gray',
+    qualifying: 'gray',
+    drafting: 'blue',
+    reviewing: 'violet',
+    submitted: 'teal',
+    awaiting: 'amber',
+    won: 'green',
+    rejected: 'red',
+    waitlisted: 'orange',
+    withdrew: 'gray',
+  };
+
   async function openApplication(id: string) {
     await goto(`/applications/${id}`);
   }
@@ -69,64 +85,73 @@
   {/snippet}
 </TopBar>
 
-<div class="flex-1 overflow-auto p-6">
+<ScreenBody>
   {#if loading}
-    <p class="text-sm text-muted-foreground">Loading…</p>
+    <LoadingState recipe="card-grid" label="Loading applications" />
   {:else if loadError}
-    <Card>
-      <h2 class="text-base font-semibold">Could not reach the daemon</h2>
-      <p class="mt-2 text-sm text-muted-foreground">{loadError}</p>
-      <div class="mt-4">
-        <Button variant="secondary" size="sm" onclick={load}>Try again</Button>
-      </div>
-    </Card>
+    {#snippet errorMessage()}
+      Could not reach the daemon: {loadError}
+    {/snippet}
+    <ErrorState message={errorMessage} retryLabel="Try again" onRetry={load} />
   {:else if applications.length === 0}
-    <EmptyState
-      title="Start an application to track it here"
-      description="Pick an opportunity and Arpli will draft its questions grounded in your profile."
-    >
-      {#snippet actions()}
-        <Button href="/opportunities" variant="secondary">Pick an opportunity</Button>
-      {/snippet}
-    </EmptyState>
+    <div in:fade>
+      <EmptyState
+        title="Start an application to track it here"
+        description="Pick an opportunity and Arpli will draft its questions grounded in your profile."
+        icon={FileTextIcon}
+      >
+        {#snippet actions()}
+          <Button href="/opportunities" variant="primary">Pick an opportunity</Button>
+        {/snippet}
+      </EmptyState>
+    </div>
   {:else}
-    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" in:fade>
       {#each applications as app (app.id)}
         {@const opp = opportunitiesById[app.opportunityId]}
-        <Card padded={false} class="flex flex-col gap-0 overflow-hidden">
-          <button
-            class="flex-1 p-5 text-left transition hover:bg-muted/40 focus:outline-none focus:ring-2 focus:ring-ring/40"
-            onclick={() => openApplication(app.id)}
-          >
-            <div class="flex items-start justify-between gap-2">
-              <span class="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
-                {STATUS_LABEL[app.status]}
-              </span>
-              {#if opp?.deadline}
-                <span class="text-xs text-muted-foreground">Due {opp.deadline}</span>
+        <div in:fly={{ tier: 'moderate' }} out:fade={{ tier: 'fast' }}>
+          <Card.Root class="h-full">
+            <button
+              type="button"
+              class="flex flex-1 flex-col gap-2 px-4 pt-4 pb-3 text-left transition-colors duration-spring-fast hover:bg-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 motion-reduce:transition-none"
+              onclick={() => openApplication(app.id)}
+            >
+              <div class="flex items-start justify-between gap-2">
+                <Badge color={STATUS_COLOR[app.status]} size="compact">
+                  {STATUS_LABEL[app.status]}
+                </Badge>
+                {#if opp?.deadline}
+                  <span class="type-caption text-muted-foreground">Due {opp.deadline}</span>
+                {/if}
+              </div>
+              <Card.Title class="mt-1">
+                {opp?.title ?? '(opportunity not found)'}
+              </Card.Title>
+              {#if opp?.organization}
+                <p class="type-body text-muted-foreground">{opp.organization}</p>
               {/if}
-            </div>
-            <h3 class="mt-3 text-sm font-semibold leading-snug">
-              {opp?.title ?? '(opportunity not found)'}
-            </h3>
-            {#if opp?.organization}
-              <p class="mt-1 text-sm text-muted-foreground">{opp.organization}</p>
-            {/if}
-            {#if app.notes}
-              <p class="mt-2 line-clamp-3 text-xs text-muted-foreground">{app.notes}</p>
-            {/if}
-          </button>
-          <div class="flex items-center justify-between gap-2 border-t px-5 py-3">
-            <span class="text-xs text-muted-foreground">
-              Started {new Date(app.createdAt).toLocaleDateString()}
-            </span>
-            <div class="flex gap-2">
-              <Button size="sm" variant="ghost" onclick={() => openApplication(app.id)}>Open</Button>
-              <Button size="sm" variant="ghost" onclick={() => deleteApplication(app.id)}>Delete</Button>
-            </div>
-          </div>
-        </Card>
+              {#if app.notes}
+                <p class="type-caption line-clamp-3 text-muted-foreground">{app.notes}</p>
+              {/if}
+            </button>
+            <Card.Footer class="flex items-center justify-between gap-2 border-t border-border py-2">
+              <span class="type-caption text-muted-foreground">
+                Started {new Date(app.createdAt).toLocaleDateString()}
+              </span>
+              <div class="flex gap-1">
+                <Button size="sm" variant="ghost" onclick={() => openApplication(app.id)}>
+                  {#snippet trailingIcon()}<ArrowRightIcon />{/snippet}
+                  Open
+                </Button>
+                <Button size="sm" variant="ghost" onclick={() => deleteApplication(app.id)}>
+                  {#snippet leadingIcon()}<TrashIcon />{/snippet}
+                  Delete
+                </Button>
+              </div>
+            </Card.Footer>
+          </Card.Root>
+        </div>
       {/each}
     </div>
   {/if}
-</div>
+</ScreenBody>

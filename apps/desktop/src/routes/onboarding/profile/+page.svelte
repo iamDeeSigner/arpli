@@ -5,11 +5,17 @@
 -->
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import Button from '$lib/components/ui/Button.svelte';
-  import Textarea from '$lib/components/ui/Textarea.svelte';
+  import { Button } from '$lib/components/ui/button';
+  import * as Card from '$lib/components/ui/card';
+  import { Label } from '$lib/components/ui/label';
+  import { Textarea } from '$lib/components/ui/textarea';
   import MicButton from '$lib/components/voice/MicButton.svelte';
+  import { fade, fly } from '$lib/motion';
   import { onboarding } from '$lib/stores/onboarding';
   import { voiceSettings } from '$lib/voice/settings';
+  import ArrowLeftIcon from 'phosphor-svelte/lib/ArrowLeftIcon';
+  import ChatCircleTextIcon from 'phosphor-svelte/lib/ChatCircleTextIcon';
+  import FileTextIcon from 'phosphor-svelte/lib/FileTextIcon';
 
   type Mode = 'choose' | 'paste' | 'talk';
 
@@ -18,6 +24,28 @@
   let bio = $state('');
   let saving = $state(false);
   let error = $state<string | null>(null);
+
+  const choices = [
+    {
+      mode: 'paste' as const,
+      icon: FileTextIcon,
+      title: 'Import a resume or LinkedIn export',
+      desc: 'Paste plain text from a PDF, Word doc, or LinkedIn data export.',
+    },
+    {
+      mode: 'talk' as const,
+      icon: ChatCircleTextIcon,
+      title: 'Tell me about yourself',
+      desc: 'Write a few sentences and Arpli will structure it into a profile.',
+    },
+  ];
+
+  function chooseOnKey(event: KeyboardEvent, next: Mode) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      mode = next;
+    }
+  }
 
   async function submitResume() {
     if (!resumeText.trim()) {
@@ -58,89 +86,88 @@
   }
 </script>
 
-<div class="flex flex-col gap-6">
-  <div class="text-center">
-    <p class="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Step 3 of 4</p>
-    <h1 class="mt-2 text-2xl font-semibold tracking-tight">Build your profile</h1>
-    <p class="mt-1 text-sm text-muted-foreground">
+<div class="flex flex-col gap-6" in:fly={{ tier: 'moderate' }}>
+  <div class="flex flex-col gap-2 text-center">
+    <p class="type-caption text-muted-foreground">Step 3 of 4</p>
+    <h1 class="type-display">Build your profile</h1>
+    <p class="type-body text-muted-foreground">
       Your profile is Arpli's knowledge base. Start by importing what you already have.
     </p>
   </div>
 
   {#if mode === 'choose'}
-    <div class="flex flex-col gap-3">
-      <button
-        class="flex flex-col items-start gap-1 rounded-md border border-border bg-card p-4 text-left transition-colors hover:bg-muted"
-        onclick={() => (mode = 'paste')}
-      >
-        <p class="font-medium">Import a resume or LinkedIn export</p>
-        <p class="text-sm text-muted-foreground">
-          Paste plain text from a PDF, Word doc, or LinkedIn data export.
-        </p>
-      </button>
+    <div class="flex flex-col gap-6" in:fly={{ tier: 'moderate' }}>
+      <div class="flex flex-col gap-3">
+        {#each choices as choice (choice.mode)}
+          {@const Icon = choice.icon}
+          <Card.Root
+            interactive
+            role="button"
+            tabindex={0}
+            class="flex-row items-start"
+            onclick={() => (mode = choice.mode)}
+            onkeydown={(event) => chooseOnKey(event, choice.mode)}
+          >
+            {#snippet media()}
+              <Icon class="size-5 text-muted-foreground" aria-hidden="true" />
+            {/snippet}
+            <Card.Header class="flex-1 pb-4 pl-0">
+              <Card.Title class="type-body">{choice.title}</Card.Title>
+              <Card.Description>{choice.desc}</Card.Description>
+            </Card.Header>
+          </Card.Root>
+        {/each}
+      </div>
 
-      <button
-        class="flex flex-col items-start gap-1 rounded-md border border-border bg-card p-4 text-left transition-colors hover:bg-muted"
-        onclick={() => (mode = 'talk')}
-      >
-        <p class="font-medium">Tell me about yourself</p>
-        <p class="text-sm text-muted-foreground">
-          Write a few sentences and Arpli will structure it into a profile.
-        </p>
-      </button>
+      <Button variant="underline" size="sm" class="self-center" onclick={skip}>
+        Skip — I'll add my profile later
+      </Button>
     </div>
-
-    <button
-      class="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors"
-      onclick={skip}
-    >
-      Skip — I'll add my profile later
-    </button>
-
   {:else if mode === 'paste'}
-    <div class="flex flex-col gap-4">
-      <button
-        class="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors text-left"
-        onclick={() => (mode = 'choose')}
-      >
-        ← Back
-      </button>
+    <div class="flex flex-col gap-4" in:fly={{ tier: 'moderate' }}>
+      <Button variant="ghost" size="sm" class="self-start" onclick={() => (mode = 'choose')}>
+        {#snippet leadingIcon()}<ArrowLeftIcon />{/snippet}
+        Back
+      </Button>
 
-      <div class="flex flex-col gap-1">
-        <label class="text-sm font-medium" for="resume-input">
-          Paste your resume or LinkedIn export
-        </label>
+      <div class="flex flex-col gap-1.5">
+        <Label for="resume-input">Paste your resume or LinkedIn export</Label>
         <Textarea
           id="resume-input"
           bind:value={resumeText}
-          rows={10}
+          autoResize
+          minHeight={220}
           placeholder="John Smith&#10;Software Engineer&#10;&#10;Experience:&#10;..."
         />
       </div>
 
       {#if error}
-        <p class="text-sm text-danger">{error}</p>
+        <p class="type-caption text-danger" role="alert" transition:fade={{ tier: 'fast' }}>
+          {error}
+        </p>
       {/if}
 
-      <Button onclick={submitResume} disabled={saving} size="lg" class="w-full">
+      <Button
+        variant="primary"
+        onclick={submitResume}
+        disabled={saving}
+        loading={saving}
+        size="lg"
+        class="w-full"
+      >
         {saving ? 'Importing…' : 'Import resume'}
       </Button>
     </div>
-
   {:else}
-    <div class="flex flex-col gap-4">
-      <button
-        class="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2 transition-colors text-left"
-        onclick={() => (mode = 'choose')}
-      >
-        ← Back
-      </button>
+    <div class="flex flex-col gap-4" in:fly={{ tier: 'moderate' }}>
+      <Button variant="ghost" size="sm" class="self-start" onclick={() => (mode = 'choose')}>
+        {#snippet leadingIcon()}<ArrowLeftIcon />{/snippet}
+        Back
+      </Button>
 
-      <div class="flex flex-col gap-1">
+      <div class="flex flex-col gap-1.5">
         <div class="flex items-center justify-between">
-          <label class="text-sm font-medium" for="bio-input">
-            Tell me about yourself
-          </label>
+          <Label for="bio-input">Tell me about yourself</Label>
           {#if $voiceSettings.enabled}
             <MicButton bind:value={bio} appendToValue={true} />
           {/if}
@@ -148,10 +175,11 @@
         <Textarea
           id="bio-input"
           bind:value={bio}
-          rows={6}
+          autoResize
+          minHeight={140}
           placeholder="I'm a second-year CS student at UBC focused on machine learning. I've interned at two startups and I'm looking for research fellowships for next summer…"
         />
-        <p class="text-xs text-muted-foreground">
+        <p class="type-caption text-muted-foreground">
           Include your current situation, background, and what you're looking for.
           {#if $voiceSettings.enabled}
             Use the mic button above to dictate.
@@ -160,10 +188,19 @@
       </div>
 
       {#if error}
-        <p class="text-sm text-danger">{error}</p>
+        <p class="type-caption text-danger" role="alert" transition:fade={{ tier: 'fast' }}>
+          {error}
+        </p>
       {/if}
 
-      <Button onclick={submitBio} disabled={saving} size="lg" class="w-full">
+      <Button
+        variant="primary"
+        onclick={submitBio}
+        disabled={saving}
+        loading={saving}
+        size="lg"
+        class="w-full"
+      >
         {saving ? 'Saving…' : 'Continue'}
       </Button>
     </div>
