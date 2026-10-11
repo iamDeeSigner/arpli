@@ -75,6 +75,21 @@
   --color-yellowgreen-900: #505825;
   --color-yellowgreen-950: #424820;
   --color-yellowgreen-975: #262b0f;
+
+  /* Rose White — warm reds */
+  --color-rosewhite-25: #fff8f6;
+  --color-rosewhite-50: #fff5f4;
+  --color-rosewhite-100: #fbe4e1;
+  --color-rosewhite-200: #f8d1cf;
+  --color-rosewhite-300: #edb1ac;
+  --color-rosewhite-400: #d37e7a;
+  --color-rosewhite-500: #b2514d;
+  --color-rosewhite-600: #92382e;
+  --color-rosewhite-700: #792921;
+  --color-rosewhite-800: #5c1a1d;
+  --color-rosewhite-900: #410d13;
+  --color-rosewhite-950: #2f0708;
+  --color-rosewhite-975: #1a0304;
 }
 
 /* Approved product-facing design tokens. Color values are unwrapped HSL channels. */
