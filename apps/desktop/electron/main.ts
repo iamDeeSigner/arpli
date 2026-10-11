@@ -177,7 +177,7 @@ ipcMain.handle(
 function wireRendererPermissions() {
   session.defaultSession.setPermissionRequestHandler(
     (_webContents, permission, callback) => {
-      if (permission === 'media' || permission === 'audioCapture') {
+      if (permission === 'media' || (permission as string) === 'audioCapture') {
         callback(true);
         return;
       }
@@ -186,7 +186,7 @@ function wireRendererPermissions() {
   );
 
   session.defaultSession.setPermissionCheckHandler((_webContents, permission) => {
-    if (permission === 'media' || permission === 'audioCapture') return true;
+    if (permission === 'media' || (permission as string) === 'audioCapture') return true;
     return false;
   });
 }
