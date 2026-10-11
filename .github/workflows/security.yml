@@ -44,15 +44,41 @@ jobs:
 
   dependency-review:
     name: Dependency review
-    # Blocks a PR that adds a dependency with a known high or critical issue.
+    # Fails a PR that brings in a new high or critical advisory in shipped
+    # dependencies. Compares against the base branch, so advisories already on
+    # main are reported by the daily audit instead of blocking every PR.
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/dependency-review-action@v4
         with:
-          fail-on-severity: high
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Compare advisories with the base branch
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          advisories() {
+            (cd "$1" && npm audit --package-lock-only --omit=dev --json || true) |
+              jq -r '[.vulnerabilities[] | .via[] | objects
+                      | select(.severity == "high" or .severity == "critical")
+                      | "\(.name) \(.url)"] | unique[]'
+          }
+          git worktree add -q "$RUNNER_TEMP/base" "$BASE_SHA"
+          advisories "$RUNNER_TEMP/base" > "$RUNNER_TEMP/base.txt"
+          advisories . > "$RUNNER_TEMP/head.txt"
+          new=$(comm -13 "$RUNNER_TEMP/base.txt" "$RUNNER_TEMP/head.txt")
+          if [ -n "$new" ]; then
+            echo "This PR adds high or critical advisories in shipped dependencies:"
+            echo "$new"
+            exit 1
+          fi
+          echo "No new high or critical advisories."
 
   secrets:
     name: Secret scan
