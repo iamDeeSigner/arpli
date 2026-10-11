@@ -1,4 +1,84 @@
 /* Approved product-facing design tokens. Color values are unwrapped HSL channels. */
+@theme {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-ink: hsl(var(--primary-ink));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-shortcut-foreground: color-mix(
+    in srgb,
+    hsl(var(--muted-foreground)) 85%,
+    hsl(var(--background))
+  );
+  --color-danger: hsl(var(--danger));
+  --color-danger-background: hsl(var(--danger-background));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-info: hsl(var(--info));
+  --color-info-foreground: hsl(var(--info-foreground));
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+  --color-warning: hsl(var(--warning));
+  --color-warning-ink: hsl(var(--warning-ink));
+  --color-warning-foreground: hsl(var(--warning-foreground));
+  --color-sidebar: hsl(var(--sidebar));
+  --color-sidebar-foreground: hsl(var(--sidebar-foreground));
+  --color-sidebar-accent: hsl(var(--sidebar-accent));
+  --color-sidebar-accent-foreground: hsl(var(--sidebar-accent-foreground));
+  --color-sidebar-border: hsl(var(--sidebar-border));
+  --color-hover: var(--hover);
+  --color-active: var(--active);
+  --color-selected: hsl(var(--selected));
+  --color-focus-ring: hsl(var(--focus-ring));
+  --color-surface-1: hsl(var(--surface-1));
+  --color-surface-2: hsl(var(--surface-2));
+  --color-surface-3: hsl(var(--surface-3));
+  --color-surface-4: hsl(var(--surface-4));
+  --color-surface-5: hsl(var(--surface-5));
+  --color-surface-6: hsl(var(--surface-6));
+  --color-surface-7: hsl(var(--surface-7));
+  --color-surface-8: hsl(var(--surface-8));
+  --shadow-surface-1: var(--surface-shadow-1);
+  --shadow-surface-2: var(--surface-shadow-2);
+  --shadow-surface-3: var(--surface-shadow-3);
+  --shadow-surface-4: var(--surface-shadow-4);
+  --shadow-surface-5: var(--surface-shadow-5);
+  --shadow-surface-6: var(--surface-shadow-6);
+  --shadow-surface-7: var(--surface-shadow-7);
+  --shadow-surface-8: var(--surface-shadow-8);
+
+  --transition-duration-spring-fast: var(--spring-fast);
+  --transition-duration-spring-fast-exit: var(--spring-fast-exit);
+  --transition-duration-spring-moderate: var(--spring-moderate);
+  --transition-duration-spring-moderate-exit: var(--spring-moderate-exit);
+  --transition-duration-spring-slow: var(--spring-slow);
+  --transition-duration-spring-slow-exit: var(--spring-slow-exit);
+  --ease-spring-fast: var(--spring-fast-ease);
+  --ease-spring-moderate: var(--spring-moderate-ease);
+  --ease-spring-slow: var(--spring-slow-ease);
+  --ease-spring-exit: var(--spring-exit-ease);
+
+  /* Reachable compatibility utilities; do not use in new product code. */
+  --color-app-background: hsl(var(--app-background));
+  --color-ghost: hsl(var(--text-ghost));
+  --color-subtle: hsl(var(--text-subtle));
+
+  --radius-sm: var(--radius-small);
+  --radius-md: var(--radius-medium);
+  --radius-lg: var(--radius-large);
+}
+
 :root {
   color-scheme: light dark;
 

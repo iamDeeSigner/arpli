@@ -16,6 +16,15 @@ const config = {
       lib: 'src/lib',
       routes: 'src/routes',
     },
+    alias: {
+      // Shared modules used by the UI kit ported from Intent (cloudlands-fe).
+      $shared: 'src/shared',
+      // Intent's kit still imports Font Awesome identifiers; like upstream, they
+      // resolve to Phosphor icons so there is one icon set.
+      '@fortawesome/free-solid-svg-icons': 'src/lib/icons/phosphor-icons.ts',
+      '@fortawesome/fontawesome-common-types': 'src/lib/icons/phosphor-icons.ts',
+      'svelte-fa': 'src/lib/components/shared/icons/fa-proxy.ts',
+    },
   },
 };
 

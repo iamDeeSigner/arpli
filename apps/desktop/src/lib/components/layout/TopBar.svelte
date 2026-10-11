@@ -1,11 +1,14 @@
 <!--
-  TopBar — persistent page header with title, optional subtitle, and action slot.
-  Consumers pass actions using the Svelte 5 snippet API:
+  Page header. Thin wrapper over the ScreenHeader pattern from Intent's kit so pages
+  keep the simple string API:
     <TopBar title="..." subtitle="...">
       {#snippet actions()}<Button>...</Button>{/snippet}
     </TopBar>
 -->
 <script lang="ts">
+  import { ScreenHeader } from '$lib/components/patterns/screen';
+  import type { Snippet } from 'svelte';
+
   let {
     title,
     subtitle = null,
@@ -13,21 +16,16 @@
   }: {
     title: string;
     subtitle?: string | null;
-    actions?: import('svelte').Snippet;
+    actions?: Snippet;
   } = $props();
 </script>
 
-<header class="flex h-topbar items-center justify-between border-b border-border bg-background px-6">
-  <div class="flex flex-col">
-    <h1 class="text-lg font-semibold leading-tight">{title}</h1>
-    {#if subtitle}
-      <p class="text-xs text-muted-foreground">{subtitle}</p>
-    {/if}
-  </div>
+{#snippet titleSnippet()}{title}{/snippet}
+{#snippet descriptionSnippet()}{subtitle}{/snippet}
 
-  {#if actions}
-    <div class="flex items-center gap-2">
-      {@render actions()}
-    </div>
-  {/if}
-</header>
+<ScreenHeader
+  class="app-drag-region"
+  title={titleSnippet}
+  description={subtitle ? descriptionSnippet : undefined}
+  {actions}
+/>

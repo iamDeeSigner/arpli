@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { readonly, writable } from 'svelte/store';
 import { browser } from '$app/environment';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
@@ -21,12 +21,18 @@ function systemPrefersDark(): boolean {
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches ?? false;
 }
 
+const resolvedDark = writable(false);
+
+/** True while the resolved theme (after applying 'system') is dark. */
+export const isDarkTheme = readonly(resolvedDark);
+
 function applyTheme(mode: ThemeMode) {
   if (!browser) return;
   const root = document.documentElement;
   root.classList.remove('light', 'dark');
   const resolved = mode === 'system' ? (systemPrefersDark() ? 'dark' : 'light') : mode;
   root.classList.add(resolved);
+  resolvedDark.set(resolved === 'dark');
 }
 
 function createThemeStore() {

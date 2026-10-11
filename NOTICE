@@ -1,0 +1,36 @@
+Arpli
+Copyright 2026 Destiny Ehiakhamen
+
+This product includes software from cloudlands-fe, part of Intent
+(https://github.com/intent-hq/cloudlands-fe), licensed under the Apache License,
+Version 2.0. A copy of the license is in LICENSES/Apache-2.0.txt.
+
+The following were ported from cloudlands-fe and modified for Arpli:
+
+  apps/desktop/src/app.css
+  apps/desktop/src/lib/styles/          (design tokens, overlay surface, option rows)
+  apps/desktop/src/lib/motion/          (motion tiers, transitions, animated height)
+  apps/desktop/src/lib/interaction/
+  apps/desktop/src/lib/components/ui/   (UI kit)
+  apps/desktop/src/lib/components/patterns/
+  apps/desktop/src/lib/components/shared/icons/, src/lib/icons/phosphor-icons.ts
+  apps/desktop/src/lib/utils/, src/lib/i18n/, src/lib/actions/, src/lib/hooks/,
+  apps/desktop/src/shared/i18n/ (supporting utilities)
+  apps/desktop/messages/en.json         (subset of UI strings)
+
+Modifications include: removing Intent-specific components and branding (the Intent
+mark loader is replaced by a neutral spinner), replacing Redux-backed state with local
+equivalents, an English-only message module in place of Paraglide, and removal of
+tests and catalog metadata.
+
+Original cloudlands-fe NOTICE:
+
+  cloudlands-fe
+  Copyright 2026 The Intent Authors
+
+  This product is part of Intent, an open-source agentic coding platform.
+  Intent originated as "Intent by Augment" (https://github.com/intent-hq),
+  and the NOTICE preserves that lineage and branding.
+
+The Apache License does not grant rights to the Intent name or branding; Arpli does
+not use them.

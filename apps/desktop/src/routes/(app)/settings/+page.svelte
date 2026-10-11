@@ -1,6 +1,12 @@
 <script lang="ts">
   import TopBar from '$lib/components/layout/TopBar.svelte';
-  import Card from '$lib/components/ui/Card.svelte';
+  import { ScreenBody } from '$lib/components/patterns/screen';
+  import { SettingsSection } from '$lib/components/ui/settings-section';
+  import { SettingsFieldRow } from '$lib/components/ui/settings-field-row';
+  import { Switch } from '$lib/components/ui/switch';
+  import { Badge } from '$lib/components/ui/badge';
+  import * as ToggleGroup from '$lib/components/ui/toggle-group';
+  import { slide } from '$lib/motion';
   import { theme, type ThemeMode } from '$lib/stores/theme';
   import { ai } from '$lib/ipc/client';
   import { voiceSettings } from '$lib/voice/settings';
@@ -33,153 +39,133 @@
     { value: 'dark', label: 'Dark' },
     { value: 'system', label: 'System' },
   ];
+
+  function setTheme(value: string) {
+    // Single-select toggle groups emit '' when the active item is clicked again;
+    // keep the current theme in that case.
+    if (themes.some((t) => t.value === value)) theme.set(value as ThemeMode);
+  }
 </script>
 
 <TopBar title="Settings" subtitle="Preferences and integrations" />
 
-<div class="flex-1 overflow-auto p-6">
-  <div class="grid max-w-2xl grid-cols-1 gap-4">
-
+<ScreenBody>
+  <div class="flex max-w-2xl flex-col gap-8">
     <!-- Appearance -->
-    <Card>
-      <h2 class="text-base font-semibold">Appearance</h2>
-      <p class="mt-1 text-sm text-muted-foreground">Choose how Arpli looks on this device.</p>
-
-      <div class="mt-4 flex gap-2">
-        {#each themes as t}
-          <button
-            class="flex-1 rounded-md border px-3 py-2 text-sm font-medium transition-colors"
-            class:bg-primary={$theme === t.value}
-            class:text-primary-foreground={$theme === t.value}
-            class:border-primary={$theme === t.value}
-            class:border-border={$theme !== t.value}
-            class:hover:bg-muted={$theme !== t.value}
-            onclick={() => theme.set(t.value)}
+    <SettingsSection
+      id="settings-appearance"
+      title="Appearance"
+      description="Choose how Arpli looks on this device."
+    >
+      <SettingsFieldRow id="settings-theme" label="Theme">
+        {#snippet control({ labelId })}
+          <ToggleGroup.Root
+            type="single"
+            value={$theme}
+            onValueChange={setTheme}
+            aria-labelledby={labelId}
           >
-            {t.label}
-          </button>
-        {/each}
-      </div>
-    </Card>
+            {#each themes as t (t.value)}
+              <ToggleGroup.Item value={t.value}>{t.label}</ToggleGroup.Item>
+            {/each}
+          </ToggleGroup.Root>
+        {/snippet}
+      </SettingsFieldRow>
+    </SettingsSection>
 
     <!-- AI providers -->
-    <Card>
-      <h2 class="text-base font-semibold">AI Providers</h2>
-      <p class="mt-1 text-sm text-muted-foreground">
-        Providers configured in the Arpli daemon. Manage API keys in your environment or
-        through the onboarding flow.
-      </p>
-
+    <SettingsSection
+      id="settings-providers"
+      title="AI Providers"
+      description="Providers configured in the Arpli daemon. Manage API keys in your environment or through the onboarding flow."
+    >
       {#if providers.length === 0}
-        <p class="mt-4 text-sm text-muted-foreground">No providers detected — is the daemon running?</p>
+        <p class="type-body py-3 text-muted-foreground">
+          No providers detected — is the daemon running?
+        </p>
       {:else}
-        <ul class="mt-4 flex flex-col gap-2">
-          {#each providers as p}
-            <li class="flex items-center justify-between rounded-md border border-border px-3 py-2 text-sm">
-              <div class="flex items-center gap-2">
-                <span class="h-2 w-2 rounded-full bg-primary" aria-hidden="true"></span>
-                <span class="font-medium">{p.displayName}</span>
-                <span class="text-muted-foreground">{p.model}</span>
-              </div>
-              <span class="text-xs text-muted-foreground">{p.tier}</span>
-            </li>
-          {/each}
-        </ul>
+        {#each providers as p (p.id)}
+          <SettingsFieldRow id={`settings-provider-${p.id}`} label={p.displayName} description={p.model}>
+            {#snippet control()}
+              <Badge variant="dot" color="green">{p.tier}</Badge>
+            {/snippet}
+          </SettingsFieldRow>
+        {/each}
       {/if}
-    </Card>
+    </SettingsSection>
 
     <!-- Voice input -->
-    <Card>
-      <h2 class="text-base font-semibold">Voice Input</h2>
-      <p class="mt-1 text-sm text-muted-foreground">
-        Dictate into profile fields and answer boxes using your microphone.
-      </p>
-
+    <SettingsSection
+      id="settings-voice"
+      title="Voice Input"
+      description="Dictate into profile fields and answer boxes using your microphone."
+    >
       {#if !speechSupported && !whisperAvailable}
-        <p class="mt-3 text-sm text-muted-foreground">
+        <p class="type-body py-3 text-muted-foreground">
           Speech recognition is not available in this environment.
         </p>
       {:else}
-        <!-- Master toggle -->
-        <label class="mt-4 flex cursor-pointer items-center justify-between gap-4">
-          <div>
-            <p class="text-sm font-medium">Enable voice input</p>
-            <p class="text-xs text-muted-foreground">
-              Show the mic button in profile and answer fields.
-            </p>
-          </div>
-          <button
-            type="button"
-            role="switch"
-            aria-label="Enable voice input"
-            aria-checked={$voiceSettings.enabled}
-            class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            class:bg-primary={$voiceSettings.enabled}
-            class:bg-muted={!$voiceSettings.enabled}
-            onclick={() => voiceSettings.toggle()}
-          >
-            <span
-              class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition-transform"
-              class:translate-x-4={$voiceSettings.enabled}
-              class:translate-x-0={!$voiceSettings.enabled}
-            ></span>
-          </button>
-        </label>
+        <SettingsFieldRow
+          id="settings-voice-enabled"
+          label="Enable voice input"
+          description="Show the mic button in profile and answer fields."
+          htmlFor="settings-voice-enabled-switch"
+        >
+          {#snippet control({ descriptionId })}
+            <Switch
+              id="settings-voice-enabled-switch"
+              ariaLabel="Enable voice input"
+              ariaDescribedby={descriptionId}
+              checked={$voiceSettings.enabled}
+              onCheckedChange={() => voiceSettings.toggle()}
+            />
+          {/snippet}
+        </SettingsFieldRow>
 
-        <!-- Whisper sub-option -->
         {#if $voiceSettings.enabled}
-          <label
-            class="mt-3 flex items-center justify-between gap-4 rounded-md border border-border px-3 py-2"
-            class:opacity-50={!whisperAvailable}
-          >
-            <div>
-              <p class="text-sm font-medium">
-                Use Groq Whisper for higher accuracy
-              </p>
-              <p class="text-xs text-muted-foreground">
+          <div transition:slide={{ tier: 'fast' }}>
+            <SettingsFieldRow
+              id="settings-voice-whisper"
+              label="Use Groq Whisper for higher accuracy"
+              htmlFor="settings-voice-whisper-switch"
+              disabled={!whisperAvailable}
+            >
+              {#snippet descriptionContent()}
                 {#if whisperAvailable}
                   Records audio and sends it to Groq for transcription. More accurate than
                   browser speech recognition.
                 {:else}
                   Add a Groq API key under AI Providers to enable this option.
                 {/if}
-              </p>
-            </div>
-            <button
-              type="button"
-              role="switch"
-              aria-label="Use Groq Whisper for higher accuracy"
-              aria-checked={$voiceSettings.useWhisper && whisperAvailable}
-              disabled={!whisperAvailable}
-              class="relative inline-flex h-5 w-9 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:pointer-events-none"
-              class:bg-primary={$voiceSettings.useWhisper && whisperAvailable}
-              class:bg-muted={!($voiceSettings.useWhisper && whisperAvailable)}
-              onclick={() => voiceSettings.toggleWhisper()}
-            >
-              <span
-                class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition-transform"
-                class:translate-x-4={$voiceSettings.useWhisper && whisperAvailable}
-                class:translate-x-0={!($voiceSettings.useWhisper && whisperAvailable)}
-              ></span>
-            </button>
-          </label>
+              {/snippet}
+              {#snippet control({ descriptionId })}
+                <Switch
+                  id="settings-voice-whisper-switch"
+                  ariaLabel="Use Groq Whisper for higher accuracy"
+                  ariaDescribedby={descriptionId}
+                  checked={$voiceSettings.useWhisper && whisperAvailable}
+                  disabled={!whisperAvailable}
+                  onCheckedChange={() => voiceSettings.toggleWhisper()}
+                />
+              {/snippet}
+            </SettingsFieldRow>
+          </div>
         {/if}
       {/if}
-    </Card>
+    </SettingsSection>
 
     <!-- Data -->
-    <Card>
-      <h2 class="text-base font-semibold">Data</h2>
-      <p class="mt-1 text-sm text-muted-foreground">
-        All data is stored locally on this machine. No account required.
-      </p>
-      <dl class="mt-4 grid grid-cols-[8rem_1fr] gap-y-2 text-sm">
-        <dt class="text-muted-foreground">Storage</dt>
-        <dd>~/.arpli/</dd>
-        <dt class="text-muted-foreground">Version</dt>
-        <dd>v0.1.0 (Phase 1)</dd>
-      </dl>
-    </Card>
-
+    <SettingsSection
+      id="settings-data"
+      title="Data"
+      description="All data is stored locally on this machine. No account required."
+    >
+      <SettingsFieldRow id="settings-data-storage" label="Storage">
+        <span class="type-code text-foreground">~/.arpli/</span>
+      </SettingsFieldRow>
+      <SettingsFieldRow id="settings-data-version" label="Version">
+        <span class="type-body text-foreground">v0.1.0 (Phase 1)</span>
+      </SettingsFieldRow>
+    </SettingsSection>
   </div>
-</div>
+</ScreenBody>
