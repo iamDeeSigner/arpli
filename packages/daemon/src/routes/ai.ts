@@ -10,6 +10,11 @@ import {
 import { getActiveConnector, loadConnector, testAllConnectors, storedToConfig } from '../ai/manager.js';
 import { buildSystemPrompt } from '../ai/context.js';
 import {
+  pickTranscriptionProvider,
+  transcribeAudio,
+  TranscribeError,
+} from '../services/transcribe.js';
+import {
   getActiveProvider,
   getAllProviders,
   getProvider,
@@ -47,6 +52,26 @@ interface SaveProviderBody {
   baseUrl?: string | null;
   setActive?: boolean;
 }
+
+interface TranscribeBody {
+  /** Base64-encoded audio bytes. */
+  audio?: string;
+  /** MIME type of the audio blob. */
+  mimeType?: string;
+  /** Optional filename hint, defaults to 'recording.webm'. */
+  filename?: string;
+  /** Optional Whisper model override. */
+  model?: string;
+  /** Optional ISO-639-1 language hint. */
+  language?: string;
+}
+
+/**
+ * Soft cap on uploaded audio size. Groq Whisper accepts up to ~25 MB per
+ * request; we cap below that so a stuck-record session can't flood the
+ * daemon. Measured on the decoded buffer, not the base64 string.
+ */
+const MAX_AUDIO_BYTES = 20 * 1024 * 1024; // 20 MB
 
 export async function registerAiRoutes(app: FastifyInstance, db: ArpliDb): Promise<void> {
   app.post('/ai/complete', async (req, reply) => {
@@ -277,6 +302,80 @@ export async function registerAiRoutes(app: FastifyInstance, db: ArpliDb): Promi
       }
     },
   );
+
+  /**
+   * Transcribe an audio blob using the user's configured Whisper-capable
+   * provider (currently Groq or OpenAI). The audio arrives as base64 JSON —
+   * the Electron renderer encodes a browser MediaRecorder blob and forwards
+   * it through IPC. We stream the decoded buffer back out as
+   * multipart/form-data to the provider; the daemon never persists audio.
+   *
+   * Returns `{ text, provider, model }`. A 409 means no transcription
+   * provider is configured — the UI should fall back to the Web Speech API
+   * path.
+   */
+  app.post(
+    '/ai/transcribe',
+    { bodyLimit: 32 * 1024 * 1024 },
+    async (req, reply) => {
+      const body = (req.body ?? {}) as TranscribeBody;
+      if (typeof body.audio !== 'string' || body.audio.length === 0) {
+        return reply.code(400).send({ error: 'audio (base64 string) is required' });
+      }
+      if (typeof body.mimeType !== 'string' || body.mimeType.length === 0) {
+        return reply.code(400).send({ error: 'mimeType is required' });
+      }
+      let audio: Buffer;
+      try {
+        audio = Buffer.from(body.audio, 'base64');
+      } catch {
+        return reply.code(400).send({ error: 'audio is not valid base64' });
+      }
+      if (audio.length === 0) {
+        return reply.code(400).send({ error: 'decoded audio buffer is empty' });
+      }
+      if (audio.length > MAX_AUDIO_BYTES) {
+        return reply
+          .code(413)
+          .send({ error: `audio exceeds ${MAX_AUDIO_BYTES} byte limit` });
+      }
+      try {
+        const result = await transcribeAudio(db, {
+          audio,
+          mimeType: body.mimeType,
+          filename: body.filename ?? 'recording.webm',
+          model: body.model,
+          language: body.language,
+        });
+        return result;
+      } catch (err) {
+        if (err instanceof TranscribeError) {
+          const status =
+            err.code === 'no-provider'
+              ? 409
+              : err.code === 'bad-request'
+                ? 400
+                : 502;
+          return reply.code(status).send({ error: err.message, code: err.code });
+        }
+        app.log.error({ err }, 'ai.transcribe failed');
+        return reply.code(502).send({ error: errorMessage(err) });
+      }
+    },
+  );
+
+  /**
+   * Report whether a Whisper-capable provider (Groq / OpenAI) is configured
+   * with an API key. The settings UI uses this to enable or disable the
+   * "Use Groq Whisper" toggle.
+   */
+  app.get('/ai/transcribe/status', async () => {
+    const pick = pickTranscriptionProvider(db);
+    return {
+      available: pick !== null,
+      provider: pick?.provider ?? null,
+    };
+  });
 
   /**
    * Catalog of every provider Arpli knows about, in a shape the setup UI
