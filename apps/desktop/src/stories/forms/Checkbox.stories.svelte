@@ -34,38 +34,42 @@
 </Story>
 
 <Story name="States">
-  <div class="flex flex-col gap-3">
-    <div class="flex items-center gap-2">
-      <Checkbox id="cb-1" />
-      <Label for="cb-1">Unchecked</Label>
+  {#snippet template()}
+    <div class="flex flex-col gap-3">
+      <div class="flex items-center gap-2">
+        <Checkbox id="cb-1" />
+        <Label for="cb-1">Unchecked</Label>
+      </div>
+      <div class="flex items-center gap-2">
+        <Checkbox id="cb-2" checked />
+        <Label for="cb-2">Checked</Label>
+      </div>
+      <div class="flex items-center gap-2">
+        <Checkbox id="cb-3" indeterminate />
+        <Label for="cb-3">Indeterminate</Label>
+      </div>
+      <div class="flex items-center gap-2">
+        <Checkbox id="cb-4" invalid required />
+        <Label for="cb-4" invalid>I certify this information is accurate (required)</Label>
+      </div>
+      <div class="flex items-center gap-2">
+        <Checkbox id="cb-5" disabled />
+        <Label for="cb-5">Disabled</Label>
+      </div>
+      <div class="flex items-center gap-2">
+        <Checkbox id="cb-6" disabled checked />
+        <Label for="cb-6">Disabled checked</Label>
+      </div>
     </div>
-    <div class="flex items-center gap-2">
-      <Checkbox id="cb-2" checked />
-      <Label for="cb-2">Checked</Label>
-    </div>
-    <div class="flex items-center gap-2">
-      <Checkbox id="cb-3" indeterminate />
-      <Label for="cb-3">Indeterminate</Label>
-    </div>
-    <div class="flex items-center gap-2">
-      <Checkbox id="cb-4" invalid required />
-      <Label for="cb-4" invalid>I certify this information is accurate (required)</Label>
-    </div>
-    <div class="flex items-center gap-2">
-      <Checkbox id="cb-5" disabled />
-      <Label for="cb-5">Disabled</Label>
-    </div>
-    <div class="flex items-center gap-2">
-      <Checkbox id="cb-6" disabled checked />
-      <Label for="cb-6">Disabled checked</Label>
-    </div>
-  </div>
+  {/snippet}
 </Story>
 
 <Story name="Sizes">
-  <div class="flex items-center gap-4">
-    <Checkbox size="sm" checked ariaLabel="Small" />
-    <Checkbox size="md" checked ariaLabel="Medium" />
-    <Checkbox size="lg" checked ariaLabel="Large" />
-  </div>
+  {#snippet template()}
+    <div class="flex items-center gap-4">
+      <Checkbox size="sm" checked ariaLabel="Small" />
+      <Checkbox size="md" checked ariaLabel="Medium" />
+      <Checkbox size="lg" checked ariaLabel="Large" />
+    </div>
+  {/snippet}
 </Story>

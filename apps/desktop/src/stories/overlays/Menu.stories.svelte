@@ -54,65 +54,71 @@
 </Story>
 
 <Story name="Command items">
-  <Menu.Root>
-    <Menu.Trigger>Draft actions</Menu.Trigger>
-    <Menu.Content class="min-w-56">
-      <Menu.CommandItem icon={faPen} label="Rename" shortcut="F2" />
-      <Menu.CommandItem icon={faCopy} label="Duplicate" shortcut="Mod+D" />
-      <Menu.CommandItem
-        icon={faArchive}
-        label="Archive"
-        disabled
-        disabledReason="Submitted applications can't be archived"
-      />
-      <Menu.Separator />
-      <Menu.CommandItem icon={faTrash} label="Delete" shortcut="Mod+Backspace" destructive />
-    </Menu.Content>
-  </Menu.Root>
+  {#snippet template()}
+    <Menu.Root>
+      <Menu.Trigger>Draft actions</Menu.Trigger>
+      <Menu.Content class="min-w-56">
+        <Menu.CommandItem icon={faPen} label="Rename" shortcut="F2" />
+        <Menu.CommandItem icon={faCopy} label="Duplicate" shortcut="Mod+D" />
+        <Menu.CommandItem
+          icon={faArchive}
+          label="Archive"
+          disabled
+          disabledReason="Submitted applications can't be archived"
+        />
+        <Menu.Separator />
+        <Menu.CommandItem icon={faTrash} label="Delete" shortcut="Mod+Backspace" destructive />
+      </Menu.Content>
+    </Menu.Root>
+  {/snippet}
 </Story>
 
 <Story name="Checkbox and radio">
-  <Menu.Root>
-    <Menu.Trigger>
-      <FunnelIcon aria-hidden="true" />
-      Filter
-    </Menu.Trigger>
-    <Menu.Content class="min-w-56">
-      <Menu.Group>
-        <Menu.Label>Type</Menu.Label>
-        <Menu.CheckboxItem checked>Scholarships</Menu.CheckboxItem>
-        <Menu.CheckboxItem checked>Fellowships</Menu.CheckboxItem>
-        <Menu.CheckboxItem>Grants</Menu.CheckboxItem>
-      </Menu.Group>
-      <Menu.Separator />
-      <Menu.RadioGroup value="deadline">
-        <Menu.Label>Sort by</Menu.Label>
-        <Menu.RadioItem value="deadline">Deadline</Menu.RadioItem>
-        <Menu.RadioItem value="award">Award amount</Menu.RadioItem>
-        <Menu.RadioItem value="match">Best match</Menu.RadioItem>
-      </Menu.RadioGroup>
-    </Menu.Content>
-  </Menu.Root>
+  {#snippet template()}
+    <Menu.Root>
+      <Menu.Trigger>
+        <FunnelIcon aria-hidden="true" />
+        Filter
+      </Menu.Trigger>
+      <Menu.Content class="min-w-56">
+        <Menu.Group>
+          <Menu.Label>Type</Menu.Label>
+          <Menu.CheckboxItem checked>Scholarships</Menu.CheckboxItem>
+          <Menu.CheckboxItem checked>Fellowships</Menu.CheckboxItem>
+          <Menu.CheckboxItem>Grants</Menu.CheckboxItem>
+        </Menu.Group>
+        <Menu.Separator />
+        <Menu.RadioGroup value="deadline">
+          <Menu.Label>Sort by</Menu.Label>
+          <Menu.RadioItem value="deadline">Deadline</Menu.RadioItem>
+          <Menu.RadioItem value="award">Award amount</Menu.RadioItem>
+          <Menu.RadioItem value="match">Best match</Menu.RadioItem>
+        </Menu.RadioGroup>
+      </Menu.Content>
+    </Menu.Root>
+  {/snippet}
 </Story>
 
 <Story name="Submenu">
-  <Menu.Root>
-    <Menu.Trigger>Application</Menu.Trigger>
-    <Menu.Content class="min-w-52">
-      <Menu.Item>Open</Menu.Item>
-      <Menu.Sub>
-        <Menu.SubTrigger>
-          {#snippet leading()}<ExportIcon aria-hidden="true" />{/snippet}
-          Export as
-        </Menu.SubTrigger>
-        <Menu.SubContent>
-          <Menu.Item>PDF</Menu.Item>
-          <Menu.Item>Word document</Menu.Item>
-          <Menu.Item>Plain text</Menu.Item>
-        </Menu.SubContent>
-      </Menu.Sub>
-      <Menu.Separator />
-      <Menu.Item disabled>Submit (2 sections incomplete)</Menu.Item>
-    </Menu.Content>
-  </Menu.Root>
+  {#snippet template()}
+    <Menu.Root>
+      <Menu.Trigger>Application</Menu.Trigger>
+      <Menu.Content class="min-w-52">
+        <Menu.Item>Open</Menu.Item>
+        <Menu.Sub>
+          <Menu.SubTrigger>
+            {#snippet leading()}<ExportIcon aria-hidden="true" />{/snippet}
+            Export as
+          </Menu.SubTrigger>
+          <Menu.SubContent>
+            <Menu.Item>PDF</Menu.Item>
+            <Menu.Item>Word document</Menu.Item>
+            <Menu.Item>Plain text</Menu.Item>
+          </Menu.SubContent>
+        </Menu.Sub>
+        <Menu.Separator />
+        <Menu.Item disabled>Submit (2 sections incomplete)</Menu.Item>
+      </Menu.Content>
+    </Menu.Root>
+  {/snippet}
 </Story>

@@ -54,20 +54,24 @@
 </Story>
 
 <Story name="Collapsed groups">
-  <div class="w-80">
-    <GroupedCombobox ariaLabel="Essay" groups={essayGroups} value="fb-sop" defaultCollapsed />
-  </div>
+  {#snippet template()}
+    <div class="w-80">
+      <GroupedCombobox ariaLabel="Essay" groups={essayGroups} value="fb-sop" defaultCollapsed />
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Open (static)">
-  <div class="w-80">
-    <GroupedCombobox
-      ariaLabel="Essay"
-      groups={essayGroups}
-      value="rhodes-ps"
-      open
-      staticPosition
-      defaultCollapsed={false}
-    />
-  </div>
+  {#snippet template()}
+    <div class="w-80">
+      <GroupedCombobox
+        ariaLabel="Essay"
+        groups={essayGroups}
+        value="rhodes-ps"
+        open
+        staticPosition
+        defaultCollapsed={false}
+      />
+    </div>
+  {/snippet}
 </Story>

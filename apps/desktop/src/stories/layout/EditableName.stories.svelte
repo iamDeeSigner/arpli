@@ -29,16 +29,22 @@
 </Story>
 
 <Story name="Click to rename">
-  <EditableNameDemo />
+  {#snippet template()}
+    <EditableNameDemo />
+  {/snippet}
 </Story>
 
 <Story name="Title size">
-  <EditableNameDemo initial="Gates Cambridge application" textClass="type-title font-bold" maxWidth={400} />
+  {#snippet template()}
+    <EditableNameDemo initial="Gates Cambridge application" textClass="type-title font-bold" maxWidth={400} />
+  {/snippet}
 </Story>
 
 <Story name="Empty and disabled">
-  <div class="flex flex-col gap-4">
-    <EditableNameDemo initial="" />
-    <EditableNameDemo initial="Submitted — locked" disabled />
-  </div>
+  {#snippet template()}
+    <div class="flex flex-col gap-4">
+      <EditableNameDemo initial="" />
+      <EditableNameDemo initial="Submitted — locked" disabled />
+    </div>
+  {/snippet}
 </Story>

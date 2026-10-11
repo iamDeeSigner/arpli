@@ -22,54 +22,58 @@
 </script>
 
 <Story name="Applications">
-  <div class="w-[40rem]">
-    <Table.Root>
-      <Table.Caption>Your applications for the 2026–27 cycle.</Table.Caption>
-      <Table.Header>
-        <Table.Row>
-          <Table.Head>Opportunity</Table.Head>
-          <Table.Head>Deadline</Table.Head>
-          <Table.Head>Status</Table.Head>
-          <Table.Head class="text-right">Award</Table.Head>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        {#each rows as row (row.name)}
+  {#snippet template()}
+    <div class="w-[40rem]">
+      <Table.Root>
+        <Table.Caption>Your applications for the 2026–27 cycle.</Table.Caption>
+        <Table.Header>
           <Table.Row>
-            <Table.Cell class="font-medium">{row.name}</Table.Cell>
-            <Table.Cell>{row.deadline}</Table.Cell>
-            <Table.Cell><Badge color={row.color}>{row.status}</Badge></Table.Cell>
-            <Table.Cell class="text-right tabular-nums">{row.award}</Table.Cell>
+            <Table.Head>Opportunity</Table.Head>
+            <Table.Head>Deadline</Table.Head>
+            <Table.Head>Status</Table.Head>
+            <Table.Head class="text-right">Award</Table.Head>
           </Table.Row>
-        {/each}
-      </Table.Body>
-      <Table.Footer>
-        <Table.Row>
-          <Table.Cell {...span3}>Potential funding</Table.Cell>
-          <Table.Cell class="text-right tabular-nums">$270,000</Table.Cell>
-        </Table.Row>
-      </Table.Footer>
-    </Table.Root>
-  </div>
+        </Table.Header>
+        <Table.Body>
+          {#each rows as row (row.name)}
+            <Table.Row>
+              <Table.Cell class="font-medium">{row.name}</Table.Cell>
+              <Table.Cell>{row.deadline}</Table.Cell>
+              <Table.Cell><Badge color={row.color}>{row.status}</Badge></Table.Cell>
+              <Table.Cell class="text-right tabular-nums">{row.award}</Table.Cell>
+            </Table.Row>
+          {/each}
+        </Table.Body>
+        <Table.Footer>
+          <Table.Row>
+            <Table.Cell {...span3}>Potential funding</Table.Cell>
+            <Table.Cell class="text-right tabular-nums">$270,000</Table.Cell>
+          </Table.Row>
+        </Table.Footer>
+      </Table.Root>
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Empty">
-  <div class="w-[40rem]">
-    <Table.Root>
-      <Table.Header>
-        <Table.Row>
-          <Table.Head>Opportunity</Table.Head>
-          <Table.Head>Deadline</Table.Head>
-          <Table.Head>Status</Table.Head>
-        </Table.Row>
-      </Table.Header>
-      <Table.Body>
-        <Table.Row>
-          <Table.Cell {...span3} class="h-24 text-center text-muted-foreground">
-            No applications yet. Save an opportunity to get started.
-          </Table.Cell>
-        </Table.Row>
-      </Table.Body>
-    </Table.Root>
-  </div>
+  {#snippet template()}
+    <div class="w-[40rem]">
+      <Table.Root>
+        <Table.Header>
+          <Table.Row>
+            <Table.Head>Opportunity</Table.Head>
+            <Table.Head>Deadline</Table.Head>
+            <Table.Head>Status</Table.Head>
+          </Table.Row>
+        </Table.Header>
+        <Table.Body>
+          <Table.Row>
+            <Table.Cell {...span3} class="h-24 text-center text-muted-foreground">
+              No applications yet. Save an opportunity to get started.
+            </Table.Cell>
+          </Table.Row>
+        </Table.Body>
+      </Table.Root>
+    </div>
+  {/snippet}
 </Story>

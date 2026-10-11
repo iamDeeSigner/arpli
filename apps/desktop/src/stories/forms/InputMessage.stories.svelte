@@ -20,8 +20,10 @@
 </Story>
 
 <Story name="Tones">
-  <div class="flex w-80 flex-col">
-    <InputMessage tone="helper">Use the name that appears on your transcript.</InputMessage>
-    <InputMessage tone="error">Your essay is 712 words; the limit is 650.</InputMessage>
-  </div>
+  {#snippet template()}
+    <div class="flex w-80 flex-col">
+      <InputMessage tone="helper">Use the name that appears on your transcript.</InputMessage>
+      <InputMessage tone="error">Your essay is 712 words; the limit is 650.</InputMessage>
+    </div>
+  {/snippet}
 </Story>

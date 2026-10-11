@@ -66,32 +66,38 @@
 </Story>
 
 <Story name="Grouped">
-  <div class="w-72">
-    <Combobox
-      ariaLabel="Study destination"
-      groups={countryGroups}
-      header="Study destination"
-      placeholder="Choose a country"
-    />
-  </div>
+  {#snippet template()}
+    <div class="w-72">
+      <Combobox
+        ariaLabel="Study destination"
+        groups={countryGroups}
+        header="Study destination"
+        placeholder="Choose a country"
+      />
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Multiple">
-  <div class="w-72">
-    <Combobox
-      ariaLabel="Universities to apply to"
-      options={universities}
-      multiple
-      value={['oxford', 'stanford']}
-    />
-  </div>
+  {#snippet template()}
+    <div class="w-72">
+      <Combobox
+        ariaLabel="Universities to apply to"
+        options={universities}
+        multiple
+        value={['oxford', 'stanford']}
+      />
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="States">
-  <div class="flex w-72 flex-col gap-3">
-    <Combobox ariaLabel="Disabled" options={universities} disabled placeholder="Disabled" />
-    <Combobox ariaLabel="Invalid" options={universities} invalid placeholder="Required field" />
-    <Combobox ariaLabel="Loading" options={[]} loading placeholder="Loading universities…" />
-    <Combobox ariaLabel="Compact" options={universities} size="compact" value="eth" />
-  </div>
+  {#snippet template()}
+    <div class="flex w-72 flex-col gap-3">
+      <Combobox ariaLabel="Disabled" options={universities} disabled placeholder="Disabled" />
+      <Combobox ariaLabel="Invalid" options={universities} invalid placeholder="Required field" />
+      <Combobox ariaLabel="Loading" options={[]} loading placeholder="Loading universities…" />
+      <Combobox ariaLabel="Compact" options={universities} size="compact" value="eth" />
+    </div>
+  {/snippet}
 </Story>

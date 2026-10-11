@@ -31,34 +31,40 @@
 </Story>
 
 <Story name="Variants">
-  <div class="flex flex-col items-start gap-4">
-    {#each ['default', 'outline', 'flat'] as const as variant (variant)}
-      <ToggleGroupRoot type="single" value="month" {variant} aria-label="Deadline range ({variant})">
-        <ToggleGroupItem value="week">This week</ToggleGroupItem>
-        <ToggleGroupItem value="month">This month</ToggleGroupItem>
-        <ToggleGroupItem value="all">All upcoming</ToggleGroupItem>
-      </ToggleGroupRoot>
-    {/each}
-  </div>
+  {#snippet template()}
+    <div class="flex flex-col items-start gap-4">
+      {#each ['default', 'outline', 'flat'] as const as variant (variant)}
+        <ToggleGroupRoot type="single" value="month" {variant} aria-label="Deadline range ({variant})">
+          <ToggleGroupItem value="week">This week</ToggleGroupItem>
+          <ToggleGroupItem value="month">This month</ToggleGroupItem>
+          <ToggleGroupItem value="all">All upcoming</ToggleGroupItem>
+        </ToggleGroupRoot>
+      {/each}
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Icons and sizes">
-  <div class="flex flex-col items-start gap-4">
-    {#each ['xs', 'sm', 'default', 'lg'] as const as size (size)}
-      <ToggleGroupRoot type="single" value="grid" {size} aria-label="View ({size})">
-        <ToggleGroupItem value="grid" aria-label="Grid view"><SquaresFourIcon class="size-4" /></ToggleGroupItem>
-        <ToggleGroupItem value="list" aria-label="List view"><RowsIcon class="size-4" /></ToggleGroupItem>
-        <ToggleGroupItem value="calendar" aria-label="Calendar view"><CalendarIcon class="size-4" /></ToggleGroupItem>
-      </ToggleGroupRoot>
-    {/each}
-  </div>
+  {#snippet template()}
+    <div class="flex flex-col items-start gap-4">
+      {#each ['xs', 'sm', 'default', 'lg'] as const as size (size)}
+        <ToggleGroupRoot type="single" value="grid" {size} aria-label="View ({size})">
+          <ToggleGroupItem value="grid" aria-label="Grid view"><SquaresFourIcon class="size-4" /></ToggleGroupItem>
+          <ToggleGroupItem value="list" aria-label="List view"><RowsIcon class="size-4" /></ToggleGroupItem>
+          <ToggleGroupItem value="calendar" aria-label="Calendar view"><CalendarIcon class="size-4" /></ToggleGroupItem>
+        </ToggleGroupRoot>
+      {/each}
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Multiple">
-  <ToggleGroupRoot type="multiple" value={['stem', 'arts']} aria-label="Fields">
-    <ToggleGroupItem value="stem">STEM</ToggleGroupItem>
-    <ToggleGroupItem value="arts">Arts</ToggleGroupItem>
-    <ToggleGroupItem value="humanities">Humanities</ToggleGroupItem>
-    <ToggleGroupItem value="business" disabled>Business</ToggleGroupItem>
-  </ToggleGroupRoot>
+  {#snippet template()}
+    <ToggleGroupRoot type="multiple" value={['stem', 'arts']} aria-label="Fields">
+      <ToggleGroupItem value="stem">STEM</ToggleGroupItem>
+      <ToggleGroupItem value="arts">Arts</ToggleGroupItem>
+      <ToggleGroupItem value="humanities">Humanities</ToggleGroupItem>
+      <ToggleGroupItem value="business" disabled>Business</ToggleGroupItem>
+    </ToggleGroupRoot>
+  {/snippet}
 </Story>

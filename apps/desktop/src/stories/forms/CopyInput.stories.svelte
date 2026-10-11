@@ -34,12 +34,14 @@
 </Story>
 
 <Story name="Variants">
-  <div class="flex w-96 flex-col gap-3">
-    <CopyInput value="GATES-26-0419" />
-    <CopyInput value="GATES-26-0419" variant="button" />
-    <CopyInput value="https://arpli.app/r/recommend/9f2c" label="Recommender link" variant="button" />
-    <CopyInput value="GATES-26-0419" align="left" />
-    <CopyInput value="GATES-26-0419" size="compact" />
-    <CopyInput value="GATES-26-0419" disabled />
-  </div>
+  {#snippet template()}
+    <div class="flex w-96 flex-col gap-3">
+      <CopyInput value="GATES-26-0419" />
+      <CopyInput value="GATES-26-0419" variant="button" />
+      <CopyInput value="https://arpli.app/r/recommend/9f2c" label="Recommender link" variant="button" />
+      <CopyInput value="GATES-26-0419" align="left" />
+      <CopyInput value="GATES-26-0419" size="compact" />
+      <CopyInput value="GATES-26-0419" disabled />
+    </div>
+  {/snippet}
 </Story>

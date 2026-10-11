@@ -22,15 +22,19 @@
 </Story>
 
 <Story name="With input">
-  <div class="flex w-72 flex-col gap-1.5">
-    <Label for="label-gpa">Cumulative GPA</Label>
-    <Input id="label-gpa" placeholder="e.g. 3.85" inputmode="decimal" />
-  </div>
+  {#snippet template()}
+    <div class="flex w-72 flex-col gap-1.5">
+      <Label for="label-gpa">Cumulative GPA</Label>
+      <Input id="label-gpa" placeholder="e.g. 3.85" inputmode="decimal" />
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Invalid">
-  <div class="flex w-72 flex-col gap-1.5">
-    <Label for="label-email" invalid>School email</Label>
-    <Input id="label-email" value="jordan@" error="Enter a full .edu address." />
-  </div>
+  {#snippet template()}
+    <div class="flex w-72 flex-col gap-1.5">
+      <Label for="label-email" invalid>School email</Label>
+      <Input id="label-email" value="jordan@" error="Enter a full .edu address." />
+    </div>
+  {/snippet}
 </Story>

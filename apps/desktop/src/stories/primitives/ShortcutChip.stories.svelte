@@ -10,16 +10,20 @@
 </script>
 
 <Story name="Playground">
-  <ShortcutChip>⌘K</ShortcutChip>
+  {#snippet template()}
+    <ShortcutChip>⌘K</ShortcutChip>
+  {/snippet}
 </Story>
 
 <Story name="In context">
-  <div class="flex w-72 flex-col gap-2">
-    {#each [['Search opportunities', '⌘K'], ['New application', '⌘N'], ['Save draft', '⌘S'], ['Toggle sidebar', '⌘\\']] as [label, keys] (label)}
-      <div class="flex items-center justify-between rounded-(--radius-medium) bg-card px-3 py-2">
-        <span class="type-body">{label}</span>
-        <ShortcutChip>{keys}</ShortcutChip>
-      </div>
-    {/each}
-  </div>
+  {#snippet template()}
+    <div class="flex w-72 flex-col gap-2">
+      {#each [['Search opportunities', '⌘K'], ['New application', '⌘N'], ['Save draft', '⌘S'], ['Toggle sidebar', '⌘\\']] as [label, keys] (label)}
+        <div class="flex items-center justify-between rounded-(--radius-medium) bg-card px-3 py-2">
+          <span class="type-body">{label}</span>
+          <ShortcutChip>{keys}</ShortcutChip>
+        </div>
+      {/each}
+    </div>
+  {/snippet}
 </Story>

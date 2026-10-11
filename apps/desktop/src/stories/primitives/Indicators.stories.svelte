@@ -21,25 +21,29 @@
 </Story>
 
 <Story name="Spinner sizes">
-  <div class="flex items-center gap-4 text-muted-foreground">
-    <Spinner size={12} />
-    <Spinner size={16} />
-    <Spinner size={18} />
-    <Spinner size={24} />
-    <Spinner size={32} class="text-primary" />
-    <Spinner size={24} playing={false} />
-  </div>
+  {#snippet template()}
+    <div class="flex items-center gap-4 text-muted-foreground">
+      <Spinner size={12} />
+      <Spinner size={16} />
+      <Spinner size={18} />
+      <Spinner size={24} />
+      <Spinner size={32} class="text-primary" />
+      <Spinner size={24} playing={false} />
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Unsaved indicator">
-  <div class="flex flex-col gap-2">
-    <div class="flex items-center gap-2">
-      <span class="type-body">Personal statement</span>
-      <UnsavedIndicator visible />
+  {#snippet template()}
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center gap-2">
+        <span class="type-body">Personal statement</span>
+        <UnsavedIndicator visible />
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="type-body">Activities list</span>
+        <UnsavedIndicator visible={false} />
+      </div>
     </div>
-    <div class="flex items-center gap-2">
-      <span class="type-body">Activities list</span>
-      <UnsavedIndicator visible={false} />
-    </div>
-  </div>
+  {/snippet}
 </Story>

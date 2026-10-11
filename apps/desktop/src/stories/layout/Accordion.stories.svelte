@@ -53,35 +53,39 @@
 </Story>
 
 <Story name="Multiple open">
-  <div class="w-[28rem]">
-    <Accordion.Root type="multiple" value={['eligibility', 'interview']}>
-      {#each faqs as faq (faq.value)}
-        <Accordion.Item value={faq.value}>
-          <Accordion.Header>
-            <Accordion.Trigger>{faq.q}</Accordion.Trigger>
-          </Accordion.Header>
-          <Accordion.Content>
-            <p class="type-body text-muted-foreground">{faq.a}</p>
-          </Accordion.Content>
-        </Accordion.Item>
-      {/each}
-    </Accordion.Root>
-  </div>
+  {#snippet template()}
+    <div class="w-[28rem]">
+      <Accordion.Root type="multiple" value={['eligibility', 'interview']}>
+        {#each faqs as faq (faq.value)}
+          <Accordion.Item value={faq.value}>
+            <Accordion.Header>
+              <Accordion.Trigger>{faq.q}</Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content>
+              <p class="type-body text-muted-foreground">{faq.a}</p>
+            </Accordion.Content>
+          </Accordion.Item>
+        {/each}
+      </Accordion.Root>
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Disabled item">
-  <div class="w-[28rem]">
-    <Accordion.Root type="single" value="eligibility">
-      {#each faqs as faq, i (faq.value)}
-        <Accordion.Item value={faq.value} disabled={i === 2}>
-          <Accordion.Header>
-            <Accordion.Trigger>{faq.q}</Accordion.Trigger>
-          </Accordion.Header>
-          <Accordion.Content>
-            <p class="type-body text-muted-foreground">{faq.a}</p>
-          </Accordion.Content>
-        </Accordion.Item>
-      {/each}
-    </Accordion.Root>
-  </div>
+  {#snippet template()}
+    <div class="w-[28rem]">
+      <Accordion.Root type="single" value="eligibility">
+        {#each faqs as faq, i (faq.value)}
+          <Accordion.Item value={faq.value} disabled={i === 2}>
+            <Accordion.Header>
+              <Accordion.Trigger>{faq.q}</Accordion.Trigger>
+            </Accordion.Header>
+            <Accordion.Content>
+              <p class="type-body text-muted-foreground">{faq.a}</p>
+            </Accordion.Content>
+          </Accordion.Item>
+        {/each}
+      </Accordion.Root>
+    </div>
+  {/snippet}
 </Story>

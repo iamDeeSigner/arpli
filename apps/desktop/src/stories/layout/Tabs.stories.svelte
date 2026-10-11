@@ -48,32 +48,36 @@
 </Story>
 
 <Story name="Variants">
-  <div class="flex w-[28rem] flex-col gap-8">
-    {#each variants as variant (variant)}
-      <div class="flex flex-col gap-2">
-        <span class="type-caption text-muted-foreground">{variant}</span>
-        <Tabs.Root value="overview" {variant}>
-          <Tabs.List>
-            <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
-            <Tabs.Trigger value="eligibility">Eligibility</Tabs.Trigger>
-            <Tabs.Trigger value="documents">Documents</Tabs.Trigger>
-          </Tabs.List>
-          {@render panels()}
-        </Tabs.Root>
-      </div>
-    {/each}
-  </div>
+  {#snippet template()}
+    <div class="flex w-[28rem] flex-col gap-8">
+      {#each variants as variant (variant)}
+        <div class="flex flex-col gap-2">
+          <span class="type-caption text-muted-foreground">{variant}</span>
+          <Tabs.Root value="overview" {variant}>
+            <Tabs.List>
+              <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
+              <Tabs.Trigger value="eligibility">Eligibility</Tabs.Trigger>
+              <Tabs.Trigger value="documents">Documents</Tabs.Trigger>
+            </Tabs.List>
+            {@render panels()}
+          </Tabs.Root>
+        </div>
+      {/each}
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Compact">
-  <div class="w-[28rem]">
-    <Tabs.Root value="eligibility" size="compact" variant="subtle">
-      <Tabs.List>
-        <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
-        <Tabs.Trigger value="eligibility">Eligibility</Tabs.Trigger>
-        <Tabs.Trigger value="documents">Documents</Tabs.Trigger>
-      </Tabs.List>
-      {@render panels()}
-    </Tabs.Root>
-  </div>
+  {#snippet template()}
+    <div class="w-[28rem]">
+      <Tabs.Root value="eligibility" size="compact" variant="subtle">
+        <Tabs.List>
+          <Tabs.Trigger value="overview">Overview</Tabs.Trigger>
+          <Tabs.Trigger value="eligibility">Eligibility</Tabs.Trigger>
+          <Tabs.Trigger value="documents">Documents</Tabs.Trigger>
+        </Tabs.List>
+        {@render panels()}
+      </Tabs.Root>
+    </div>
+  {/snippet}
 </Story>

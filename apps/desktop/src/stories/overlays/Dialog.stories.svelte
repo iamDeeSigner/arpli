@@ -52,69 +52,75 @@
 </Story>
 
 <Story name="Open by default">
-  <DialogOpenDemo />
+  {#snippet template()}
+    <DialogOpenDemo />
+  {/snippet}
 </Story>
 
 <Story name="With form">
-  <Dialog.Root>
-    <Dialog.Trigger>
-      {#snippet child({ props })}
-        <Button {...props} variant="secondary">Add deadline</Button>
-      {/snippet}
-    </Dialog.Trigger>
-    <Dialog.Content size="lg">
-      <Dialog.Header>
-        <Dialog.Title>Add a deadline</Dialog.Title>
-        <Dialog.Description>Track an opportunity you found outside Arpli.</Dialog.Description>
-      </Dialog.Header>
-      <div class="flex flex-col gap-4">
-        <div class="flex flex-col gap-1.5">
-          <Label for="dlg-name">Opportunity</Label>
-          <Input id="dlg-name" placeholder="e.g. Gates Cambridge Scholarship" />
+  {#snippet template()}
+    <Dialog.Root>
+      <Dialog.Trigger>
+        {#snippet child({ props })}
+          <Button {...props} variant="secondary">Add deadline</Button>
+        {/snippet}
+      </Dialog.Trigger>
+      <Dialog.Content size="lg">
+        <Dialog.Header>
+          <Dialog.Title>Add a deadline</Dialog.Title>
+          <Dialog.Description>Track an opportunity you found outside Arpli.</Dialog.Description>
+        </Dialog.Header>
+        <div class="flex flex-col gap-4">
+          <div class="flex flex-col gap-1.5">
+            <Label for="dlg-name">Opportunity</Label>
+            <Input id="dlg-name" placeholder="e.g. Gates Cambridge Scholarship" />
+          </div>
+          <div class="flex flex-col gap-1.5">
+            <Label for="dlg-date">Deadline</Label>
+            <Input id="dlg-date" type="date" />
+          </div>
         </div>
-        <div class="flex flex-col gap-1.5">
-          <Label for="dlg-date">Deadline</Label>
-          <Input id="dlg-date" type="date" />
-        </div>
-      </div>
-      <Dialog.Footer>
-        <Dialog.Close>
-          {#snippet child({ props })}
-            <Button {...props} variant="ghost">Cancel</Button>
-          {/snippet}
-        </Dialog.Close>
-        <Button variant="primary">Save deadline</Button>
-      </Dialog.Footer>
-    </Dialog.Content>
-  </Dialog.Root>
+        <Dialog.Footer>
+          <Dialog.Close>
+            {#snippet child({ props })}
+              <Button {...props} variant="ghost">Cancel</Button>
+            {/snippet}
+          </Dialog.Close>
+          <Button variant="primary">Save deadline</Button>
+        </Dialog.Footer>
+      </Dialog.Content>
+    </Dialog.Root>
+  {/snippet}
 </Story>
 
 <Story name="Sizes">
-  <div class="flex gap-2">
-    {#each ['sm', 'default', 'lg', 'wide'] as const as size (size)}
-      <Dialog.Root>
-        <Dialog.Trigger>
-          {#snippet child({ props })}
-            <Button {...props} variant="secondary">{size}</Button>
-          {/snippet}
-        </Dialog.Trigger>
-        <Dialog.Content {size}>
-          <Dialog.Header>
-            <Dialog.Title>Eligibility check</Dialog.Title>
-            <Dialog.Description>
-              This dialog uses the <code class="type-code">{size}</code> size. You meet 4 of 5 criteria
-              for the Marshall Scholarship.
-            </Dialog.Description>
-          </Dialog.Header>
-          <Dialog.Footer>
-            <Dialog.Close>
-              {#snippet child({ props })}
-                <Button {...props} variant="primary">Got it</Button>
-              {/snippet}
-            </Dialog.Close>
-          </Dialog.Footer>
-        </Dialog.Content>
-      </Dialog.Root>
-    {/each}
-  </div>
+  {#snippet template()}
+    <div class="flex gap-2">
+      {#each ['sm', 'default', 'lg', 'wide'] as const as size (size)}
+        <Dialog.Root>
+          <Dialog.Trigger>
+            {#snippet child({ props })}
+              <Button {...props} variant="secondary">{size}</Button>
+            {/snippet}
+          </Dialog.Trigger>
+          <Dialog.Content {size}>
+            <Dialog.Header>
+              <Dialog.Title>Eligibility check</Dialog.Title>
+              <Dialog.Description>
+                This dialog uses the <code class="type-code">{size}</code> size. You meet 4 of 5 criteria
+                for the Marshall Scholarship.
+              </Dialog.Description>
+            </Dialog.Header>
+            <Dialog.Footer>
+              <Dialog.Close>
+                {#snippet child({ props })}
+                  <Button {...props} variant="primary">Got it</Button>
+                {/snippet}
+              </Dialog.Close>
+            </Dialog.Footer>
+          </Dialog.Content>
+        </Dialog.Root>
+      {/each}
+    </div>
+  {/snippet}
 </Story>

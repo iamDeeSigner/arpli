@@ -43,27 +43,31 @@
 </Story>
 
 <Story name="Horizontal">
-  <ScrollArea orientation="horizontal" class="w-96 rounded-(--radius-large) border border-border">
-    <div class="flex w-max gap-3 p-3">
-      {#each deadlines.slice(0, 12) as item (item.id)}
-        <div class="type-caption flex w-36 shrink-0 flex-col gap-1 rounded-(--radius-medium) bg-muted p-3">
-          <span class="font-medium text-foreground">{item.name}</span>
-          <span class="text-muted-foreground">{item.date}</span>
-        </div>
-      {/each}
-    </div>
-  </ScrollArea>
+  {#snippet template()}
+    <ScrollArea orientation="horizontal" class="w-96 rounded-(--radius-large) border border-border">
+      <div class="flex w-max gap-3 p-3">
+        {#each deadlines.slice(0, 12) as item (item.id)}
+          <div class="type-caption flex w-36 shrink-0 flex-col gap-1 rounded-(--radius-medium) bg-muted p-3">
+            <span class="font-medium text-foreground">{item.name}</span>
+            <span class="text-muted-foreground">{item.date}</span>
+          </div>
+        {/each}
+      </div>
+    </ScrollArea>
+  {/snippet}
 </Story>
 
 <Story name="Both axes">
-  <ScrollArea orientation="both" class="h-64 w-80 rounded-(--radius-large) border border-border">
-    <div class="type-body w-[40rem] p-4 text-foreground">
-      {#each deadlines as item (item.id)}
-        <p class="whitespace-nowrap">
-          {item.name} — application due {item.date}. Remember to request transcripts and letters
-          two weeks in advance.
-        </p>
-      {/each}
-    </div>
-  </ScrollArea>
+  {#snippet template()}
+    <ScrollArea orientation="both" class="h-64 w-80 rounded-(--radius-large) border border-border">
+      <div class="type-body w-[40rem] p-4 text-foreground">
+        {#each deadlines as item (item.id)}
+          <p class="whitespace-nowrap">
+            {item.name} — application due {item.date}. Remember to request transcripts and letters
+            two weeks in advance.
+          </p>
+        {/each}
+      </div>
+    </ScrollArea>
+  {/snippet}
 </Story>

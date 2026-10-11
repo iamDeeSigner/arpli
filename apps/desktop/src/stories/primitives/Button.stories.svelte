@@ -55,109 +55,121 @@
 </Story>
 
 <Story name="Variants">
-  <div class="flex flex-wrap items-center gap-3">
-    {#each variants as variant (variant)}
-      <Button {variant}>{variant}</Button>
-    {/each}
-  </div>
+  {#snippet template()}
+    <div class="flex flex-wrap items-center gap-3">
+      {#each variants as variant (variant)}
+        <Button {variant}>{variant}</Button>
+      {/each}
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Sizes">
-  <div class="flex flex-col gap-6">
-    <div class="flex flex-wrap items-center gap-3">
-      {#each textSizes as size (size)}
-        <Button variant="secondary" {size}>Save draft ({size})</Button>
-      {/each}
+  {#snippet template()}
+    <div class="flex flex-col gap-6">
+      <div class="flex flex-wrap items-center gap-3">
+        {#each textSizes as size (size)}
+          <Button variant="secondary" {size}>Save draft ({size})</Button>
+        {/each}
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        {#each iconSizes as size (size)}
+          <Button variant="outline" {size} aria-label="Add opportunity ({size})">
+            <PlusIcon />
+          </Button>
+        {/each}
+        {#each iconSizes as size (size)}
+          <Button variant="ghost" {size} aria-label="More actions ({size})">
+            <DotsThreeIcon />
+          </Button>
+        {/each}
+      </div>
     </div>
-    <div class="flex flex-wrap items-center gap-3">
-      {#each iconSizes as size (size)}
-        <Button variant="outline" {size} aria-label="Add opportunity ({size})">
-          <PlusIcon />
-        </Button>
-      {/each}
-      {#each iconSizes as size (size)}
-        <Button variant="ghost" {size} aria-label="More actions ({size})">
-          <DotsThreeIcon />
-        </Button>
-      {/each}
-    </div>
-  </div>
+  {/snippet}
 </Story>
 
 <Story name="With icons">
-  <div class="flex flex-wrap items-center gap-3">
-    <Button variant="primary">
-      {#snippet leadingIcon()}<PlusIcon />{/snippet}
-      New opportunity
-    </Button>
-    <Button variant="secondary">
-      Continue to essays
-      {#snippet trailingIcon()}<ArrowRightIcon />{/snippet}
-    </Button>
-    <Button variant="outline">
-      {#snippet leadingIcon()}<DownloadIcon />{/snippet}
-      Export transcript
-    </Button>
-    <Button variant="destructive">
-      {#snippet leadingIcon()}<TrashIcon />{/snippet}
-      Withdraw application
-    </Button>
-    <Button variant="ghost" size="sm">
-      {#snippet leadingIcon()}<BookmarkSimpleIcon />{/snippet}
-      Save for later
-    </Button>
-  </div>
+  {#snippet template()}
+    <div class="flex flex-wrap items-center gap-3">
+      <Button variant="primary">
+        {#snippet leadingIcon()}<PlusIcon />{/snippet}
+        New opportunity
+      </Button>
+      <Button variant="secondary">
+        Continue to essays
+        {#snippet trailingIcon()}<ArrowRightIcon />{/snippet}
+      </Button>
+      <Button variant="outline">
+        {#snippet leadingIcon()}<DownloadIcon />{/snippet}
+        Export transcript
+      </Button>
+      <Button variant="destructive">
+        {#snippet leadingIcon()}<TrashIcon />{/snippet}
+        Withdraw application
+      </Button>
+      <Button variant="ghost" size="sm">
+        {#snippet leadingIcon()}<BookmarkSimpleIcon />{/snippet}
+        Save for later
+      </Button>
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="States">
-  <div class="flex flex-col gap-4">
-    <div class="flex flex-wrap items-center gap-3">
-      <span class="type-caption w-20 text-muted-foreground">Loading</span>
-      <Button variant="primary" loading>Submitting…</Button>
-      <Button variant="secondary" loading>Saving</Button>
-      <Button variant="outline" size="sm" loading>Uploading</Button>
-      <Button variant="ghost" size="icon" loading aria-label="Sending">
-        <PaperPlaneTiltIcon />
-      </Button>
+  {#snippet template()}
+    <div class="flex flex-col gap-4">
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="type-caption w-20 text-muted-foreground">Loading</span>
+        <Button variant="primary" loading>Submitting…</Button>
+        <Button variant="secondary" loading>Saving</Button>
+        <Button variant="outline" size="sm" loading>Uploading</Button>
+        <Button variant="ghost" size="icon" loading aria-label="Sending">
+          <PaperPlaneTiltIcon />
+        </Button>
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="type-caption w-20 text-muted-foreground">Disabled</span>
+        {#each ['primary', 'secondary', 'outline', 'ghost', 'destructive'] as const as variant (variant)}
+          <Button {variant} disabled>Submit</Button>
+        {/each}
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="type-caption w-20 text-muted-foreground">Active</span>
+        {#each ['primary', 'secondary', 'outline', 'ghost'] as const as variant (variant)}
+          <Button {variant} active>Shortlisted</Button>
+        {/each}
+      </div>
+      <div class="flex flex-wrap items-center gap-3">
+        <span class="type-caption w-20 text-muted-foreground">As link</span>
+        <Button variant="link" href="#guidelines">View eligibility guidelines</Button>
+      </div>
     </div>
-    <div class="flex flex-wrap items-center gap-3">
-      <span class="type-caption w-20 text-muted-foreground">Disabled</span>
-      {#each ['primary', 'secondary', 'outline', 'ghost', 'destructive'] as const as variant (variant)}
-        <Button {variant} disabled>Submit</Button>
-      {/each}
-    </div>
-    <div class="flex flex-wrap items-center gap-3">
-      <span class="type-caption w-20 text-muted-foreground">Active</span>
-      {#each ['primary', 'secondary', 'outline', 'ghost'] as const as variant (variant)}
-        <Button {variant} active>Shortlisted</Button>
-      {/each}
-    </div>
-    <div class="flex flex-wrap items-center gap-3">
-      <span class="type-caption w-20 text-muted-foreground">As link</span>
-      <Button variant="link" href="#guidelines">View eligibility guidelines</Button>
-    </div>
-  </div>
+  {/snippet}
 </Story>
 
 <Story name="With tooltip">
-  <div class="flex items-center gap-3">
-    <Button variant="outline" tooltip="Create a new opportunity" tooltipShortcut="⌘N">
-      {#snippet leadingIcon()}<PlusIcon />{/snippet}
-      New
-    </Button>
-    <Button variant="ghost" size="icon" tooltip="Bookmark this scholarship" tooltipSide="bottom">
-      <BookmarkSimpleIcon />
-    </Button>
-    <Button variant="ghost" size="icon" tooltip="Delete draft" tooltipShortcut="⌫" tooltipSide="right">
-      <TrashIcon />
-    </Button>
-  </div>
+  {#snippet template()}
+    <div class="flex items-center gap-3">
+      <Button variant="outline" tooltip="Create a new opportunity" tooltipShortcut="⌘N">
+        {#snippet leadingIcon()}<PlusIcon />{/snippet}
+        New
+      </Button>
+      <Button variant="ghost" size="icon" tooltip="Bookmark this scholarship" tooltipSide="bottom">
+        <BookmarkSimpleIcon />
+      </Button>
+      <Button variant="ghost" size="icon" tooltip="Delete draft" tooltipShortcut="⌫" tooltipSide="right">
+        <TrashIcon />
+      </Button>
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Long label">
-  <div class="w-56">
-    <Button variant="secondary" class="w-full">
-      Submit application for the Rhodes Scholarship 2027 cycle
-    </Button>
-  </div>
+  {#snippet template()}
+    <div class="w-56">
+      <Button variant="secondary" class="w-full">
+        Submit application for the Rhodes Scholarship 2027 cycle
+      </Button>
+    </div>
+  {/snippet}
 </Story>

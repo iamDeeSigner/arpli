@@ -34,20 +34,24 @@
 </Story>
 
 <Story name="With descriptions">
-  <div class="w-96">
-    <CheckboxGroup value={['email']} aria-label="Deadline reminders">
-      <CheckboxGroupItem value="email" title="Email" description="A digest 7 days and 1 day before each deadline." />
-      <CheckboxGroupItem value="desktop" title="Desktop notifications" description="A banner on the morning a deadline is due." />
-      <CheckboxGroupItem value="calendar" title="Calendar export" description="Add deadlines to your calendar feed." />
-    </CheckboxGroup>
-  </div>
+  {#snippet template()}
+    <div class="w-96">
+      <CheckboxGroup value={['email']} aria-label="Deadline reminders">
+        <CheckboxGroupItem value="email" title="Email" description="A digest 7 days and 1 day before each deadline." />
+        <CheckboxGroupItem value="desktop" title="Desktop notifications" description="A banner on the morning a deadline is due." />
+        <CheckboxGroupItem value="calendar" title="Calendar export" description="Add deadlines to your calendar feed." />
+      </CheckboxGroup>
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Inline">
-  <CheckboxGroup layout="inline" value={['stem']} aria-label="Fields of study">
-    <CheckboxGroupItem value="stem" title="STEM" />
-    <CheckboxGroupItem value="arts" title="Arts" />
-    <CheckboxGroupItem value="humanities" title="Humanities" />
-    <CheckboxGroupItem value="business" title="Business" />
-  </CheckboxGroup>
+  {#snippet template()}
+    <CheckboxGroup layout="inline" value={['stem']} aria-label="Fields of study">
+      <CheckboxGroupItem value="stem" title="STEM" />
+      <CheckboxGroupItem value="arts" title="Arts" />
+      <CheckboxGroupItem value="humanities" title="Humanities" />
+      <CheckboxGroupItem value="business" title="Business" />
+    </CheckboxGroup>
+  {/snippet}
 </Story>

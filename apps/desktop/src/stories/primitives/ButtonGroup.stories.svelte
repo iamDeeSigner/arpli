@@ -30,19 +30,23 @@
 </Story>
 
 <Story name="Icon toolbar">
-  <ButtonGroup aria-label="Essay formatting">
-    <Button variant="ghost" size="icon-sm" aria-label="Bold"><TextBIcon /></Button>
-    <Button variant="ghost" size="icon-sm" aria-label="Italic" active><TextItalicIcon /></Button>
-    <Button variant="ghost" size="icon-sm" aria-label="Bulleted list"><ListBulletsIcon /></Button>
-    <Button variant="ghost" size="icon-sm" aria-label="Insert link"><LinkIcon /></Button>
-  </ButtonGroup>
+  {#snippet template()}
+    <ButtonGroup aria-label="Essay formatting">
+      <Button variant="ghost" size="icon-sm" aria-label="Bold"><TextBIcon /></Button>
+      <Button variant="ghost" size="icon-sm" aria-label="Italic" active><TextItalicIcon /></Button>
+      <Button variant="ghost" size="icon-sm" aria-label="Bulleted list"><ListBulletsIcon /></Button>
+      <Button variant="ghost" size="icon-sm" aria-label="Insert link"><LinkIcon /></Button>
+    </ButtonGroup>
+  {/snippet}
 </Story>
 
 <Story name="Vertical">
-  <ButtonGroup orientation="vertical" class="w-40">
-    <Button variant="ghost" size="sm" active>Profile</Button>
-    <Button variant="ghost" size="sm">Education</Button>
-    <Button variant="ghost" size="sm">Activities</Button>
-    <Button variant="ghost" size="sm">Essays</Button>
-  </ButtonGroup>
+  {#snippet template()}
+    <ButtonGroup orientation="vertical" class="w-40">
+      <Button variant="ghost" size="sm" active>Profile</Button>
+      <Button variant="ghost" size="sm">Education</Button>
+      <Button variant="ghost" size="sm">Activities</Button>
+      <Button variant="ghost" size="sm">Essays</Button>
+    </ButtonGroup>
+  {/snippet}
 </Story>

@@ -42,19 +42,23 @@
 </Story>
 
 <Story name="Async search">
-  <div class="w-72">
-    <SearchableCombobox
-      ariaLabel="Recommender"
-      options={recommenders}
-      onSearch={search}
-      value="patel"
-      tooltip="Who will write your letter"
-    />
-  </div>
+  {#snippet template()}
+    <div class="w-72">
+      <SearchableCombobox
+        ariaLabel="Recommender"
+        options={recommenders}
+        onSearch={search}
+        value="patel"
+        tooltip="Who will write your letter"
+      />
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Disabled">
-  <div class="w-72">
-    <SearchableCombobox ariaLabel="Recommender" options={recommenders} value="okafor" disabled />
-  </div>
+  {#snippet template()}
+    <div class="w-72">
+      <SearchableCombobox ariaLabel="Recommender" options={recommenders} value="okafor" disabled />
+    </div>
+  {/snippet}
 </Story>

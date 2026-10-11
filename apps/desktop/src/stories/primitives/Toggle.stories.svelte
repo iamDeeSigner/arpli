@@ -27,20 +27,24 @@
 </Story>
 
 <Story name="States">
-  <div class="flex flex-wrap items-center gap-3">
-    <Toggle>Off</Toggle>
-    <Toggle pressed>On</Toggle>
-    <Toggle disabled>Disabled</Toggle>
-    <Toggle pressed disabled>Disabled on</Toggle>
-  </div>
+  {#snippet template()}
+    <div class="flex flex-wrap items-center gap-3">
+      <Toggle>Off</Toggle>
+      <Toggle pressed>On</Toggle>
+      <Toggle disabled>Disabled</Toggle>
+      <Toggle pressed disabled>Disabled on</Toggle>
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Sizes">
-  <div class="flex flex-wrap items-center gap-3">
-    {#each ['xs', 'sm', 'default', 'lg'] as const as size (size)}
-      <Toggle {size} ariaLabel="Filter by eligibility ({size})">
-        <FunnelSimpleIcon class="mr-1.5 size-4" /> Eligible ({size})
-      </Toggle>
-    {/each}
-  </div>
+  {#snippet template()}
+    <div class="flex flex-wrap items-center gap-3">
+      {#each ['xs', 'sm', 'default', 'lg'] as const as size (size)}
+        <Toggle {size} ariaLabel="Filter by eligibility ({size})">
+          <FunnelSimpleIcon class="mr-1.5 size-4" /> Eligible ({size})
+        </Toggle>
+      {/each}
+    </div>
+  {/snippet}
 </Story>

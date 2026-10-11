@@ -62,28 +62,34 @@
 </Story>
 
 <Story name="Searchable groups">
-  <div class="w-64">
-    <Dropdown groups={fieldGroups} searchable portal placeholder="Field of study" />
-  </div>
+  {#snippet template()}
+    <div class="w-64">
+      <Dropdown groups={fieldGroups} searchable portal placeholder="Field of study" />
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Multiple">
-  <div class="w-64">
-    <Dropdown
-      options={statusOptions.slice(0, 4)}
-      value={['draft', 'ready']}
-      multiple
-      closeOnSelect={false}
-      searchable={false}
-      portal
-    />
-  </div>
+  {#snippet template()}
+    <div class="w-64">
+      <Dropdown
+        options={statusOptions.slice(0, 4)}
+        value={['draft', 'ready']}
+        multiple
+        closeOnSelect={false}
+        searchable={false}
+        portal
+      />
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Trigger variants">
-  <div class="flex items-center gap-3">
-    {#each ['default', 'ghost', 'outline', 'inline'] as const as variant (variant)}
-      <Dropdown options={statusOptions} value="ready" {variant} searchable={false} portal />
-    {/each}
-  </div>
+  {#snippet template()}
+    <div class="flex items-center gap-3">
+      {#each ['default', 'ghost', 'outline', 'inline'] as const as variant (variant)}
+        <Dropdown options={statusOptions} value="ready" {variant} searchable={false} portal />
+      {/each}
+    </div>
+  {/snippet}
 </Story>

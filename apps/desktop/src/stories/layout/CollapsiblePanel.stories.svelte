@@ -37,31 +37,35 @@
 </Story>
 
 <Story name="Collapsed with actions">
-  <div class="w-96">
-    <CollapsiblePanel title="Awards and honors" defaultCollapsed>
-      {#snippet headerActions()}
-        <Button variant="ghost" size="icon-xs" iconOnly aria-label="Add award">
-          <PlusIcon aria-hidden="true" />
-        </Button>
-      {/snippet}
-      <ul class="type-body flex flex-col gap-2 p-3 text-foreground">
-        <li>Goldwater Scholar, 2025</li>
-        <li>Dean's List, six semesters</li>
-      </ul>
-    </CollapsiblePanel>
-  </div>
+  {#snippet template()}
+    <div class="w-96">
+      <CollapsiblePanel title="Awards and honors" defaultCollapsed>
+        {#snippet headerActions()}
+          <Button variant="ghost" size="icon-xs" iconOnly aria-label="Add award">
+            <PlusIcon aria-hidden="true" />
+          </Button>
+        {/snippet}
+        <ul class="type-body flex flex-col gap-2 p-3 text-foreground">
+          <li>Goldwater Scholar, 2025</li>
+          <li>Dean's List, six semesters</li>
+        </ul>
+      </CollapsiblePanel>
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Stacked">
-  <div class="flex w-96 flex-col gap-2">
-    <CollapsiblePanel title="Personal details">
-      <p class="type-body p-3 text-muted-foreground">Name, contact information, citizenship.</p>
-    </CollapsiblePanel>
-    <CollapsiblePanel title="Work experience" defaultCollapsed>
-      <p class="type-body p-3 text-muted-foreground">Research assistant, Ecology Lab, 2024–2026.</p>
-    </CollapsiblePanel>
-    <CollapsiblePanel title="Activities" defaultCollapsed showGradient={false}>
-      <p class="type-body p-3 text-muted-foreground">Debate team captain; peer tutor.</p>
-    </CollapsiblePanel>
-  </div>
+  {#snippet template()}
+    <div class="flex w-96 flex-col gap-2">
+      <CollapsiblePanel title="Personal details">
+        <p class="type-body p-3 text-muted-foreground">Name, contact information, citizenship.</p>
+      </CollapsiblePanel>
+      <CollapsiblePanel title="Work experience" defaultCollapsed>
+        <p class="type-body p-3 text-muted-foreground">Research assistant, Ecology Lab, 2024–2026.</p>
+      </CollapsiblePanel>
+      <CollapsiblePanel title="Activities" defaultCollapsed showGradient={false}>
+        <p class="type-body p-3 text-muted-foreground">Debate team captain; peer tutor.</p>
+      </CollapsiblePanel>
+    </div>
+  {/snippet}
 </Story>

@@ -31,14 +31,16 @@
 </Story>
 
 <Story name="Ranges">
-  <dl class="type-body grid grid-cols-[12rem_8rem_6rem] gap-y-2">
-    <dt class="text-muted-foreground">Event</dt>
-    <dd class="text-muted-foreground">Default</dd>
-    <dd class="text-muted-foreground">Compact</dd>
-    {#each examples as ex (ex.label)}
-      <dt class="text-foreground">{ex.label}</dt>
-      <dd><RelativeTime date={ex.date} /></dd>
-      <dd><RelativeTime date={ex.date} compact /></dd>
-    {/each}
-  </dl>
+  {#snippet template()}
+    <dl class="type-body grid grid-cols-[12rem_8rem_6rem] gap-y-2">
+      <dt class="text-muted-foreground">Event</dt>
+      <dd class="text-muted-foreground">Default</dd>
+      <dd class="text-muted-foreground">Compact</dd>
+      {#each examples as ex (ex.label)}
+        <dt class="text-foreground">{ex.label}</dt>
+        <dd><RelativeTime date={ex.date} /></dd>
+        <dd><RelativeTime date={ex.date} compact /></dd>
+      {/each}
+    </dl>
+  {/snippet}
 </Story>

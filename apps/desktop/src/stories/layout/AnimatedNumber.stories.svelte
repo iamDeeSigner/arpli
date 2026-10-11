@@ -26,15 +26,19 @@
 </Story>
 
 <Story name="Interactive">
-  <AnimatedNumberDemo />
+  {#snippet template()}
+    <AnimatedNumberDemo />
+  {/snippet}
 </Story>
 
 <Story name="With secondary value">
-  <div class="type-body text-foreground">
-    <AnimatedNumber
-      value={3}
-      secondaryValue={5}
-      format={(n, total) => `${Math.round(n)} of ${total} sections complete`}
-    />
-  </div>
+  {#snippet template()}
+    <div class="type-body text-foreground">
+      <AnimatedNumber
+        value={3}
+        secondaryValue={5}
+        format={(n, total) => `${Math.round(n)} of ${total} sections complete`}
+      />
+    </div>
+  {/snippet}
 </Story>

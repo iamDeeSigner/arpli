@@ -39,26 +39,30 @@
 </Story>
 
 <Story name="Value positions">
-  <div class="flex w-80 flex-col gap-6">
-    {#each ['left', 'right', 'top', 'bottom', 'tooltip'] as const as position (position)}
-      <Slider value={40} showValue valuePosition={position} aria-label="Hours per week ({position})" />
-    {/each}
-  </div>
+  {#snippet template()}
+    <div class="flex w-80 flex-col gap-6">
+      {#each ['left', 'right', 'top', 'bottom', 'tooltip'] as const as position (position)}
+        <Slider value={40} showValue valuePosition={position} aria-label="Hours per week ({position})" />
+      {/each}
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Steps and formatting">
-  <div class="flex w-80 flex-col gap-6">
-    <Slider
-      value={10000}
-      min={0}
-      max={50000}
-      step={1000}
-      steps={[0, 5000, 10000, 25000, 50000]}
-      showSteps
-      showValue
-      formatValue={formatUsd}
-      aria-label="Minimum award"
-    />
-    <Slider value={60} disabled showValue aria-label="Disabled slider" />
-  </div>
+  {#snippet template()}
+    <div class="flex w-80 flex-col gap-6">
+      <Slider
+        value={10000}
+        min={0}
+        max={50000}
+        step={1000}
+        steps={[0, 5000, 10000, 25000, 50000]}
+        showSteps
+        showValue
+        formatValue={formatUsd}
+        aria-label="Minimum award"
+      />
+      <Slider value={60} disabled showValue aria-label="Disabled slider" />
+    </div>
+  {/snippet}
 </Story>

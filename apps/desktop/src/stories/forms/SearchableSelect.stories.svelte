@@ -53,26 +53,32 @@
 </Story>
 
 <Story name="Preselected">
-  <div class="w-80">
-    <SearchableSelect options={schools} value="gatech" ariaLabel="School" />
-  </div>
+  {#snippet template()}
+    <div class="w-80">
+      <SearchableSelect options={schools} value="gatech" ariaLabel="School" />
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Async search">
-  <div class="w-80">
-    <SearchableSelect
-      onSearch={searchSchools}
-      placeholder="Find your school"
-      searchPlaceholder="Type at least one letter…"
-      ariaLabel="School (async)"
-      allowCustom
-    />
-  </div>
+  {#snippet template()}
+    <div class="w-80">
+      <SearchableSelect
+        onSearch={searchSchools}
+        placeholder="Find your school"
+        searchPlaceholder="Type at least one letter…"
+        ariaLabel="School (async)"
+        allowCustom
+      />
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Disabled and loading">
-  <div class="flex w-80 flex-col gap-3">
-    <SearchableSelect options={schools} value="howard" disabled ariaLabel="Disabled school" />
-    <SearchableSelect options={[]} loading ariaLabel="Loading schools" placeholder="Loading schools…" />
-  </div>
+  {#snippet template()}
+    <div class="flex w-80 flex-col gap-3">
+      <SearchableSelect options={schools} value="howard" disabled ariaLabel="Disabled school" />
+      <SearchableSelect options={[]} loading ariaLabel="Loading schools" placeholder="Loading schools…" />
+    </div>
+  {/snippet}
 </Story>

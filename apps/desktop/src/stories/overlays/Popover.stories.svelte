@@ -40,29 +40,31 @@
 </Story>
 
 <Story name="With form">
-  <Popover.Root>
-    <Popover.Trigger>
-      {#snippet child({ props })}
-        <Button {...props} variant="primary">Set reminder</Button>
-      {/snippet}
-    </Popover.Trigger>
-    <Popover.Content class="flex w-72 flex-col gap-3 p-3">
-      <div class="flex flex-col gap-1.5">
-        <Label for="pop-days">Remind me before the deadline</Label>
-        <Input id="pop-days" type="number" value="7" />
-      </div>
-      <div class="flex justify-end gap-2">
-        <Popover.Close>
-          {#snippet child({ props })}
-            <Button {...props} variant="ghost" size="sm">Cancel</Button>
-          {/snippet}
-        </Popover.Close>
-        <Popover.Close>
-          {#snippet child({ props })}
-            <Button {...props} variant="primary" size="sm">Save</Button>
-          {/snippet}
-        </Popover.Close>
-      </div>
-    </Popover.Content>
-  </Popover.Root>
+  {#snippet template()}
+    <Popover.Root>
+      <Popover.Trigger>
+        {#snippet child({ props })}
+          <Button {...props} variant="primary">Set reminder</Button>
+        {/snippet}
+      </Popover.Trigger>
+      <Popover.Content class="flex w-72 flex-col gap-3 p-3">
+        <div class="flex flex-col gap-1.5">
+          <Label for="pop-days">Remind me before the deadline</Label>
+          <Input id="pop-days" type="number" value="7" />
+        </div>
+        <div class="flex justify-end gap-2">
+          <Popover.Close>
+            {#snippet child({ props })}
+              <Button {...props} variant="ghost" size="sm">Cancel</Button>
+            {/snippet}
+          </Popover.Close>
+          <Popover.Close>
+            {#snippet child({ props })}
+              <Button {...props} variant="primary" size="sm">Save</Button>
+            {/snippet}
+          </Popover.Close>
+        </div>
+      </Popover.Content>
+    </Popover.Root>
+  {/snippet}
 </Story>

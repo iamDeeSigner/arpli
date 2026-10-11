@@ -18,9 +18,11 @@
 </Story>
 
 <Story name="Sizes">
-  <div class="flex flex-col gap-3">
-    {#each [1, 2, 3, 4, 5, 6] as const as size (size)}
-      <Header {size}>h{size} · Scholarships closing this month</Header>
-    {/each}
-  </div>
+  {#snippet template()}
+    <div class="flex flex-col gap-3">
+      {#each [1, 2, 3, 4, 5, 6] as const as size (size)}
+        <Header {size}>h{size} · Scholarships closing this month</Header>
+      {/each}
+    </div>
+  {/snippet}
 </Story>

@@ -42,29 +42,33 @@
 </Story>
 
 <Story name="Auto resize">
-  <div class="flex w-96 flex-col gap-1.5">
-    <Label for="ta-auto">Personal statement</Label>
-    <Textarea
-      id="ta-auto"
-      bind:value={essay}
-      autoResize
-      minHeight={60}
-      maxHeight={240}
-      message="Keep typing — the field grows up to 240px, then scrolls."
-    />
-  </div>
+  {#snippet template()}
+    <div class="flex w-96 flex-col gap-1.5">
+      <Label for="ta-auto">Personal statement</Label>
+      <Textarea
+        id="ta-auto"
+        bind:value={essay}
+        autoResize
+        minHeight={60}
+        maxHeight={240}
+        message="Keep typing — the field grows up to 240px, then scrolls."
+      />
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Message and error">
-  <div class="flex w-96 flex-col gap-4">
-    <div class="flex flex-col gap-1.5">
-      <Label for="ta-msg">Why this fellowship?</Label>
-      <Textarea id="ta-msg" message="250 words maximum." />
+  {#snippet template()}
+    <div class="flex w-96 flex-col gap-4">
+      <div class="flex flex-col gap-1.5">
+        <Label for="ta-msg">Why this fellowship?</Label>
+        <Textarea id="ta-msg" message="250 words maximum." />
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <Label for="ta-err" invalid>Community impact</Label>
+        <Textarea id="ta-err" value="TBD" error="Please write at least 100 words." />
+      </div>
+      <Textarea disabled value="Submitted on Jan 12, 2026 — editing is locked." aria-label="Locked essay" />
     </div>
-    <div class="flex flex-col gap-1.5">
-      <Label for="ta-err" invalid>Community impact</Label>
-      <Textarea id="ta-err" value="TBD" error="Please write at least 100 words." />
-    </div>
-    <Textarea disabled value="Submitted on Jan 12, 2026 — editing is locked." aria-label="Locked essay" />
-  </div>
+  {/snippet}
 </Story>

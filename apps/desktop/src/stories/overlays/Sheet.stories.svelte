@@ -53,38 +53,44 @@
 </Story>
 
 <Story name="Open by default">
-  <div class="flex h-[32rem] items-center justify-center bg-background">
-    <SheetOpenDemo />
-  </div>
+  {#snippet template()}
+    <div class="flex h-[32rem] items-center justify-center bg-background">
+      <SheetOpenDemo />
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Each side">
-  <div class="flex h-[32rem] items-center justify-center gap-2 bg-background">
-    {#each sides as side (side)}
-      <Sheet.Root>
-        <Sheet.Trigger>
-          {#snippet child({ props })}
-            <Button {...props} variant="secondary">{side}</Button>
-          {/snippet}
-        </Sheet.Trigger>
-        <Sheet.Content {side}>
-          <Sheet.Header>
-            <Sheet.Title>Upcoming deadlines</Sheet.Title>
-            <Sheet.Description>Opened from the {side} edge.</Sheet.Description>
-          </Sheet.Header>
-          <ul class="type-body flex flex-col gap-2 py-4 text-foreground">
-            <li>Fulbright U.S. Student Program · Oct 14</li>
-            <li>Marshall Scholarship · Oct 28</li>
-            <li>Schwarzman Scholars · Nov 2</li>
-          </ul>
-        </Sheet.Content>
-      </Sheet.Root>
-    {/each}
-  </div>
+  {#snippet template()}
+    <div class="flex h-[32rem] items-center justify-center gap-2 bg-background">
+      {#each sides as side (side)}
+        <Sheet.Root>
+          <Sheet.Trigger>
+            {#snippet child({ props })}
+              <Button {...props} variant="secondary">{side}</Button>
+            {/snippet}
+          </Sheet.Trigger>
+          <Sheet.Content {side}>
+            <Sheet.Header>
+              <Sheet.Title>Upcoming deadlines</Sheet.Title>
+              <Sheet.Description>Opened from the {side} edge.</Sheet.Description>
+            </Sheet.Header>
+            <ul class="type-body flex flex-col gap-2 py-4 text-foreground">
+              <li>Fulbright U.S. Student Program · Oct 14</li>
+              <li>Marshall Scholarship · Oct 28</li>
+              <li>Schwarzman Scholars · Nov 2</li>
+            </ul>
+          </Sheet.Content>
+        </Sheet.Root>
+      {/each}
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Open on the left">
-  <div class="flex h-[32rem] items-center justify-center bg-background">
-    <SheetOpenDemo side="left" />
-  </div>
+  {#snippet template()}
+    <div class="flex h-[32rem] items-center justify-center bg-background">
+      <SheetOpenDemo side="left" />
+    </div>
+  {/snippet}
 </Story>

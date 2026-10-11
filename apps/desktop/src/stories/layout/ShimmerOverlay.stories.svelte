@@ -18,13 +18,17 @@
 </Story>
 
 <Story name="Fast">
-  <ShimmerOverlay duration={2} class="type-body">Checking eligibility for 48 scholarships…</ShimmerOverlay>
+  {#snippet template()}
+    <ShimmerOverlay duration={2} class="type-body">Checking eligibility for 48 scholarships…</ShimmerOverlay>
+  {/snippet}
 </Story>
 
 <Story name="As overlay">
-  <div class="relative w-80 overflow-hidden rounded-(--radius-large) bg-muted p-4">
-    <ShimmerOverlay />
-    <p class="type-body font-medium text-foreground">Drafting your personal statement</p>
-    <p class="type-caption text-muted-foreground">This usually takes a few seconds.</p>
-  </div>
+  {#snippet template()}
+    <div class="relative w-80 overflow-hidden rounded-(--radius-large) bg-muted p-4">
+      <ShimmerOverlay />
+      <p class="type-body font-medium text-foreground">Drafting your personal statement</p>
+      <p class="type-caption text-muted-foreground">This usually takes a few seconds.</p>
+    </div>
+  {/snippet}
 </Story>

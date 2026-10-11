@@ -32,30 +32,34 @@
 </Story>
 
 <Story name="States">
-  <div class="flex w-80 flex-col gap-3">
-    <div class="flex items-center justify-between">
-      <Label for="sw-1">Email deadline reminders</Label>
-      <Switch id="sw-1" checked />
+  {#snippet template()}
+    <div class="flex w-80 flex-col gap-3">
+      <div class="flex items-center justify-between">
+        <Label for="sw-1">Email deadline reminders</Label>
+        <Switch id="sw-1" checked />
+      </div>
+      <div class="flex items-center justify-between">
+        <Label for="sw-2">Show expired opportunities</Label>
+        <Switch id="sw-2" />
+      </div>
+      <div class="flex items-center justify-between">
+        <Label for="sw-3">Share profile with counselors</Label>
+        <Switch id="sw-3" disabled />
+      </div>
+      <div class="flex items-center justify-between">
+        <Label for="sw-4">Sync with school portal</Label>
+        <Switch id="sw-4" checked disabled />
+      </div>
     </div>
-    <div class="flex items-center justify-between">
-      <Label for="sw-2">Show expired opportunities</Label>
-      <Switch id="sw-2" />
-    </div>
-    <div class="flex items-center justify-between">
-      <Label for="sw-3">Share profile with counselors</Label>
-      <Switch id="sw-3" disabled />
-    </div>
-    <div class="flex items-center justify-between">
-      <Label for="sw-4">Sync with school portal</Label>
-      <Switch id="sw-4" checked disabled />
-    </div>
-  </div>
+  {/snippet}
 </Story>
 
 <Story name="Sizes">
-  <div class="flex items-center gap-4">
-    {#each ['xs', 'sm', 'md', 'lg'] as const as size (size)}
-      <Switch {size} checked ariaLabel="Switch {size}" />
-    {/each}
-  </div>
+  {#snippet template()}
+    <div class="flex items-center gap-4">
+      {#each ['xs', 'sm', 'md', 'lg'] as const as size (size)}
+        <Switch {size} checked ariaLabel="Switch {size}" />
+      {/each}
+    </div>
+  {/snippet}
 </Story>

@@ -34,39 +34,43 @@
 </Story>
 
 <Story name="Addons">
-  <div class="flex w-80 flex-col gap-4">
-    <InputGroup>
-      {#snippet leading()}<CurrencyDollarIcon class="size-4" />{/snippet}
-      <Input type="number" placeholder="10,000" aria-label="Award amount" />
-      {#snippet trailing()}<span class="type-caption">USD</span>{/snippet}
-    </InputGroup>
-    <InputGroup>
-      {#snippet leading()}<span class="type-caption">https://</span>{/snippet}
-      <Input placeholder="apply.fulbright.org" aria-label="Application portal" />
-    </InputGroup>
-    <InputGroup>
-      {#snippet leading()}<MagnifyingGlassIcon class="size-4" />{/snippet}
-      <Input value="Rhodes" aria-label="Search" />
-      {#snippet trailing()}
-        <Button variant="ghost" size="icon" aria-label="Clear search"><XIcon /></Button>
-      {/snippet}
-    </InputGroup>
-  </div>
+  {#snippet template()}
+    <div class="flex w-80 flex-col gap-4">
+      <InputGroup>
+        {#snippet leading()}<CurrencyDollarIcon class="size-4" />{/snippet}
+        <Input type="number" placeholder="10,000" aria-label="Award amount" />
+        {#snippet trailing()}<span class="type-caption">USD</span>{/snippet}
+      </InputGroup>
+      <InputGroup>
+        {#snippet leading()}<span class="type-caption">https://</span>{/snippet}
+        <Input placeholder="apply.fulbright.org" aria-label="Application portal" />
+      </InputGroup>
+      <InputGroup>
+        {#snippet leading()}<MagnifyingGlassIcon class="size-4" />{/snippet}
+        <Input value="Rhodes" aria-label="Search" />
+        {#snippet trailing()}
+          <Button variant="ghost" size="icon" aria-label="Clear search"><XIcon /></Button>
+        {/snippet}
+      </InputGroup>
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Message and error">
-  <div class="flex w-80 flex-col gap-4">
-    <InputGroup message="Most undergraduate awards are under $20,000.">
-      {#snippet leading()}<CurrencyDollarIcon class="size-4" />{/snippet}
-      <Input type="number" placeholder="Award amount" aria-label="Award amount" />
-    </InputGroup>
-    <InputGroup error="Amount must be a positive number.">
-      {#snippet leading()}<CurrencyDollarIcon class="size-4" />{/snippet}
-      <Input value="-250" aria-label="Award amount" aria-invalid="true" />
-    </InputGroup>
-    <InputGroup disabled>
-      {#snippet leading()}<CurrencyDollarIcon class="size-4" />{/snippet}
-      <Input value="7500" disabled aria-label="Award amount" />
-    </InputGroup>
-  </div>
+  {#snippet template()}
+    <div class="flex w-80 flex-col gap-4">
+      <InputGroup message="Most undergraduate awards are under $20,000.">
+        {#snippet leading()}<CurrencyDollarIcon class="size-4" />{/snippet}
+        <Input type="number" placeholder="Award amount" aria-label="Award amount" />
+      </InputGroup>
+      <InputGroup error="Amount must be a positive number.">
+        {#snippet leading()}<CurrencyDollarIcon class="size-4" />{/snippet}
+        <Input value="-250" aria-label="Award amount" aria-invalid="true" />
+      </InputGroup>
+      <InputGroup disabled>
+        {#snippet leading()}<CurrencyDollarIcon class="size-4" />{/snippet}
+        <Input value="7500" disabled aria-label="Award amount" />
+      </InputGroup>
+    </div>
+  {/snippet}
 </Story>

@@ -43,28 +43,36 @@
 </Story>
 
 <Story name="Sections">
-  <ListDemo />
+  {#snippet template()}
+    <ListDemo />
+  {/snippet}
 </Story>
 
 <Story name="Small ghost">
-  <ListDemo size="sm" variant="ghost" />
+  {#snippet template()}
+    <ListDemo size="sm" variant="ghost" />
+  {/snippet}
 </Story>
 
 <Story name="Item states">
-  <div class="w-72">
-    <ListContainer spacing="relaxed">
-      <ListItem title="Default" subtitle="Academic statement" iconComponent={FileTextIcon} />
-      <ListItem title="Active" subtitle="Open in editor" iconComponent={FileTextIcon} active />
-      <ListItem title="Selected" subtitle="Checked for export" iconComponent={FileTextIcon} selected />
-      <ListItem title="Loading" subtitle="Syncing" iconComponent={FileTextIcon} loading />
-      <ListItem title="Disabled" subtitle="Locked after submit" iconComponent={FileTextIcon} disabled />
-      <ListItem title="Badges" badge="Due soon" badgeVariant="warning" iconComponent={FileTextIcon} />
-    </ListContainer>
-  </div>
+  {#snippet template()}
+    <div class="w-72">
+      <ListContainer spacing="relaxed">
+        <ListItem title="Default" subtitle="Academic statement" iconComponent={FileTextIcon} />
+        <ListItem title="Active" subtitle="Open in editor" iconComponent={FileTextIcon} active />
+        <ListItem title="Selected" subtitle="Checked for export" iconComponent={FileTextIcon} selected />
+        <ListItem title="Loading" subtitle="Syncing" iconComponent={FileTextIcon} loading />
+        <ListItem title="Disabled" subtitle="Locked after submit" iconComponent={FileTextIcon} disabled />
+        <ListItem title="Badges" badge="Due soon" badgeVariant="warning" iconComponent={FileTextIcon} />
+      </ListContainer>
+    </div>
+  {/snippet}
 </Story>
 
 <Story name="Empty">
-  <div class="w-72">
-    <ListEmpty message="No saved opportunities. Browse Opportunities to add some." />
-  </div>
+  {#snippet template()}
+    <div class="w-72">
+      <ListEmpty message="No saved opportunities. Browse Opportunities to add some." />
+    </div>
+  {/snippet}
 </Story>
