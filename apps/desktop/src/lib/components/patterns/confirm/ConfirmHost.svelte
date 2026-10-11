@@ -1,5 +1,5 @@
 <script lang="ts">
-  /* eslint-disable intent/no-component-async-data-fetch -- this host coordinates ephemeral UI promises; it does not load domain data */
+  /* Upstream note: this host coordinates ephemeral UI promises; it does not load domain data */
   import ConfirmRequestView from './ConfirmRequestView.svelte';
   import { onMount } from 'svelte';
   import {

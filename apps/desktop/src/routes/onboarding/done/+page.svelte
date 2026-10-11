@@ -5,8 +5,11 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import Button from '$lib/components/ui/Button.svelte';
+  import { Button } from '$lib/components/ui/button';
+  import * as Card from '$lib/components/ui/card';
+  import { fly } from '$lib/motion';
   import { onboarding } from '$lib/stores/onboarding';
+  import CheckIcon from 'phosphor-svelte/lib/CheckIcon';
 
   onMount(() => {
     // Mark as complete immediately — the user can dismiss the screen at their pace.
@@ -16,49 +19,46 @@
   function enter() {
     goto('/profile', { replaceState: true });
   }
+
+  const tips = [
+    'Paste an opportunity URL or description to get started',
+    'Arpli surfaces how your profile fits each requirement',
+    'Draft application materials with AI assistance',
+  ];
 </script>
 
-<div class="flex flex-col items-center gap-6 text-center">
-  <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="28"
-      height="28"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      class="text-primary-foreground"
-    >
-      <path d="M20 6 9 17l-5-5" />
-    </svg>
+<div class="flex flex-col items-center gap-6 text-center" in:fly={{ tier: 'moderate' }}>
+  <div
+    class="flex size-16 items-center justify-center rounded-(--radius-large) bg-primary text-primary-foreground"
+    aria-hidden="true"
+  >
+    <CheckIcon class="size-7" weight="bold" />
   </div>
 
   <div class="flex flex-col gap-2">
-    <p class="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Step 4 of 4</p>
-    <h1 class="text-2xl font-semibold tracking-tight">You're all set</h1>
-    <p class="text-sm text-muted-foreground">
+    <p class="type-caption text-muted-foreground">Step 4 of 4</p>
+    <h1 class="type-display">You're all set</h1>
+    <p class="type-body text-muted-foreground">
       Arpli is ready. Your profile, opportunities, and applications live here — private,
       local, and always growing.
     </p>
   </div>
 
-  <ul class="flex flex-col gap-2 text-left text-sm w-full">
-    {#each [
-      'Paste an opportunity URL or description to get started',
-      'Arpli surfaces how your profile fits each requirement',
-      'Draft application materials with AI assistance',
-    ] as tip, i}
-      <li class="flex items-start gap-3 rounded-md bg-card border border-border p-3">
-        <span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
-          {i + 1}
-        </span>
-        {tip}
+  <ol class="flex w-full flex-col gap-2 text-left">
+    {#each tips as tip, i (tip)}
+      <li>
+        <Card.Root class="flex-row items-start gap-3 p-3">
+          <span
+            class="type-caption mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-primary font-semibold text-primary-foreground"
+            aria-hidden="true"
+          >
+            {i + 1}
+          </span>
+          <span class="type-body">{tip}</span>
+        </Card.Root>
       </li>
     {/each}
-  </ul>
+  </ol>
 
-  <Button onclick={enter} size="lg" class="w-full">Open Arpli</Button>
+  <Button variant="primary" onclick={enter} size="lg" class="w-full">Open Arpli</Button>
 </div>

@@ -4,6 +4,7 @@
   import { onboarding } from '$lib/stores/onboarding';
   import { lastSection } from '$lib/stores/nav';
   import { profileApi } from '$lib/ipc/client';
+  import { Spinner } from '$lib/components/ui/indicators';
 
   onMount(async () => {
     // Decide the entry route: finished onboarding goes to the last visited
@@ -33,6 +34,7 @@
   });
 </script>
 
-<main class="flex min-h-screen items-center justify-center bg-background">
-  <p class="text-sm text-muted-foreground">Loading Arpli…</p>
+<main class="flex min-h-screen items-center justify-center gap-2 bg-background text-foreground">
+  <Spinner size={16} class="text-muted-foreground" />
+  <p class="type-caption text-muted-foreground">Loading Arpli…</p>
 </main>

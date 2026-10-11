@@ -5,7 +5,9 @@
     "ecmaVersion": 2022,
     "sourceType": "module"
   },
-  "plugins": ["@typescript-eslint"],
+  "plugins": [
+    "@typescript-eslint"
+  ],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended"
@@ -17,15 +19,43 @@
   },
   "overrides": [
     {
-      "files": ["*.svelte"],
+      "files": [
+        "*.svelte"
+      ],
       "parser": "svelte-eslint-parser",
       "parserOptions": {
         "parser": "@typescript-eslint/parser"
       }
+    },
+    {
+      "files": [
+        "apps/desktop/src/lib/components/ui/**",
+        "apps/desktop/src/lib/components/patterns/**",
+        "apps/desktop/src/lib/components/shared/**",
+        "apps/desktop/src/lib/motion/**",
+        "apps/desktop/src/lib/interaction/**",
+        "apps/desktop/src/lib/utils/**",
+        "apps/desktop/src/lib/icons/**"
+      ],
+      "rules": {
+        "@typescript-eslint/no-explicit-any": "off"
+      }
     }
   ],
-  "ignorePatterns": ["node_modules", "dist", "build", ".svelte-kit"],
+  "ignorePatterns": [
+    "node_modules",
+    "dist",
+    "build",
+    ".svelte-kit"
+  ],
   "rules": {
-    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }]
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "no-inner-declarations": "off",
+    "no-undef": "off"
   }
 }

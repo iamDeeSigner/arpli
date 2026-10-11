@@ -1,0 +1,25 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Introduction" />
+
+# Arpli UI
+
+Arpli's interface is built on the UI kit, design tokens and motion system ported from
+[Intent](https://github.com/intent-hq/cloudlands-fe) (cloudlands-fe, Apache-2.0 — see `NOTICE`).
+
+- **Foundations** — the tokens every component reads: colour roles, surfaces, type roles,
+  radius, control heights and the three motion tiers. They live in `src/lib/styles/tokens.css`.
+- **Primitives, Forms, Overlays, Layout** — components in `src/lib/components/ui`.
+- **Patterns** — compositions in `src/lib/components/patterns` (screen states, settings,
+  confirm, notify, action menus).
+- **Arpli** — Arpli's own components built on top of the kit.
+
+Use the theme switcher in the toolbar to check every story in light and dark.
+
+## Rules the kit follows
+
+- Semantic tokens only (`bg-card`, `text-muted-foreground`, `border-border` …), never raw colours.
+- Type roles (`type-caption`, `type-body`, `type-title`, `type-display`, `type-code`) over size utilities.
+- Motion comes from `$lib/motion` (`fade`, `fly`, `slide`, `scale` with a `tier`), never from
+  `svelte/transition`, and never with hand-written durations. Motion never overshoots, and
+  reduced motion settles instantly.

@@ -9,7 +9,7 @@
     done    → success banner before close
 
   All daemon calls go through profileImportApi; the component is
-  self-contained and emits an `imported` event when the apply succeeds.
+  self-contained and calls `onimported` when the apply succeeds.
 -->
 <script lang="ts">
   import { Button } from '$lib/components/ui/button';

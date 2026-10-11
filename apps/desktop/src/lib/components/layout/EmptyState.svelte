@@ -24,7 +24,7 @@
 
 {#snippet titleSnippet()}{title}{/snippet}
 {#snippet descriptionSnippet()}{description}{/snippet}
-{#snippet iconSnippet()}<Icon aria-hidden="true" />{/snippet}
+{#snippet iconSnippet()}<Icon class="size-6" aria-hidden="true" />{/snippet}
 
 <EmptyState
   title={titleSnippet}

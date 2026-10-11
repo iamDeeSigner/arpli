@@ -20,7 +20,7 @@
   } = $props();
 </script>
 
-{#snippet titleSnippet()}{title}{/snippet}
+{#snippet titleSnippet()}<h1 class="type-title font-semibold">{title}</h1>{/snippet}
 {#snippet descriptionSnippet()}{subtitle}{/snippet}
 
 <ScreenHeader

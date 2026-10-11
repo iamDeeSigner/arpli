@@ -3,11 +3,26 @@
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   import TopBar from '$lib/components/layout/TopBar.svelte';
-  import Card from '$lib/components/ui/Card.svelte';
-  import Button from '$lib/components/ui/Button.svelte';
-  import Input from '$lib/components/ui/Input.svelte';
-  import Textarea from '$lib/components/ui/Textarea.svelte';
+  import EmptyState from '$lib/components/layout/EmptyState.svelte';
+  import { ErrorState, LoadingState, ScreenBody } from '$lib/components/patterns/screen';
+  import { Badge } from '$lib/components/ui/badge';
+  import { Button } from '$lib/components/ui/button';
+  import * as Card from '$lib/components/ui/card';
+  import { Input } from '$lib/components/ui/input';
+  import { Label } from '$lib/components/ui/label';
+  import { Select } from '$lib/components/ui/select';
+  import { Textarea } from '$lib/components/ui/textarea';
+  import { fade, fly, slide } from '$lib/motion';
   import { applicationApi, opportunityApi } from '$lib/ipc/client';
+  import ArrowClockwiseIcon from 'phosphor-svelte/lib/ArrowClockwiseIcon';
+  import ArrowLeftIcon from 'phosphor-svelte/lib/ArrowLeftIcon';
+  import CopyIcon from 'phosphor-svelte/lib/CopyIcon';
+  import FileTextIcon from 'phosphor-svelte/lib/FileTextIcon';
+  import FloppyDiskIcon from 'phosphor-svelte/lib/FloppyDiskIcon';
+  import PlusIcon from 'phosphor-svelte/lib/PlusIcon';
+  import SparkleIcon from 'phosphor-svelte/lib/SparkleIcon';
+  import WarningCircleIcon from 'phosphor-svelte/lib/WarningCircleIcon';
+  import XIcon from 'phosphor-svelte/lib/XIcon';
   import type {
     Application,
     ApplicationDraft,
@@ -67,6 +82,8 @@
     'waitlisted',
     'withdrew',
   ];
+
+  const STATUS_ITEMS = STATUSES.map((value) => ({ value, label: STATUS_LABEL[value] }));
 
   function countWords(s: string): number {
     const t = s.trim();
@@ -306,177 +323,246 @@
 >
   {#snippet actions()}
     {#if application}
-      <select
-        value={application.status}
-        onchange={(e) => updateStatus((e.target as HTMLSelectElement).value as ApplicationStatus)}
-        class="rounded-md border border-border bg-background px-2 py-1 text-sm
-          focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/30"
-      >
-        {#each STATUSES as s}
-          <option value={s}>{STATUS_LABEL[s]}</option>
-        {/each}
-      </select>
+      <div class="w-40">
+        <Select.Root
+          value={application.status}
+          items={STATUS_ITEMS}
+          onchange={(value) => updateStatus(value as ApplicationStatus)}
+        >
+          <Select.Trigger aria-label="Application status">
+            <Select.Value />
+          </Select.Trigger>
+          <Select.Content portal class="w-40">
+            {#each STATUS_ITEMS as item (item.value)}
+              <Select.Item value={item.value} label={item.label}>{item.label}</Select.Item>
+            {/each}
+          </Select.Content>
+        </Select.Root>
+      </div>
     {/if}
-    <Button size="sm" variant="ghost" href="/applications">← Back</Button>
+    <Button size="sm" variant="ghost" href="/applications">
+      {#snippet leadingIcon()}<ArrowLeftIcon />{/snippet}
+      Back
+    </Button>
   {/snippet}
 </TopBar>
 
-<div class="flex-1 overflow-auto p-6">
+<ScreenBody>
   {#if loading}
-    <p class="text-sm text-muted-foreground">Loading…</p>
+    <LoadingState recipe="form" label="Loading application" />
   {:else if loadError}
-    <Card>
-      <h2 class="text-base font-semibold">Could not load this application</h2>
-      <p class="mt-2 text-sm text-muted-foreground">{loadError}</p>
-      <div class="mt-4">
-        <Button variant="secondary" size="sm" onclick={load}>Try again</Button>
-      </div>
-    </Card>
+    {#snippet errorMessage()}
+      Could not load this application: {loadError}
+    {/snippet}
+    <ErrorState message={errorMessage} retryLabel="Try again" onRetry={load} />
   {:else if !application || !opportunity}
-    <p class="text-sm text-muted-foreground">Application not found.</p>
+    <div in:fade>
+      <EmptyState title="Application not found." icon={FileTextIcon} />
+    </div>
   {:else}
-    <div class="mx-auto max-w-3xl space-y-6">
+    <div class="mx-auto flex max-w-3xl flex-col gap-6" in:fade>
       {#if allQuestions.length === 0}
-        <Card>
-          <h2 class="text-base font-semibold">No questions saved on this opportunity</h2>
-          <p class="mt-2 text-sm text-muted-foreground">
-            Add questions below and Arpli will draft them. You can also go back and edit the opportunity
-            to add its application questions once.
-          </p>
-        </Card>
+        <Card.Root>
+          <Card.Header>
+            <Card.Title>No questions saved on this opportunity</Card.Title>
+            <Card.Description>
+              Add questions below and Arpli will draft them. You can also go back and edit the
+              opportunity to add its application questions once.
+            </Card.Description>
+          </Card.Header>
+        </Card.Root>
       {/if}
 
       {#each allQuestions as q, i (q.id)}
         {@const s = qState[q.id]}
         {@const isCustom = customQuestions.some((c) => c.id === q.id)}
-        <Card>
-          <div class="flex items-start gap-3">
-            <span class="mt-0.5 text-sm font-medium text-muted-foreground">Q{i + 1}</span>
-            <div class="flex-1">
-              <p class="text-sm font-medium leading-relaxed">{q.text}</p>
-              <div class="mt-1 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-                {#if q.wordLimit}
-                  <span>Limit: {q.wordLimit} words</span>
-                {/if}
-                <span>
-                  Current: {s?.wordCount ?? 0} words{q.wordLimit
-                    ? s?.wordCount && s.wordCount > q.wordLimit
-                      ? ` (over by ${s.wordCount - q.wordLimit})`
-                      : ''
-                    : ''}
-                </span>
-                {#if s?.savedVersion}
-                  <span>Saved: v{s.savedVersion}</span>
-                {/if}
-                {#if s?.dirty}
-                  <span class="text-warning">Unsaved changes</span>
-                {/if}
+        <div in:fly={{ tier: 'moderate' }} out:fade={{ tier: 'fast' }}>
+          <Card.Root>
+            <Card.Header>
+              <div class="flex min-w-0 items-start gap-3">
+                <span class="type-caption mt-0.5 font-medium text-muted-foreground">Q{i + 1}</span>
+                <div class="flex min-w-0 flex-1 flex-col gap-1.5">
+                  <Card.Title class="type-body leading-relaxed">{q.text}</Card.Title>
+                  <div class="type-caption flex flex-wrap items-center gap-x-3 gap-y-1 text-muted-foreground">
+                    {#if q.wordLimit}
+                      <span>Limit: {q.wordLimit} words</span>
+                    {/if}
+                    <span>
+                      Current: {s?.wordCount ?? 0} words{q.wordLimit
+                        ? s?.wordCount && s.wordCount > q.wordLimit
+                          ? ` (over by ${s.wordCount - q.wordLimit})`
+                          : ''
+                        : ''}
+                    </span>
+                    {#if s?.savedVersion}
+                      {#key s.savedVersion}
+                        <span in:fade={{ tier: 'fast' }}>
+                          <Badge size="compact">Saved: v{s.savedVersion}</Badge>
+                        </span>
+                      {/key}
+                    {/if}
+                    {#if s?.dirty}
+                      <span transition:fade={{ tier: 'fast' }}>
+                        <Badge variant="dot" color="amber" size="compact">Unsaved changes</Badge>
+                      </span>
+                    {/if}
+                  </div>
+                </div>
               </div>
-            </div>
-            {#if isCustom}
-              <button
-                aria-label="Remove question"
-                class="text-muted-foreground hover:text-foreground text-sm"
-                onclick={() => removeCustomQuestion(q.id)}
-              >✕</button>
-            {/if}
-          </div>
-
-          {#if s}
-            <div class="mt-4 grid grid-cols-2 gap-3">
-              <div>
-                <label class="mb-1 block text-xs font-medium text-muted-foreground" for={`tone-${q.id}`}>
-                  Tone (optional)
-                </label>
-                <Input
-                  id={`tone-${q.id}`}
-                  value={s.tone}
-                  placeholder="e.g. concise, warm, formal"
-                  oninput={(e: Event) => updateTone(q.id, (e.target as HTMLInputElement).value)}
-                />
-              </div>
-              <div>
-                <label class="mb-1 block text-xs font-medium text-muted-foreground" for={`instr-${q.id}`}>
-                  Regenerate instruction (optional)
-                </label>
-                <Input
-                  id={`instr-${q.id}`}
-                  value={s.instruction}
-                  placeholder="e.g. shorter, lead with ARPA-E"
-                  oninput={(e: Event) => updateInstruction(q.id, (e.target as HTMLInputElement).value)}
-                />
-              </div>
-            </div>
-
-            <div class="mt-4">
-              <Textarea
-                rows={8}
-                value={s.content}
-                placeholder="Click Draft to generate an answer grounded in your profile…"
-                oninput={(e: Event) => updateContent(q.id, (e.target as HTMLTextAreaElement).value)}
-              />
-            </div>
-
-            {#if s.error}
-              <p class="mt-3 rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">{s.error}</p>
-            {/if}
-
-            <div class="mt-4 flex flex-wrap items-center gap-2">
-              {#if s.content.trim().length === 0}
-                <Button onclick={() => draft(q, 'draft')} disabled={s.busy}>
-                  {s.busy ? 'Drafting…' : 'Draft with AI'}
-                </Button>
-              {:else}
-                <Button onclick={() => draft(q, 'regenerate')} disabled={s.busy}>
-                  {s.busy ? 'Regenerating…' : 'Regenerate'}
-                </Button>
-                <Button variant="secondary" onclick={() => saveEdit(q)} disabled={s.busy || !s.dirty}>
-                  {s.busy ? 'Saving…' : s.dirty ? 'Save edits' : 'Saved'}
-                </Button>
-                <Button variant="ghost" onclick={() => copyToClipboard(q)}>Copy</Button>
+              {#if isCustom}
+                <Card.Action>
+                  <Button
+                    size="icon-sm"
+                    variant="ghost"
+                    tooltip="Remove question"
+                    aria-label="Remove question"
+                    onclick={() => removeCustomQuestion(q.id)}
+                  >
+                    <XIcon />
+                  </Button>
+                </Card.Action>
               {/if}
-            </div>
-          {/if}
-        </Card>
+            </Card.Header>
+
+            {#if s}
+              <Card.Content class="flex flex-col gap-4">
+                <div class="grid grid-cols-2 gap-3">
+                  <div class="flex flex-col gap-1.5">
+                    <Label for={`tone-${q.id}`}>Tone (optional)</Label>
+                    <Input
+                      id={`tone-${q.id}`}
+                      bind:value={() => s.tone, (v: string) => updateTone(q.id, v)}
+                      placeholder="e.g. concise, warm, formal"
+                    />
+                  </div>
+                  <div class="flex flex-col gap-1.5">
+                    <Label for={`instr-${q.id}`}>Regenerate instruction (optional)</Label>
+                    <Input
+                      id={`instr-${q.id}`}
+                      bind:value={() => s.instruction, (v: string) => updateInstruction(q.id, v)}
+                      placeholder="e.g. shorter, lead with ARPA-E"
+                    />
+                  </div>
+                </div>
+
+                <Textarea
+                  autoResize
+                  minHeight={176}
+                  maxHeight={640}
+                  bind:value={() => s.content, (v: string) => updateContent(q.id, v)}
+                  placeholder="Click Draft to generate an answer grounded in your profile…"
+                  aria-label={`Answer to question ${i + 1}`}
+                />
+
+                {#if s.error}
+                  <p
+                    role="alert"
+                    class="type-caption flex items-start gap-2 rounded-(--radius-medium) bg-danger/10 px-3 py-2 text-danger"
+                    transition:slide={{ tier: 'fast' }}
+                  >
+                    <WarningCircleIcon class="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                    <span>{s.error}</span>
+                  </p>
+                {/if}
+              </Card.Content>
+
+              <Card.Footer>
+                {#if s.content.trim().length === 0}
+                  <Button variant="primary" onclick={() => draft(q, 'draft')} disabled={s.busy}>
+                    {#snippet leadingIcon()}<SparkleIcon />{/snippet}
+                    {s.busy ? 'Drafting…' : 'Draft with AI'}
+                  </Button>
+                {:else}
+                  <Button variant="primary" onclick={() => draft(q, 'regenerate')} disabled={s.busy}>
+                    {#snippet leadingIcon()}<ArrowClockwiseIcon />{/snippet}
+                    {s.busy ? 'Regenerating…' : 'Regenerate'}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onclick={() => saveEdit(q)}
+                    disabled={s.busy || !s.dirty}
+                  >
+                    {#snippet leadingIcon()}<FloppyDiskIcon />{/snippet}
+                    {s.busy ? 'Saving…' : s.dirty ? 'Save edits' : 'Saved'}
+                  </Button>
+                  <Button variant="ghost" onclick={() => copyToClipboard(q)}>
+                    {#snippet leadingIcon()}<CopyIcon />{/snippet}
+                    Copy
+                  </Button>
+                {/if}
+              </Card.Footer>
+            {/if}
+          </Card.Root>
+        </div>
       {/each}
 
       <!-- Add custom question -->
       {#if addingCustom}
-        <Card>
-          <h3 class="text-sm font-semibold">Add a question</h3>
-          <p class="mt-1 text-xs text-muted-foreground">
-            For when the opportunity has prompts you didn't record earlier.
-          </p>
-          <div class="mt-3 space-y-3">
-            <Textarea
-              rows={3}
-              bind:value={newCustomText}
-              placeholder="Paste the question text…"
-            />
-            <div class="flex items-center gap-2">
-              <label class="text-xs text-muted-foreground" for="new-wl">Word limit:</label>
-              <input
-                id="new-wl"
-                type="number"
-                min="0"
-                bind:value={newCustomLimit}
-                class="w-24 rounded border border-border bg-background px-2 py-1 text-xs
-                  focus:outline-none focus:ring-1 focus:ring-ring"
+        <div in:slide={{ tier: 'moderate' }}>
+          <Card.Root>
+            <Card.Header>
+              <Card.Title>Add a question</Card.Title>
+              <Card.Description>
+                For when the opportunity has prompts you didn't record earlier.
+              </Card.Description>
+            </Card.Header>
+            <Card.Content class="flex flex-col gap-3">
+              <Textarea
+                autoResize
+                minHeight={88}
+                bind:value={newCustomText}
+                placeholder="Paste the question text…"
+                aria-label="Question text"
               />
-            </div>
-            <div class="flex gap-2">
-              <Button onclick={addCustomQuestion} disabled={!newCustomText.trim()}>Add</Button>
-              <Button variant="ghost" onclick={() => { addingCustom = false; newCustomText = ''; newCustomLimit = ''; }}>Cancel</Button>
-            </div>
-          </div>
-        </Card>
+              <div class="flex items-center gap-2">
+                <Label for="new-wl">Word limit:</Label>
+                <Input
+                  id="new-wl"
+                  type="number"
+                  min="0"
+                  class="w-24"
+                  bind:value={
+                    () => newCustomLimit,
+                    (v: string | number | null | undefined) =>
+                      (newCustomLimit = v == null ? '' : String(v))
+                  }
+                />
+              </div>
+            </Card.Content>
+            <Card.Footer>
+              <Button
+                variant="primary"
+                onclick={addCustomQuestion}
+                disabled={!newCustomText.trim()}
+              >
+                Add
+              </Button>
+              <Button
+                variant="ghost"
+                onclick={() => {
+                  addingCustom = false;
+                  newCustomText = '';
+                  newCustomLimit = '';
+                }}
+              >
+                Cancel
+              </Button>
+            </Card.Footer>
+          </Card.Root>
+        </div>
       {:else}
         <div class="flex justify-center">
-          <Button variant="secondary" onclick={() => { addingCustom = true; }}>
-            + Add a question
+          <Button
+            variant="secondary"
+            onclick={() => {
+              addingCustom = true;
+            }}
+          >
+            {#snippet leadingIcon()}<PlusIcon />{/snippet}
+            Add a question
           </Button>
         </div>
       {/if}
     </div>
   {/if}
-</div>
+</ScreenBody>
