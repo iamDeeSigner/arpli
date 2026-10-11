@@ -1,3 +1,82 @@
+/* ─── Color Primitives ───────────────────────────────────── */
+/* Raw named palette — use these to build semantic tokens.    */
+:root {
+  /* Hawkes Blue — cool sky blues */
+  --color-hawkesblue-25: #f3f9ff;
+  --color-hawkesblue-50: #e8f2ff;
+  --color-hawkesblue-100: #d1e2ff;
+  --color-hawkesblue-200: #bed9fe;
+  --color-hawkesblue-300: #96c0f8;
+  --color-hawkesblue-400: #669ae9;
+  --color-hawkesblue-500: #4177d7;
+  --color-hawkesblue-600: #1e5dc5;
+  --color-hawkesblue-700: #0b49b3;
+  --color-hawkesblue-800: #033897;
+  --color-hawkesblue-900: #072978;
+  --color-hawkesblue-950: #0a1d5b;
+  --color-hawkesblue-975: #040e39;
+
+  /* Sail — bright sky to deep ocean */
+  --color-sail-25: #f2faff;
+  --color-sail-50: #e7f6fe;
+  --color-sail-100: #ccebff;
+  --color-sail-200: #aee2fd;
+  --color-sail-300: #7accf6;
+  --color-sail-400: #35abe3;
+  --color-sail-500: #008cc9;
+  --color-sail-600: #0071aa;
+  --color-sail-700: #005b90;
+  --color-sail-800: #004876;
+  --color-sail-900: #00375f;
+  --color-sail-950: #00284b;
+  --color-sail-975: #001633;
+
+  /* Iceberg — cool teal-greens */
+  --color-iceberg-25: #f5fbfb;
+  --color-iceberg-50: #e7f9f7;
+  --color-iceberg-100: #daf5f0;
+  --color-iceberg-200: #b8e8dd;
+  --color-iceberg-300: #91d3c6;
+  --color-iceberg-400: #5cafa2;
+  --color-iceberg-500: #338c81;
+  --color-iceberg-600: #1d7069;
+  --color-iceberg-700: #095b55;
+  --color-iceberg-800: #00463f;
+  --color-iceberg-900: #00342d;
+  --color-iceberg-950: #002522;
+  --color-iceberg-975: #001412;
+
+  /* Mercury — neutral greys */
+  --color-mercury-25: #fafafa;
+  --color-mercury-50: #f6f6f6;
+  --color-mercury-100: #e8e8e8;
+  --color-mercury-200: #dcdcdc;
+  --color-mercury-300: #c3c3c3;
+  --color-mercury-400: #999999;
+  --color-mercury-500: #737373;
+  --color-mercury-600: #575757;
+  --color-mercury-700: #464646;
+  --color-mercury-800: #333333;
+  --color-mercury-900: #212121;
+  --color-mercury-950: #151515;
+  --color-mercury-975: #0a0a0a;
+
+  /* Yellow Green — nature accent */
+  --color-yellowgreen-25: #fafcee;
+  --color-yellowgreen-50: #f4f9dc;
+  --color-yellowgreen-100: #ebf5c1;
+  --color-yellowgreen-200: #deee9f;
+  --color-yellowgreen-300: #c7e075;
+  --color-yellowgreen-400: #bdd55e;
+  --color-yellowgreen-500: #a9c24f;
+  --color-yellowgreen-600: #8da13d;
+  --color-yellowgreen-700: #738131;
+  --color-yellowgreen-800: #5e6829;
+  --color-yellowgreen-900: #505825;
+  --color-yellowgreen-950: #424820;
+  --color-yellowgreen-975: #262b0f;
+}
+
 /* Approved product-facing design tokens. Color values are unwrapped HSL channels. */
 @theme {
   --color-background: hsl(var(--background));
