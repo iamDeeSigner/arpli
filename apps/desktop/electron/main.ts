@@ -174,10 +174,16 @@ ipcMain.handle(
  * Info.plist (configured at packaging time); the dev shell inherits
  * Electron Helper's own entitlements and prompts on first use.
  */
+// Electron 32's typings omit 'audioCapture', but Chromium still sends it on
+// some platforms — compare as plain strings.
+function isMicPermission(permission: string): boolean {
+  return permission === 'media' || permission === 'audioCapture';
+}
+
 function wireRendererPermissions() {
   session.defaultSession.setPermissionRequestHandler(
     (_webContents, permission, callback) => {
-      if (permission === 'media' || permission === 'audioCapture') {
+      if (isMicPermission(permission)) {
         callback(true);
         return;
       }
@@ -186,7 +192,7 @@ function wireRendererPermissions() {
   );
 
   session.defaultSession.setPermissionCheckHandler((_webContents, permission) => {
-    if (permission === 'media' || permission === 'audioCapture') return true;
+    if (isMicPermission(permission)) return true;
     return false;
   });
 }
