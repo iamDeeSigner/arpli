@@ -18,5 +18,5 @@
       "@arpli/db": ["./packages/db/src/index.ts"]
     }
   },
-  "exclude": ["node_modules", "**/dist", "**/build", "**/.svelte-kit"]
+  "exclude": ["node_modules", "**/dist", "**/build", "**/.svelte-kit", "references", "studio"]
 }

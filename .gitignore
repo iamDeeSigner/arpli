@@ -49,3 +49,9 @@ storybook-static/
 .beads-credential-key
 .beads/proxieddb/
 *.gate.lock*
+
+# Arpli workspace folders that are not part of this repo
+# references/: other projects read for ideas (dossier is AGPL-3.0: never copy its code)
+# studio/: Design Studio, its own git repo
+/references/
+/studio/
