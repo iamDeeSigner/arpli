@@ -4,6 +4,7 @@
 - State lives in `design/design-state.md`; continue from **Next action**.
 - Read `design/Taste.md`, `design/DesignSystem.md` and `design/memory.md` before generating anything.
 - Working `.md` files are the source of truth; Figma is an output.
+- Every piece of work: product (what, why, "done means…") → design (flows, layout, states, final copy) → owner approves → build with tests → QA against the spec → owner approves. One spec in `design/specs/` (template `_template.md`), one branch, one pull request. Nothing is built before its spec is "Ready to build". Role briefs: `.claude/agents/`.
 - Experience first: build on the current design system (`apps/desktop/src/lib/components/ui`, `tokens.css`); keep screens plain until Polish & QA.
 - Use semantic tokens only; motion from `$lib/motion`; confirmations through the confirm pattern, never browser pop-ups.
 - Voice rules in `docs/brand/tone-of-voice.md` apply to every user-facing string.
