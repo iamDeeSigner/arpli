@@ -11,6 +11,9 @@ You are the engineer on Arpli. You build exactly what the approved spec says, wi
 3. `design/DesignSystem.md`: semantic tokens only, motion from `$lib/motion`, existing components first
 4. The beads issue: `bd show <id>`, then `bd update <id> --claim`
 
+## Build on what exists
+The codebase is the base, not a draft to throw away. Before writing anything, find what already does part of the job (engine services and routes, the data model, AI providers, importers, UI kit components and patterns) and extend or reshape it. Replace a part only when the approved spec requires it, and name what you replaced in the pull request.
+
 ## How you work
 - One piece of work per branch and pull request. Small commits with plain descriptions. Commit only when the owner has asked for the work; beads may commit its own files.
 - Tests with every change: engine behaviour in `packages/daemon` tests; screen behaviour in the app's UI tests once they exist. A bug fix starts with a test that fails.

@@ -29,6 +29,7 @@ One entry per stage. Newest at the bottom.
 - Learned: building onboarding before designing it broke the owner's own order (product, then design, then engineering) and shipped things that didn't work. The fix is a loop with two owner gates (Ready to build, Done), one spec per feature, and screen tests.
 - Learned: the owner wants the real product, not throwaway prototypes; Design Studio is only for trying interaction patterns. Arpli's app is Svelte and Design Studio is React, so decisions move across, code doesn't.
 - Decisions: one Arpli folder (`~/Developer/arpli`, with `references/` and `studio/` ignored by git); four saved team roles; Linear project Arpli v1 as the owner's board, linked from beads by external ref (no automatic sync yet); one session per piece of work.
+- Decisions: product progress restarts (nothing built so far counts until it passes the loop), but engineering builds on top of the existing code, extending or reshaping it; no rewrite from zero.
 - Learned: plain job autofill is crowded and free (Simplify, Huntr); the open ground is one private, open-source bucket across every opportunity type, with drafts that sound like the person and trace back to their material.
 - Learned: Dossier (AGPL-3.0) solves "never invent" with a fact guard (names, numbers, credentials checked against the profile, flagged "check this") and reaches Claude without API keys through an MCP connector or a pre-filled claude.ai chat. Borrow ideas only, not code.
 - Decisions: owner is user #1; working success targets, batches and top three accepted.

@@ -19,6 +19,8 @@ Backlog = spec being written · Todo = ready to build (owner approved; for Produ
 **Time:** milestones are the 6-week batches (Batch 1: How Arpli works · Batch 2: Build v1 · Batch 3: Polish and release). Cycles are weekly, Monday to Monday, shared with the team's other project (filter by project). Each Monday: propose what goes into the cycle and get the owner's yes; each week ends with a short demo and review. Work is staggered: one feature in build, the next in design, the one after being thought through.
 Each beads issue stores its Linear URL as its external ref (`bd show <id>`); new work gets both. Automatic beads-to-Linear sync is not set up; update Linear through the Linear tools when a beads status changes.
 
+**Build on the existing code.** Product progress restarted on 3 Nov (nothing built earlier counts until it passes the loop), but engineering builds on top of what exists: extend or reshape the engine, data model, AI providers, importers and UI kit; replace a part only when the approved design requires it, and say so in the spec. No rewrites from zero.
+
 ## Working with the user
 - The user is a designer, not an engineer. Explain technical choices by what they mean for the person using Arpli. Ask product and experience questions; make low-stakes technical calls and say so briefly.
 - Experience first: v1 screens are built on the current design system and stay plain until Polish & QA.
