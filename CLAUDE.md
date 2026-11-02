@@ -15,7 +15,7 @@ Saved helpers in `.claude/agents/`: `product-lead`, `product-designer`, `enginee
 Each feature has one spec in `design/specs/` (template: `_template.md`), one beads issue linked to one Linear issue, one branch and one pull request. Nothing is built before its spec is "Ready to build". One session per piece of work: start by reading `design/design-state.md`.
 
 **Linear** (the owner's board): project **Arpli v1** in team **Deesigner** (issues `DEE-…`), each issue labelled with one Arpli track: Product, Experience design or Engineering. Keep its status true as work moves:
-Backlog = spec being written · Todo = ready to build (owner approved) · In Progress = being built · In Review = waiting for QA or the owner (a design to approve, or a build to check) · Done = works, matches the spec, owner has seen it.
+Backlog = spec being written · Todo = ready to build (owner approved; for Product and Experience design issues, ready to start) · In Progress = being built · In Review = waiting for QA or the owner (a design to approve, or a build to check) · Done = works, matches the spec, owner has seen it.
 **Time:** milestones are the 6-week batches (Batch 1: How Arpli works · Batch 2: Build v1 · Batch 3: Polish and release). Cycles are weekly, Monday to Monday, shared with the team's other project (filter by project). Each Monday: propose what goes into the cycle and get the owner's yes; each week ends with a short demo and review. Work is staggered: one feature in build, the next in design, the one after being thought through.
 Each beads issue stores its Linear URL as its external ref (`bd show <id>`); new work gets both. Automatic beads-to-Linear sync is not set up; update Linear through the Linear tools when a beads status changes.
 
