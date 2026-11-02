@@ -14,6 +14,7 @@
 
 import type {
   Profile,
+  ProfileMode,
   AiProviderConfig,
   Opportunity,
   OpportunityDraft,
@@ -34,6 +35,11 @@ type Channel =
   | 'ai:transcribe:status'
   | 'profile:get'
   | 'profile:update'
+  | 'profile:create'
+  | 'profile:import:text'
+  | 'profile:import:apply'
+  | 'ai:detect'
+  | 'ai:providers:save'
   | 'daemon:health'
   | 'opportunity:intake'
   | 'opportunity:create'
@@ -80,7 +86,7 @@ async function viaBridge<T>(channel: Channel, payload?: unknown): Promise<T> {
 }
 
 async function viaFetch<T>(
-  method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
   path: string,
   body?: unknown,
 ): Promise<T> {
@@ -141,7 +147,56 @@ export const ai = {
       return viaBridge<{ providers: AiProviderConfig[] }>('ai:providers');
     return viaFetch<{ providers: AiProviderConfig[] }>('GET', '/ai/providers');
   },
+
+  /** What AI is already on this Mac: local runners and a signed-in Claude Code. */
+  async detect(): Promise<AiDetectResult> {
+    if (hasInvokeBridge()) return viaBridge<AiDetectResult>('ai:detect');
+    return viaFetch<AiDetectResult>('GET', '/ai/local/detect');
+  },
+
+  /** Ollama's installed models, as the engine reports them. */
+  async ollamaModels(): Promise<OllamaModelInfo[]> {
+    const result = hasInvokeBridge()
+      ? await viaBridge<{ models: OllamaModelInfo[] }>('ai:providers:ollama:models')
+      : await viaFetch<{ models: OllamaModelInfo[] }>('GET', '/ai/providers/ollama/models');
+    return result.models ?? [];
+  },
+
+  /** Save a provider (and, with setActive, make it the one drafts use). */
+  async saveProvider(input: SaveProviderInput): Promise<SavedProvider> {
+    if (hasInvokeBridge()) return viaBridge<SavedProvider>('ai:providers:save', input);
+    return viaFetch<SavedProvider>('PUT', `/ai/providers/${encodeURIComponent(input.kind)}`, {
+      model: input.model,
+      apiKey: input.apiKey ?? null,
+      baseUrl: input.baseUrl ?? null,
+      setActive: input.setActive === true,
+    });
+  },
 };
+
+export interface AiDetectResult {
+  runners: Array<{ kind: string; label: string; baseUrl: string; running: boolean }>;
+  claudeCode: { found: boolean; loggedIn: boolean; plan: string | null };
+  recommendation: { kind: string; reason: string } | null;
+}
+
+export interface SaveProviderInput {
+  kind: string;
+  model: string;
+  apiKey?: string | null;
+  baseUrl?: string | null;
+  setActive?: boolean;
+}
+
+export interface SavedProvider {
+  kind: string;
+  tier: string;
+  model: string;
+  baseUrl: string | null;
+  hasApiKey: boolean;
+  isActive: boolean;
+  updatedAt: string;
+}
 
 // ────── Profile ──────
 
@@ -160,10 +215,19 @@ export const profileApi = {
   },
 
   async update(id: string, patch: Partial<Profile>): Promise<Profile> {
-    if (hasInvokeBridge()) {
-      return viaBridge<Profile>('profile:update', { id, patch });
-    }
-    return viaFetch<Profile>('PATCH', `/profile/${id}`, patch);
+    // The engine answers { profile }.
+    const result = hasInvokeBridge()
+      ? await viaBridge<{ profile: Profile }>('profile:update', { id, patch })
+      : await viaFetch<{ profile: Profile }>('PATCH', `/profile/${id}`, patch);
+    return result.profile;
+  },
+
+  /** Create the profile. Arpli keeps one profile per Mac. */
+  async create(input: { mode: ProfileMode; bio?: string | null }): Promise<Profile> {
+    const result = hasInvokeBridge()
+      ? await viaBridge<{ profile: Profile }>('profile:create', input)
+      : await viaFetch<{ profile: Profile }>('POST', '/profile', input);
+    return result.profile;
   },
 };
 
@@ -301,12 +365,25 @@ export const profileImportApi = {
     return viaFetch<ImportPreview>('POST', '/profile/import/url', { url });
   },
 
+  /** Parse pasted CV or LinkedIn text. Returns a preview; nothing is saved yet. */
+  async importText(text: string): Promise<ImportPreview> {
+    if (hasInvokeBridge()) return viaBridge<ImportPreview>('profile:import:text', { text });
+    return viaFetch<ImportPreview>('POST', '/profile/import/text', { text });
+  },
+
   /** Apply a confirmed preview to a profile. Writes to the database. */
   async applyPreview(
     profileId: string,
     preview: ImportPreview,
     opts: { updateBio?: boolean } = {},
   ): Promise<ImportApplyResult> {
+    if (hasInvokeBridge()) {
+      return viaBridge<ImportApplyResult>('profile:import:apply', {
+        profileId,
+        preview,
+        updateBio: opts.updateBio ?? false,
+      });
+    }
     return viaFetch<ImportApplyResult>('POST', `/profile/${profileId}/import/apply`, {
       preview,
       updateBio: opts.updateBio ?? false,

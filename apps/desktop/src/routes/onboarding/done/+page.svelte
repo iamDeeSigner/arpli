@@ -21,9 +21,9 @@
   }
 
   const tips = [
-    'Paste an opportunity URL or description to get started',
-    'Arpli surfaces how your profile fits each requirement',
-    'Draft application materials with AI assistance',
+    'Add to your profile any time: a CV, a story, something you just achieved.',
+    'Save an opportunity by pasting its link or description.',
+    'Draft answers from your own material, then make them yours.',
   ];
 </script>
 
