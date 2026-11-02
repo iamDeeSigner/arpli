@@ -40,7 +40,7 @@ Written with HCD ch. 4 template #2: "We believe we will achieve [outcome] if [pe
 | O7 | **One tracker** | We'll keep people applying if applicants can see status and deadlines in one place and get a Mac reminder before each deadline. | M6 · KR2 |
 | O8 | **Tailored documents** | We'll save rewriting if applicants can get a CV, cover letter or pitch summary tailored to this opportunity from the same bucket. | job story 6 |
 | O9 | **Learn from each form** | The bucket grows without extra work if, while drafting, applicants are asked "this is new, save it to your profile?" and "anything I should know for this one?". | HMW 1 · M5 · H2 · Dossier idea 4 |
-| O10 | **Reuse past answers** | We'll avoid starting from scratch if applicants are shown "you answered something similar for X". | HMW 1 · roadmap E7 |
+| O10 | **Reuse and adapt past answers** (raised to Must by the owner, 2026-11-03) | We'll make every application faster than the last if applicants' past answers and stories are kept in their bucket and can be reused as is, adjusted lightly, or reworked for a new context. | HMW 1 · roadmap E7 · competitor gap 4 (a bank that outlives one application) |
 | O11 | **Arpli finds opportunities for you** | We'll help people find what's worth their time if Arpli searches for opportunities that match their bucket. | job map step 1 (Plan) · activation model trigger 4 · **v2** (owner) |
 | O12 | **Watch my sources** (added by the owner at G2) | We'll keep people's pipeline full if applicants can add the job boards and opportunity sites they already trust and be told what's new there, with deadlines pulled out. | job map step 1 (Plan) · M2 · O4 capture |
 
@@ -81,18 +81,18 @@ Impact (H 3 · M 2 · L 1) × confidence ÷ effort (S 1 · M 2 · L 3). **Effort
 | O9 learn from forms | 2 | 50% | S | **1.00** | attractive | |
 | O2 true drafts | 3 | 60% (drafting built; guard and levels new) | M | **0.90** | attractive → performance | override: Must |
 | O5 form companion | 3 | 60% (widgets are per-site work) | L | **0.60** | performance | override: Must |
-| O10 reuse | 2 | 50% | M | **0.50** | attractive | |
+| O10 reuse | 2 | 50% | M | **0.50** | attractive | override: Must (owner, 2026-11-03) |
 | O3 story interview | 2 | 40% (H3 untested) | M | **0.40** | attractive | |
 | O8 documents | 2 | 50% | L | **0.33** | performance | |
 
-**Overrides (logged):** O2 and O5 rank lower only because they are bigger builds. O2 *is* the product's promise (the riskiest assumption), and O5 is the owner's top three #2. Both are Musts regardless of score.
+**Overrides (logged):** O2 and O5 rank lower only because they are bigger builds. O2 *is* the product's promise (the riskiest assumption), and O5 is the owner's top three #2. Both are Musts regardless of score. O10 was raised to Must by the owner on 2026-11-03: answers written once are worth reusing, and keeping them is what makes the bucket grow with every application. Its low reach in the first weeks (the bank starts empty) is accepted.
 **Cross-check (value vs effort):** high value, low effort: O7, O4, O6 · high value, high effort: O2, O5, O1 · lower value now: O3, O8, O10.
 
 ## 6. Roadmap strip
 
 | Quick wins | Meaningful shift (the bet) | Big bets or parked |
 |---|---|---|
-| O7 tracker basics · O4 capture · O9 "save this to your profile?" | **O1 + O2 on top of O6: "a bucket that writes like you"**, delivered through O5 on real forms | O3 story interview (test as a direction in Explore) · O8 full documents, including pitch decks · O10 reuse bank (grows with use) · discovery (v2) |
+| O7 tracker basics · O4 capture · O9 "save this to your profile?" | **O1 + O2 on top of O6: "a bucket that writes like you"**, delivered through O5 on real forms | O3 story interview (test as a direction in Explore) · O8 full documents, including pitch decks · discovery (v2) · *O10 reuse moved into the bet as a Must, 2026-11-03* |
 
 ## 7. Choosing the bet
 
@@ -129,8 +129,9 @@ Objective and KR1 to KR3 from Frame, unchanged. Baselines are 0 (new product); t
 | | **O4 capture:** save any page or post from Chrome as an opportunity, with deadline and questions |
 | | **O5 form companion (basic):** a side panel with the form's questions, Fill per field for standard fields and text answers, CV attach, Copy for everything, copy-only on LinkedIn and Indeed, Greenhouse and Lever readers |
 | | **O7 tracker:** statuses, a deadline list, Mac reminders, manual add for applications sent elsewhere |
+| | **O10 reuse and adapt past answers** (owner, 2026-11-03): every answer written is kept in the bucket with the story it tells; when a new question resembles a past one, Arpli shows the past answers and offers use as is, adjust lightly, or rework, with "check this" and the opportunity's AI help level still applying; a gentle warning when reusing nearly word for word for the same kind of programme |
 | **Should** | O9 learn from each form · O8 light: a tailored cover letter and CV, exported as PDF (owner confirmed the document split, 2026-11-02) |
-| **Could** | O3 story interview (a prototype direction in Explore; moves up if the prototypes favour it, owner 2026-11-02) · O10 "you answered something similar" · the built-in browser for pasted links when the extension isn't installed · a one-page pitch summary |
+| **Could** | O3 story interview (a prototype direction in Explore; moves up if the prototypes favour it, owner 2026-11-02) · the built-in browser for pasted links when the extension isn't installed · a one-page pitch summary |
 | **Should (added at G2)** | **O12 watch my sources:** the person adds links (a company's job board, a job-board search, an opportunity site, a feed); Arpli checks them and shows what's new, with deadlines. Risks to design for: scam listings that ask for fees, and sites whose terms forbid automated reading. Which sources can be read is being researched |
 | **Won't (v1)** | O11 Arpli finding opportunities on its own (v2) · Windows · phone · recommender tracking · outcome analysis · full pitch-deck generation · auto-submit · filling on LinkedIn or Indeed · team use |
 
