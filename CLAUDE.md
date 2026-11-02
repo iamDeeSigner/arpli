@@ -12,7 +12,11 @@ Saved helpers in `.claude/agents/`: `product-lead`, `product-designer`, `enginee
 1. **Product** (what and why, "done means…") → 2. **Design** (flows, layout, every state, final copy) → owner approves → **Ready to build**
 3. **Engineering** (exactly the spec, with tests) → 4. **QA** (against the spec, voice, accessibility, no-gos) → owner approves → **Done**
 
-Each feature has one spec in `design/specs/` (template: `_template.md`), one beads issue (and Linear issue once connected), one branch and one pull request. Nothing is built before its spec is "Ready to build". One session per piece of work: start by reading `design/design-state.md`.
+Each feature has one spec in `design/specs/` (template: `_template.md`), one beads issue linked to one Linear issue, one branch and one pull request. Nothing is built before its spec is "Ready to build". One session per piece of work: start by reading `design/design-state.md`.
+
+**Linear** (the owner's board): project **Arpli v1** in team **Deesigner** (issues `DEE-…`), each issue labelled with one Arpli track: Product, Experience design or Engineering. Keep its status true as work moves:
+Backlog = spec being written · Todo = ready to build (owner approved) · In Progress = being built · In Review = in QA or waiting for the owner · Done = works, matches the spec, owner has seen it.
+Each beads issue stores its Linear URL as its external ref (`bd show <id>`); new work gets both. Automatic beads-to-Linear sync is not set up; update Linear through the Linear tools when a beads status changes.
 
 ## Working with the user
 - The user is a designer, not an engineer. Explain technical choices by what they mean for the person using Arpli. Ask product and experience questions; make low-stakes technical calls and say so briefly.
