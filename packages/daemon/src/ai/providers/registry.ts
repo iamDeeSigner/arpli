@@ -21,7 +21,8 @@ export type WireProtocol =
   | 'native-ollama'
   | 'native-anthropic'
   | 'native-google'
-  | 'openai-compat';
+  | 'openai-compat'
+  | 'cli-claude-code';
 
 export interface ProviderDescriptor {
   kind: AiProvider;
@@ -176,6 +177,20 @@ export const PROVIDER_REGISTRY: Record<AiProvider, ProviderDescriptor> = {
     defaultBaseUrl: 'https://generativelanguage.googleapis.com/v1beta',
     requiresApiKey: true,
     suggestedModel: 'gemini-1.5-pro',
+  },
+
+  // ── Subscription via a local program ───────────────────────────────
+  // The person's own Claude Code, on their own Claude plan, with tools
+  // off. Opt-in only (see claude-code.ts for the policy note). There is no
+  // URL: an optional saved "baseUrl" is the path to the `claude` binary.
+  'claude-code': {
+    kind: 'claude-code',
+    label: 'Claude (your Claude Code)',
+    tier: 'paid',
+    wireProtocol: 'cli-claude-code',
+    defaultBaseUrl: '',
+    requiresApiKey: false,
+    suggestedModel: 'default',
   },
 };
 

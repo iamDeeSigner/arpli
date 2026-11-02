@@ -3,6 +3,7 @@ import { OllamaConnector } from './providers/ollama.js';
 import { GoogleConnector } from './providers/google.js';
 import { AnthropicConnector } from './providers/anthropic.js';
 import { OpenAiCompatibleConnector } from './providers/openai-compatible.js';
+import { ClaudeCodeConnector } from './providers/claude-code.js';
 import { describe } from './providers/registry.js';
 import {
   getActiveProvider,
@@ -27,6 +28,8 @@ export function loadConnector(config: AiConnectorConfig): AiConnector {
       return new GoogleConnector(config);
     case 'openai-compat':
       return new OpenAiCompatibleConnector(config);
+    case 'cli-claude-code':
+      return new ClaudeCodeConnector(config);
     default: {
       const exhaustive: never = descriptor.wireProtocol;
       throw new AiProviderError(

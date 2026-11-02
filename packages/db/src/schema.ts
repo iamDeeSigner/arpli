@@ -211,6 +211,7 @@ export const aiProviders = sqliteTable('ai_providers', {
       'openrouter',
       'together',
       'mistral',
+      'claude-code',
     ],
   }).primaryKey(),
   tier: text('tier', { enum: ['local', 'free-cloud', 'paid'] }).notNull(),

@@ -11,6 +11,8 @@
  * - OpenAI-compatible: openai (reference), groq, lmstudio, jan, localai,
  *   llamafile, openrouter, together, mistral. All share one adapter —
  *   only the base URL, auth header, and tier differ.
+ * - Local program: claude-code (the person's own Claude Code, on their own
+ *   Claude plan, run with tools off). No API key.
  */
 
 export type AiProvider =
@@ -26,7 +28,8 @@ export type AiProvider =
   | 'llamafile'
   | 'openrouter'
   | 'together'
-  | 'mistral';
+  | 'mistral'
+  | 'claude-code';
 
 export type AiProviderTier = 'local' | 'free-cloud' | 'paid';
 
