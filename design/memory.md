@@ -36,3 +36,8 @@ One entry per stage. Newest at the bottom.
 - Decisions: reusing and adapting past answers (O10) is a v1 Must (owner, 2026-11-03). The bucket keeps every answer with the story it tells; new questions that resemble old ones offer use as is, adjust lightly or rework; near-verbatim reuse for the same kind of programme gets a gentle warning. A seventh moment (M7, reusing what you've written) was added to the Explore pattern research.
 - Decisions: the one-page product strategy is approved, vision line included (owner, 2026-11-03). Every feature now traces to a job step in its product map.
 - Learned: the Must list is now seven items (O6, O1, O2, O4, O5, O7, O10). The G2 condition to re-check the Must list size after Batch 1 matters more now.
+
+## 2026-11-03 · Explore step 1 (patterns)
+- Learned: Mobbin covers in-app patterns well but has no browser extension working on top of another site's form, no web clipper states, no claim-level "check this", and nothing that warns about reusing your own words. Those are Arpli's own to design, and the prototypes carry more weight there.
+- Learned: the owner decides fastest when each moment ends with one clear choice and a recommendation. Seven moments were reviewed in one sitting this way.
+- Decisions: one per moment (see the table at the end of `04-explore.md`). The owner added one change: the tracker switches between list and board, with the list as default.
