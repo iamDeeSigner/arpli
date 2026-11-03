@@ -17,7 +17,7 @@ let mainWindow: BrowserWindow | null = null;
  * On non-2xx status or network error, returns { error: string }.
  */
 async function daemonRequest<T>(
-  method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
+  method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE',
   path: string,
   body?: unknown,
 ): Promise<T | { error: string }> {
@@ -72,6 +72,47 @@ ipcMain.handle('profile:get', async () => {
 
 ipcMain.handle('profile:update', (_event, payload: { id: string; patch: unknown }) =>
   daemonRequest('PATCH', `/profile/${payload.id}`, payload.patch),
+);
+
+ipcMain.handle('profile:create', (_event, payload: { mode: string; bio?: string | null }) =>
+  daemonRequest('POST', '/profile', payload),
+);
+
+ipcMain.handle('profile:import:text', (_event, payload: { text: string }) =>
+  daemonRequest('POST', '/profile/import/text', payload),
+);
+
+ipcMain.handle(
+  'profile:import:apply',
+  (_event, payload: { profileId: string; preview: unknown; updateBio?: boolean }) =>
+    daemonRequest('POST', `/profile/${encodeURIComponent(payload.profileId)}/import/apply`, {
+      preview: payload.preview,
+      updateBio: payload.updateBio === true,
+    }),
+);
+
+// ── AI setup ─────────────────────────────────────────────────────────────────
+
+ipcMain.handle('ai:detect', () => daemonRequest('GET', '/ai/local/detect'));
+
+ipcMain.handle(
+  'ai:providers:save',
+  (
+    _event,
+    payload: {
+      kind: string;
+      model: string;
+      apiKey?: string | null;
+      baseUrl?: string | null;
+      setActive?: boolean;
+    },
+  ) =>
+    daemonRequest('PUT', `/ai/providers/${encodeURIComponent(payload.kind)}`, {
+      model: payload.model,
+      apiKey: payload.apiKey ?? null,
+      baseUrl: payload.baseUrl ?? null,
+      setActive: payload.setActive === true,
+    }),
 );
 
 ipcMain.handle('opportunity:intake', (_event, payload) =>

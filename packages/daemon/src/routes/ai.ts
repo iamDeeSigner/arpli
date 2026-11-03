@@ -24,6 +24,7 @@ import {
 } from '../services/settings.js';
 import { OllamaConnector } from '../ai/providers/ollama.js';
 import { OpenAiCompatibleConnector } from '../ai/providers/openai-compatible.js';
+import { claudeCodeStatus } from '../ai/providers/claude-code.js';
 import {
   ALL_PROVIDERS,
   LOCAL_RUNNERS,
@@ -294,6 +295,10 @@ export async function registerAiRoutes(app: FastifyInstance, db: ArpliDb): Promi
           });
           return { models: await connector.listModels() };
         }
+        if (descriptor.wireProtocol === 'cli-claude-code') {
+          // Claude Code takes model aliases; "default" uses the plan's own default.
+          return { models: ['default', 'sonnet', 'opus', 'haiku'].map((id) => ({ id })) };
+        }
         return reply
           .code(400)
           .send({ error: `provider ${provider} has no model-listing endpoint` });
@@ -432,6 +437,9 @@ export async function registerAiRoutes(app: FastifyInstance, db: ArpliDb): Promi
         }
       }),
     );
+    // The person's own Claude Code, if installed and signed in. Opt-in only:
+    // detection never connects it. The account's email is never returned.
+    const claude = await claudeCodeStatus();
     const anyRunning = results.some((r) => r.running);
     const recommendation = anyRunning
       ? null
@@ -440,7 +448,11 @@ export async function registerAiRoutes(app: FastifyInstance, db: ArpliDb): Promi
           reason:
             'No local AI runner was detected. Install Ollama from https://ollama.com for the simplest zero-cost setup, or configure a free cloud provider (OpenRouter, Groq, Google AI Studio) under Settings → AI.',
         };
-    return { runners: results, recommendation };
+    return {
+      runners: results,
+      claudeCode: { found: claude.found, loggedIn: claude.loggedIn, plan: claude.plan },
+      recommendation,
+    };
   });
 }
 

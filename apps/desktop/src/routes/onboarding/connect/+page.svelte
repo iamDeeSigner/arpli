@@ -1,7 +1,8 @@
 <!--
-  Onboarding Step 2: Connect AI.
-  Detects a local Ollama instance; also lets users enter an API key for cloud providers.
-  Persists the chosen provider + model to the onboarding store, then routes to Profile.
+  Onboarding step 2: connect AI.
+  Looks first, asks second: shows what is already on this Mac (a signed-in
+  Claude Code, a running Ollama), says plainly where text goes for each
+  option, and saves the choice in the engine so drafting works straight away.
 -->
 <script lang="ts">
   import { onMount } from 'svelte';
@@ -13,86 +14,97 @@
   import { Select } from '$lib/components/ui/select';
   import { Spinner } from '$lib/components/ui/indicators';
   import { fade, fly } from '$lib/motion';
-  import { ai } from '$lib/ipc/client';
-  import { onboarding } from '$lib/stores/onboarding';
-  import type { OllamaProbe } from '$lib/ipc/client';
-  import ArrowLeftIcon from 'phosphor-svelte/lib/ArrowLeftIcon';
+  import { ai, type AiDetectResult, type OllamaModelInfo } from '$lib/ipc/client';
+  import { onboarding, type OnboardingState } from '$lib/stores/onboarding';
 
-  type Step = 'detecting' | 'ollama' | 'api-key' | 'manual';
-  type ApiProvider = 'groq' | 'openai' | 'anthropic' | 'google';
+  type KeyProvider = 'groq' | 'openai' | 'anthropic' | 'google';
 
-  let step = $state<Step>('detecting');
-  let ollamaProbe = $state<OllamaProbe | null>(null);
-  let selectedModel = $state('');
-  let apiKeyProvider = $state<ApiProvider>('groq');
-  let apiKey = $state('');
-  let saving = $state(false);
-  let error = $state<string | null>(null);
-
-  const API_PROVIDERS = [
-    { id: 'groq' as const, name: 'Groq (fast, free tier)' },
-    { id: 'openai' as const, name: 'OpenAI' },
-    { id: 'anthropic' as const, name: 'Anthropic' },
-    { id: 'google' as const, name: 'Google Gemini' },
+  // Defaults mirror the engine's provider registry (packages/daemon/src/ai/providers/registry.ts).
+  const KEY_PROVIDERS: { value: KeyProvider; label: string; model: string; company: string }[] = [
+    { value: 'groq', label: 'Groq (has a free tier)', model: 'llama-3.1-8b-instant', company: 'Groq' },
+    { value: 'openai', label: 'OpenAI', model: 'gpt-4o-mini', company: 'OpenAI' },
+    { value: 'anthropic', label: 'Anthropic', model: 'claude-3-5-sonnet-latest', company: 'Anthropic' },
+    { value: 'google', label: 'Google AI Studio', model: 'gemini-1.5-flash', company: 'Google' },
   ];
 
-  const providerItems = API_PROVIDERS.map((p) => ({ value: p.id, label: p.name }));
-  const modelItems = $derived(
-    (ollamaProbe?.models ?? []).map((model) => ({ value: model.name, label: model.name })),
-  );
+  let detecting = $state(true);
+  let detected = $state<AiDetectResult | null>(null);
+  let ollamaModels = $state<OllamaModelInfo[]>([]);
+  let ollamaModel = $state('');
+  let showKey = $state(false);
+  let keyProvider = $state<KeyProvider>('groq');
+  let apiKey = $state('');
+  let saving = $state<string | null>(null);
+  let error = $state<string | null>(null);
 
-  function isApiProvider(value: string): value is ApiProvider {
-    return API_PROVIDERS.some((p) => p.id === value);
+  const claude = $derived(detected?.claudeCode ?? null);
+  const ollamaRunning = $derived(
+    (detected?.runners ?? []).some((runner) => runner.kind === 'ollama' && runner.running),
+  );
+  const modelItems = $derived(
+    ollamaModels.map((m) => ({ value: m.name, label: `${m.name} · ${formatSize(m.size)}` })),
+  );
+  const keyCompany = $derived(KEY_PROVIDERS.find((p) => p.value === keyProvider)?.company ?? '');
+
+  function formatSize(bytes?: number): string {
+    if (!bytes) return 'size unknown';
+    return `${(bytes / 1_000_000_000).toFixed(1)} GB`;
   }
 
-  onMount(async () => {
-    try {
-      const probe = await ai.probeOllama();
-      ollamaProbe = probe;
-      if (probe.available && probe.models.length > 0) {
-        selectedModel = probe.models[0].name;
-        step = 'ollama';
-      } else {
-        step = 'api-key';
-      }
-    } catch {
-      step = 'api-key';
-    }
-  });
-
-  async function continueWithOllama() {
-    saving = true;
+  async function detect() {
+    detecting = true;
     error = null;
     try {
-      onboarding.patch({ aiProvider: 'ollama', aiModel: selectedModel });
-      await goto('/onboarding/profile');
+      detected = await ai.detect();
+      if (detected.runners.some((r) => r.kind === 'ollama' && r.running)) {
+        const models = await ai.ollamaModels();
+        // Smallest first. Very large models can be too slow for this Mac,
+        // so preselect the smallest one that is likely to write well (3 GB+).
+        ollamaModels = [...models].sort((a, b) => (a.size ?? 0) - (b.size ?? 0));
+        ollamaModel =
+          ollamaModels.find((m) => (m.size ?? 0) >= 3_000_000_000)?.name ?? ollamaModels[0]?.name ?? '';
+      }
     } catch (e) {
-      error = e instanceof Error ? e.message : String(e);
-      saving = false;
+      error = `Arpli's engine isn't answering yet. Make sure Arpli is running, then check again. (${
+        e instanceof Error ? e.message : String(e)
+      })`;
+    } finally {
+      detecting = false;
     }
   }
 
-  async function continueWithApiKey() {
+  onMount(detect);
+
+  async function connect(
+    kind: NonNullable<OnboardingState['aiProvider']>,
+    model: string,
+    apiKeyValue: string | null = null,
+  ) {
+    saving = kind;
+    error = null;
+    try {
+      await ai.saveProvider({ kind, model, apiKey: apiKeyValue, setActive: true });
+      onboarding.patch({ aiProvider: kind, aiModel: model });
+      await goto('/onboarding/profile');
+    } catch (e) {
+      error = `That didn't save. ${e instanceof Error ? e.message : String(e)}`;
+    } finally {
+      saving = null;
+    }
+  }
+
+  function connectKey() {
     if (!apiKey.trim()) {
-      error = 'Enter an API key to continue.';
+      error = 'Paste your key to continue.';
       return;
     }
-    saving = true;
-    error = null;
-    try {
-      // In Phase 1 we store provider intent locally; the daemon will read it
-      // via env vars in a later phase. For now just record the selection.
-      onboarding.patch({ aiProvider: apiKeyProvider, aiModel: null });
-      await goto('/onboarding/profile');
-    } catch (e) {
-      error = e instanceof Error ? e.message : String(e);
-      saving = false;
-    }
+    const provider = KEY_PROVIDERS.find((p) => p.value === keyProvider);
+    if (provider) void connect(provider.value, provider.model, apiKey.trim());
   }
 
   function skip() {
     onboarding.patch({ aiProvider: null, aiModel: null });
-    goto('/onboarding/profile');
+    void goto('/onboarding/profile');
   }
 </script>
 
@@ -101,115 +113,154 @@
     <p class="type-caption text-muted-foreground">Step 2 of 4</p>
     <h1 class="type-display">Connect your AI</h1>
     <p class="type-body text-muted-foreground">
-      Arpli uses a local or API-backed model to help draft and refine applications.
+      Arpli drafts with an AI you already have. Pick one. You can change it later in Settings.
     </p>
   </div>
 
-  {#if step === 'detecting'}
+  {#if detecting}
     <Card.Root>
       <Card.Content
         class="type-caption flex items-center justify-center gap-2 py-6 text-muted-foreground"
       >
         <Spinner size={16} />
-        Checking for Ollama…
+        Looking at what's on this Mac…
       </Card.Content>
     </Card.Root>
-  {:else if step === 'ollama'}
-    <div class="flex flex-col gap-4" in:fly={{ tier: 'moderate' }}>
-      <Card.Root>
-        <Card.Header class="pb-4">
-          <div class="flex items-center gap-2">
-            <span class="size-2 rounded-full bg-primary" aria-hidden="true"></span>
-            <Card.Title class="type-body">Ollama detected</Card.Title>
-          </div>
-          <Card.Description>{ollamaProbe?.endpoint}</Card.Description>
-        </Card.Header>
-      </Card.Root>
-
-      {#if ollamaProbe && ollamaProbe.models.length > 0}
-        <div class="flex flex-col gap-1.5">
-          <Label for="model-select">Model</Label>
-          <Select.Root bind:value={selectedModel} items={modelItems}>
-            <Select.Trigger id="model-select">
-              <Select.Value />
-            </Select.Trigger>
-            <Select.Content>
-              {#each modelItems as model (model.value)}
-                <Select.Item value={model.value} label={model.label}>{model.label}</Select.Item>
-              {/each}
-            </Select.Content>
-          </Select.Root>
-        </div>
+  {:else}
+    <div class="flex flex-col gap-3" in:fade={{ tier: 'fast' }}>
+      {#if claude?.loggedIn}
+        <Card.Root>
+          <Card.Header class="pb-3">
+            <Card.Title class="type-body">Use your Claude</Card.Title>
+            <Card.Description>
+              Claude Code is signed in on this Mac{claude.plan ? ` (${claude.plan} plan)` : ''}.
+              Your drafts go to Anthropic under your own account and use your plan's allowance.
+              Arpli runs Claude with its tools switched off, so it can't touch your files.
+            </Card.Description>
+          </Card.Header>
+          <Card.Content class="pt-0">
+            <Button
+              variant="primary"
+              class="w-full"
+              loading={saving === 'claude-code'}
+              disabled={saving !== null}
+              onclick={() => connect('claude-code', 'default')}
+            >
+              Use Claude
+            </Button>
+          </Card.Content>
+        </Card.Root>
+      {:else if claude?.found}
+        <Card.Root>
+          <Card.Header>
+            <Card.Title class="type-body">Claude Code isn't signed in</Card.Title>
+            <Card.Description>
+              Open Terminal, type <span class="type-code">claude</span>, sign in, then check again.
+            </Card.Description>
+          </Card.Header>
+          <Card.Content class="pt-0">
+            <Button variant="secondary" size="sm" onclick={detect}>Check again</Button>
+          </Card.Content>
+        </Card.Root>
       {/if}
 
-      <Button
-        variant="primary"
-        onclick={continueWithOllama}
-        disabled={saving}
-        loading={saving}
-        size="lg"
-        class="w-full"
-      >
-        {saving ? 'Saving…' : 'Use Ollama'}
-      </Button>
+      {#if ollamaRunning && ollamaModels.length > 0}
+        <Card.Root>
+          <Card.Header class="pb-3">
+            <Card.Title class="type-body">Keep it on this Mac</Card.Title>
+            <Card.Description>
+              Ollama is running. Nothing leaves your Mac. Bigger models write better but can be
+              very slow; if a draft takes more than a minute, pick a smaller one.
+            </Card.Description>
+          </Card.Header>
+          <Card.Content class="flex flex-col gap-3 pt-0">
+            <div class="flex flex-col gap-1.5">
+              <Label for="ollama-model">Model</Label>
+              <Select.Root bind:value={ollamaModel} items={modelItems}>
+                <Select.Trigger id="ollama-model">
+                  <Select.Value />
+                </Select.Trigger>
+                <Select.Content>
+                  {#each modelItems as item (item.value)}
+                    <Select.Item value={item.value} label={item.label}>{item.label}</Select.Item>
+                  {/each}
+                </Select.Content>
+              </Select.Root>
+            </div>
+            <Button
+              variant={claude?.loggedIn ? 'secondary' : 'primary'}
+              class="w-full"
+              loading={saving === 'ollama'}
+              disabled={saving !== null || !ollamaModel}
+              onclick={() => connect('ollama', ollamaModel)}
+            >
+              Use this model
+            </Button>
+          </Card.Content>
+        </Card.Root>
+      {/if}
 
-      <Button variant="underline" size="sm" class="self-center" onclick={() => (step = 'api-key')}>
-        Use a cloud provider instead
-      </Button>
-    </div>
-  {:else if step === 'api-key'}
-    <div class="flex flex-col gap-4" in:fly={{ tier: 'moderate' }}>
-      <div class="flex flex-col gap-1.5">
-        <Label for="provider-select">Provider</Label>
-        <Select.Root
-          bind:value={
-            () => apiKeyProvider,
-            (value: string) => {
-              if (isApiProvider(value)) apiKeyProvider = value;
-            }
-          }
-          items={providerItems}
-        >
-          <Select.Trigger id="provider-select">
-            <Select.Value />
-          </Select.Trigger>
-          <Select.Content>
-            {#each providerItems as p (p.value)}
-              <Select.Item value={p.value} label={p.label}>{p.label}</Select.Item>
-            {/each}
-          </Select.Content>
-        </Select.Root>
-      </div>
+      {#if !claude?.loggedIn && !(ollamaRunning && ollamaModels.length > 0)}
+        <p class="type-body text-muted-foreground">
+          No AI was found on this Mac. You can use a key from an AI company below, or install
+          Ollama from ollama.com for a free, private option.
+        </p>
+      {/if}
 
-      <div class="flex flex-col gap-1.5">
-        <Label for="api-key-input">API key</Label>
-        <Input
-          id="api-key-input"
-          type="password"
-          bind:value={apiKey}
-          placeholder="sk-..."
-          autocomplete="off"
-          message="Stored only in this device's process environment — never sent anywhere."
-        />
-      </div>
-
-      {#if ollamaProbe?.available}
-        <Button variant="ghost" size="sm" class="self-start" onclick={() => (step = 'ollama')}>
-          {#snippet leadingIcon()}<ArrowLeftIcon />{/snippet}
-          Back to Ollama
+      {#if showKey}
+        <Card.Root>
+          <Card.Header class="pb-3">
+            <Card.Title class="type-body">Use an API key</Card.Title>
+          </Card.Header>
+          <Card.Content class="flex flex-col gap-3 pt-0">
+            <div class="flex flex-col gap-1.5">
+              <Label for="key-provider">Company</Label>
+              <Select.Root
+                bind:value={
+                  () => keyProvider,
+                  (value: string) => {
+                    const match = KEY_PROVIDERS.find((p) => p.value === value);
+                    if (match) keyProvider = match.value;
+                  }
+                }
+                items={KEY_PROVIDERS.map((p) => ({ value: p.value, label: p.label }))}
+              >
+                <Select.Trigger id="key-provider">
+                  <Select.Value />
+                </Select.Trigger>
+                <Select.Content>
+                  {#each KEY_PROVIDERS as p (p.value)}
+                    <Select.Item value={p.value} label={p.label}>{p.label}</Select.Item>
+                  {/each}
+                </Select.Content>
+              </Select.Root>
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <Label for="api-key">Key</Label>
+              <Input
+                id="api-key"
+                type="password"
+                bind:value={apiKey}
+                autocomplete="off"
+                message={`Saved in Arpli on this Mac. It's only sent to ${keyCompany} when you draft.`}
+              />
+            </div>
+            <Button
+              variant="secondary"
+              class="w-full"
+              loading={saving === keyProvider}
+              disabled={saving !== null}
+              onclick={connectKey}
+            >
+              Save key
+            </Button>
+          </Card.Content>
+        </Card.Root>
+      {:else}
+        <Button variant="underline" size="sm" class="self-center" onclick={() => (showKey = true)}>
+          Use an API key instead
         </Button>
       {/if}
-
-      <Button
-        variant="primary"
-        onclick={continueWithApiKey}
-        disabled={saving}
-        loading={saving}
-        size="lg"
-        class="w-full"
-      >
-        {saving ? 'Saving…' : 'Continue'}
-      </Button>
     </div>
   {/if}
 
@@ -220,6 +271,6 @@
   {/if}
 
   <Button variant="underline" size="sm" class="self-center" onclick={skip}>
-    Skip for now — I'll add a provider later
+    Skip for now. You can connect one later in Settings.
   </Button>
 </div>

@@ -4,3 +4,5 @@ build
 .svelte-kit
 *.db
 package-lock.json
+references
+studio

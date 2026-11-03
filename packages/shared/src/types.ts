@@ -203,7 +203,14 @@ export interface DraftAnswerResult {
 }
 
 // AI connector domain
-export type AiProviderKind = 'ollama' | 'groq' | 'google' | 'anthropic' | 'openai' | 'gemini';
+export type AiProviderKind =
+  | 'ollama'
+  | 'groq'
+  | 'google'
+  | 'anthropic'
+  | 'openai'
+  | 'gemini'
+  | 'claude-code';
 
 export type AiProviderTier = 'local' | 'free-cloud' | 'paid';
 

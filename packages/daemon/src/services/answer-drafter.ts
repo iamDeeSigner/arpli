@@ -207,13 +207,16 @@ export class AnswerDrafterService {
     return this.toDraft(row);
   }
 
-  /** All draft versions for an application, newest first. */
+  /**
+   * All draft versions for an application, newest first. Saves can share a
+   * millisecond timestamp, so the version number breaks ties.
+   */
   async listDrafts(applicationId: string): Promise<ApplicationDraft[]> {
     const rows = await this.db
       .select()
       .from(schema.applicationDrafts)
       .where(eq(schema.applicationDrafts.applicationId, applicationId))
-      .orderBy(desc(schema.applicationDrafts.createdAt))
+      .orderBy(desc(schema.applicationDrafts.createdAt), desc(schema.applicationDrafts.version))
       .all();
     return rows.map((r) => this.toDraft(r));
   }
@@ -245,10 +248,14 @@ export class AnswerDrafterService {
     questionText: string,
   ): Promise<ApplicationDraft[]> {
     const all = await this.listDrafts(applicationId);
-    return all.filter((d) => {
-      if (questionId) return d.questionId === questionId;
-      return d.questionText === questionText && !d.questionId;
-    });
+    // Versions within one question only ever increase, so they are the
+    // reliable order (timestamps can tie).
+    return all
+      .filter((d) => {
+        if (questionId) return d.questionId === questionId;
+        return d.questionText === questionText && !d.questionId;
+      })
+      .sort((a, b) => b.version - a.version);
   }
 
   async getDraft(id: string): Promise<ApplicationDraft | null> {

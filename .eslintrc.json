@@ -46,7 +46,9 @@
     "node_modules",
     "dist",
     "build",
-    ".svelte-kit"
+    ".svelte-kit",
+    "references",
+    "studio"
   ],
   "rules": {
     "@typescript-eslint/no-unused-vars": [

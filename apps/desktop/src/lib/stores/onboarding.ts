@@ -3,7 +3,7 @@ import { browser } from '$app/environment';
 
 export interface OnboardingState {
   completed: boolean;
-  aiProvider: 'ollama' | 'groq' | 'openai' | 'anthropic' | 'google' | null;
+  aiProvider: 'claude-code' | 'ollama' | 'groq' | 'openai' | 'anthropic' | 'google' | null;
   aiModel: string | null;
   profileSeed: 'resume' | 'conversation' | 'skipped' | null;
 }

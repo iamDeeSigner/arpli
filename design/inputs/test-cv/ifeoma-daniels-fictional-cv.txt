@@ -1,0 +1,72 @@
+Ifeoma Daniels
+Product Designer · Lagos, Nigeria
+ifeoma.daniels@example.com · +234 000 000 0000 · example.com/ifeoma · linkedin.com/in/example-ifeoma
+Fictional profile for testing Arpli. Not a real person; all companies, awards and organisations marked (fictional) are invented.
+
+
+SUMMARY
+
+Product designer with six years of experience designing fintech and AI tools for people who are new to digital
+finance. I turn messy, high-stakes processes into calm, plain-language flows, and I test with real users in
+markets where data is expensive and phones are mid-range. I am looking for a senior product design role or a
+design fellowship focused on financial inclusion.
+
+EXPERIENCE
+
+Lead Product Designer, Lumen Pay (fictional)                                                                             Mar 2023 – Present
+Lagos, Nigeria
+    Led the redesign of the merchant lending app used by about 40,000 small traders; loan application
+    completion rose from 38% to 61% in six months.
+    Built the company's first design system (120 components), shared by three product squads; handoff
+    questions from engineers fell by roughly half.
+    Ran more than 60 field interviews in Lagos and Kano markets and introduced voice notes for traders who
+    prefer speaking to typing.
+    Mentor two junior designers; one was promoted to mid-level in 2024.
+
+Product Designer, Harbor & Field Studio (fictional)                                                                    Jun 2020 – Feb 2023
+Remote
+    Designed onboarding and identity-check flows for four African fintech clients; for one savings app, average
+    onboarding time fell from 14 minutes to 6.
+    Prototyped an AI assistant that explains loan terms in Nigerian Pidgin and Yoruba; it was shortlisted for a
+    client pilot.
+    Facilitated 12 design sprints with founders and engineers.
+
+Junior UX Designer, Ndani Health (fictional)                                                                          Aug 2018 – May 2020
+Lagos, Nigeria
+    Redesigned appointment booking for 25 clinics; missed appointments fell by 18%.
+    Made usability testing a monthly habit, with five patients in each round.
+
+EDUCATION
+
+B.Sc. Computer Science, University of Lagos                                                       2014 – 2018
+Second Class Upper (2:1). Final-year project: an SMS-based tutoring tool for secondary school students.
+
+Certificate in Human-Centred Design, Lagos Design Institute (fictional)                                                               2019
+
+PROJECTS
+
+Market Voices                                                                                                                         2024
+An open-source research kit for running interviews with low-literacy users, now used by three NGOs.
+example.com/market-voices
+
+Naira Notes                                                                                                                           2021
+A budgeting app concept for people with irregular incomes; featured in a regional design newsletter.
+AWARDS AND RECOGNITION
+
+   Shortlisted, West Africa Product Design Awards (fictional), 2023.
+   Speaker, "Designing for the first-time borrower", Lagos UX Meetup (fictional), 2024.
+
+VOLUNTEERING
+
+Design mentor, Girls Who Prototype (fictional)                                                      2021 – Present
+Monthly sessions with secondary school girls on sketching, prototyping and presenting ideas.
+
+SKILLS
+
+Product design · interaction design · user research · usability testing · design systems · prototyping · Figma ·
+plain-language writing · workshop facilitation
+
+LANGUAGES
+
+English (fluent) · Yoruba (native) · Nigerian Pidgin (fluent) · French (basic)
+

@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "embedded",
+  "dolt_database": "arpli",
+  "project_id": "d03d9148-786c-429e-a1e1-c7ab066b5969"
+}

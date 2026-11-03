@@ -15,6 +15,7 @@ import { getActiveConnector } from '../ai/manager.js';
  *   POST /profile/import              — multipart file upload (PDF/DOCX/ZIP)
  *   POST /profile/import/linkedin     — JSON body: LinkedIn JSON export
  *   POST /profile/import/url          — JSON body: { url: string }
+ *   POST /profile/import/text         — JSON body: { text: string } (pasted CV or LinkedIn text)
  *   POST /profile/:id/import/apply    — JSON body: { preview, updateBio? }
  *
  * All routes return an `ImportPreview` (parse-only) or an `ImportApplyResult`
@@ -122,6 +123,19 @@ export async function registerProfileImportRoutes(
       }
     },
   );
+
+  // Pasted text (a CV, or text copied from a LinkedIn profile). Same preview
+  // shape as a file import; nothing is written until /import/apply.
+  app.post<{ Body: { text?: unknown } }>('/profile/import/text', async (req, reply) => {
+    const text = typeof req.body?.text === 'string' ? req.body.text.trim() : '';
+    if (!text) return badRequest(reply, 'body.text is required');
+    try {
+      return await importer.parseResumeText(text.slice(0, 40_000), 'text', safeConnector(db));
+    } catch (err) {
+      req.log.error({ err }, 'profile.import.text failed');
+      return reply.code(502).send({ error: (err as Error).message });
+    }
+  });
 
   app.post<{
     Params: { id: string };
