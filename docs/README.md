@@ -12,7 +12,7 @@ Design and brand documentation for Arpli, the application coaching tool.
 | [Typography System](brand/typography-system.md) | Inter, Fraunces, JetBrains Mono; type scale; CSS custom properties |
 | [Motion Language](brand/motion-language.md) | Three motion tiers, interaction specs, reduced-motion policy, CSS tokens |
 | [Tone of Voice](brand/tone-of-voice.md) | Four voice pillars (Steady, Warm, Enabling, Grounded), vocabulary guide |
-| [User Personas](brand/user-personas.md) | Ada, Emeka, Ngozi, Tunde — four grounded personas with design implications |
+| [User Personas](brand/user-personas.md) | Ada, Sam, Maya, Emeka, Ngozi, Tunde: six ways of applying, and how each hears Arpli (evidence in `design/13-personas.md`) |
 
 ## Design
 
