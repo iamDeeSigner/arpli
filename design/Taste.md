@@ -16,6 +16,8 @@ Steady, warm, grounded (from `docs/brand/tone-of-voice.md`; the fourth pillar is
 - Use one accent colour on warm neutrals; design dark mode as a first-class mode (colour system)
 - Keep motion calm and bounded: no overshoot, reduced motion designed first (motion language)
 - Base: clear hierarchy, generous spacing, real content and real states (base taste)
+- Say what's happening in words, with time ("Drafting 2 of 5", "Drafted in 12s"); status is carried by words, not decoration (T3 Code, `07-reference-t3code.md`)
+- Undo for a few seconds instead of "are you sure?"; every way in has a way out (T3 Code: "a one-way door is a bug")
 
 ## Don't
 - Hype words: "AI-powered", "unlock", "leverage", "seamless", "supercharge" (tone of voice, banned list)
@@ -23,6 +25,9 @@ Steady, warm, grounded (from `docs/brand/tone-of-voice.md`; the fourth pillar is
 - Pure white or pure black, gradients, many accent colours, colour-coding by feature (colour system)
 - Confetti, bounce, spinning spinners, pulsing dots (motion language)
 - Browser `alert()` and `confirm()` pop-ups (found in the current code; off-system)
+
+## Principles
+- Five ranked design principles, approved 2026-11-09, in `10-principles.md`: judge every direction and screen against them. 1 Your words, or nothing · 2 You decide; Arpli never judges you · 3 Say what you checked, not what you guess · 4 Steady at 11 pm · 5 Every application makes the next one easier.
 
 ## Type, colour, motion
 - Now (v1 build): whatever the current design system provides (see DesignSystem.md)
@@ -35,3 +40,5 @@ Steady, warm, grounded (from `docs/brand/tone-of-voice.md`; the fourth pillar is
 
 ## Changes log
 - 2026-11-02 · Created from base taste and `docs/brand/` · intake
+- 2026-11-09 · Two "Do" lines from T3 Code (status in words with time; undo over confirm), owner approved · Explore
+- 2026-11-09 · Pointer to the five approved principles (`10-principles.md`) · Explore

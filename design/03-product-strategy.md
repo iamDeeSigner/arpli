@@ -52,12 +52,14 @@ Every feature exists to move the person through one step of the core job. **v1**
 | **Start** | get Arpli working with what they already have | **O6** first run and AI with no keys | Must |
 | **1 · Plan** | choose what's worth their time | **O12** watch my sources · O11 Arpli finds opportunities | Should · v2 |
 | **2 · Gather** | get the opportunity in; gather their evidence | **O4** one-click capture · **O1** pour in what you have · O9 learn from each form · O3 story interview | Must · Must · Should · Could (prototype decides) |
-| **3 · Organise** | understand what each question asks; pick the right story | **O5** form companion (reads the questions) · **O2** AI help level per opportunity | Must · Must |
+| **3 · Organise** | understand what each question asks; pick the right story | **O5** form companion (reads the questions) · **O2** AI help level per opportunity · **O2** what each question is really asking, with its source | Must · Must · Must |
 | **4 · Check** | confirm eligibility and what's needed | eligibility shown from the opportunity; recommender tracking | partly · Won't |
-| **5 · Perform** | fill fields; write answers and documents | **O5** fill and copy · **O2** true drafts in your voice · **O10** reuse and adapt a past answer · O8 cover letter and CV · pitch summary · full decks | Must · Must · Must · Should · Could · Won't |
+| **5 · Perform** | fill fields; write answers and documents | **O5** fill and copy · **O2** true drafts in your voice · **O10** reuse and adapt a past answer · **O8** documents of every kind and common format, made in each application and kept in one place · slide decks made by Arpli | Must · Must · Must · Must · Won't (a deck you have is kept and attached) |
 | **6 · Verify and track** | check every claim; see status and deadlines | **O2** "check this" guard · **O7** one tracker with reminders | Must · Must |
 | **7 · Adjust** | revise; handle follow-ups | **O2** versions and refine · **O7** statuses | Must |
 | **8 · Close** | submit; record the outcome; keep the best material | the person presses Submit · **O7** outcome · **O10** answers kept in the bucket for next time | always · Must · Must |
+
+**Changed 2026-11-09 (owner, from Explore step 6, `08-ux-elements.md`):** documents move from Should and Could to Must, for every kind of document and every common format (Markdown, PDF, Word, plain text and others), with a place of their own and a place in each application (DEE-89); "what each question is really asking" is added to Organise as a Must, part of O2.
 
 ## What we focus on now
 - **The bet in one line:** O1 + O2, on top of O6, delivered through O5. Capture (O4) and the tracker (O7) close the loop, and reuse (O10) makes every application feed the next.

@@ -40,6 +40,8 @@ The app's data stays in `~/.arpli/` (the database), outside the code on purpose.
 ## Reference repos (in `references/`)
 - `dossier` (AGPL-3.0): ideas only. Copying its code would make Arpli AGPL, so write our own.
 - `beads` (MIT): code may be reused if its copyright notice is kept.
+- `jev-job-search` (MIT): code may be reused if its copyright notice is kept. Findings in `design/06-reference-jev.md`.
+- `t3code` (MIT): code may be reused if its copyright notice is kept. Findings in `design/07-reference-t3code.md`.
 
 ## Task tracking (beads)
 - Build tasks live in beads (`bd`, prefix `arpli-`), not in markdown TODO lists. Product and design decisions stay in `design/*.md`.
