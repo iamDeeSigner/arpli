@@ -1,0 +1,20 @@
+version: 2
+updates:
+  # Routine npm version bumps are left to the monthly dependency check.
+  # A limit of 0 turns off version-update PRs here while still letting
+  # Dependabot open security-fix PRs (once enabled in repo settings).
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: daily
+      time: '06:00'
+    open-pull-requests-limit: 0
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions:
+        patterns: ['*']
